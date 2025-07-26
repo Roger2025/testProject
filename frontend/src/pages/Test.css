@@ -1,0 +1,27 @@
+.same {
+  color: red;
+}
+
+.upper {
+  color: blue;
+}
+
+.down {
+  color: green;
+}
+
+.odd {
+  color: green;
+}
+
+.even {
+  color: blue;
+}
+
+.oddCol {
+  background-color: black;
+}
+
+.evenCol {
+  background-color: white;
+}
