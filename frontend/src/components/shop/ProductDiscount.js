@@ -7,36 +7,75 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-// import '../../styles/css/productDiscount.css'; // 可放 Ogani 原樣式
+import '../../styles/css/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css/navigation';
+
+
+// 使用 imageMap.js 來獲取圖片路徑
+// import { imageMap } from '../../utils/discount/imageMap'; // 使用 discount 資料夾的映射
+// import { imageMap } from '../../utils/imageMaptest'; // 使用 imageMaptest.js 測試
+
+import { imageRegistry, getImageURL } from '../../utils/imageRegistry';
+const { discount: imageMap } = imageRegistry; // 從 imageRegistry 中獲取 discount 映射
+// 例如：const imageURL = getImageURL('discount/pd-1.jpg'); // 獲取特定圖片的 URL
+// 這樣可以保持圖片路徑的統一性和可維護性
 
 const discountProducts = [
   {
     id: 1,
     category: 'Dried Fruit',
-    name: 'Raisin’n’nuts',
+    name: '早餐店1',
     price: 30.0,
     oldPrice: 36.0,
     percent: '-20%',
-    img: '/assets/ogani/img/product/discount/pd-1.jpg',
+    img: 'pd-1.jpg',
   },
   {
     id: 2,
     category: 'Vegetables',
-    name: 'Vegetables’package',
+    name: '早餐店2',
     price: 30.0,
     oldPrice: 36.0,
     percent: '-20%',
-    img: '/assets/ogani/img/product/discount/pd-2.jpg',
+    img: 'pd-2.jpg',
   },
   {
     id: 3,
     category: 'Dried Fruit',
-    name: 'Mixed Fruitss',
+    name: '早餐店3',
     price: 30.0,
     oldPrice: 36.0,
     percent: '-20%',
-    img: '/assets/ogani/img/product/discount/pd-3.jpg',
+    img: 'pd-3.jpg',
   },
+  {
+    id: 4,
+    category: 'Dried Fruit',
+    name: '早餐店4',
+    price: 30.0,
+    oldPrice: 36.0,
+    percent: '-20%',
+    img: 'pd-4.jpg',
+  },
+  {
+    id: 5,
+    category: 'Vegetables',
+    name: '早餐店5',
+    price: 30.0,
+    oldPrice: 36.0,
+    percent: '-20%',
+    img: 'pd-5.jpg',
+  },
+  {
+    id: 6,
+    category: 'Dried Fruit',
+    name: '早餐店6',
+    price: 30.0,
+    oldPrice: 36.0,
+    percent: '-20%',
+    img: 'pd-6.jpg',
+  },  
   // 更多商品...
 ];
 
@@ -48,14 +87,38 @@ const ProductDiscount = () => {
       </div>
       <div className="row">
         <div className="product__discount__slider">
-          <Swiper spaceBetween={10} slidesPerView={3}>
-            {discountProducts.map((item) => (
+          <Swiper 
+          modules={[Navigation, Autoplay]}
+          spaceBetween={10} 
+          slidesPerView={3}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          navigation
+          breakpoints={{
+            640: {
+              slidesPerView: 1,
+            },
+            768: {
+              slidesPerView: 2,
+            },
+            1024: {
+              slidesPerView: 3,
+            },
+          }}
+          >
+            {discountProducts.map((item) => {
+              // 使用 getImageURL 函數來獲取圖片的 URL
+              // const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL 
+              // 這樣可以保持圖片路徑的統一性和可維護性
+              // 例如：const imageURL = getImageURL('discount/pd-1.jpg'); // 獲取特定圖片的 URL 
+              const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL               
+              return (
               <SwiperSlide key={item.id}>
                 <div className="product__discount__item">
                   <div
                     className="product__discount__item__pic"
                     style={{
-                      backgroundImage: `url(${item.img})`,
+                      // backgroundImage: `url(${imageMap[item.img]})`, // 使用 imageMap[item.img] 來獲取圖片的實際路徑
+                      backgroundImage: `url(${imageURL})`, // 獲取特定圖片的 URL  
                       backgroundSize: 'cover',
                     }}
                   >
@@ -75,7 +138,8 @@ const ProductDiscount = () => {
                   </div>
                 </div>
               </SwiperSlide>
-            ))}
+              );
+            })}
           </Swiper>
         </div>
       </div>

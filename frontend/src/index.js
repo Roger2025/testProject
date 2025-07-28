@@ -16,6 +16,8 @@ import './styles/css/elegant-icons.css';       // Elegant Icons
 import './styles/css/owl.carousel.min.css';    // Owl Carousel 樣式
 import './styles/css/slicknav.min.css';        // SlickNav 樣式
 // 可加入 Google Fonts 於 public/index.html 裡的 <head>
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

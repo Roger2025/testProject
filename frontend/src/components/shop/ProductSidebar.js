@@ -9,21 +9,28 @@ import ColorFilter from './ColorFilter';
 import SizeFilter from './SizeFilter';
 
 const departments = [
-  '套餐',
-  '漢堡',
-  '吐司',
-  '蛋餅',
-  '鬆餅',
-  '麵食',
-  '單品',
-  '飲品',
+  '會員中心',
+  '訂餐專區',
+  '支付管理',
+  '優惠專區',
+  '評價與收藏',
+  '客戶服務',
+  '聯絡我們',
+  // '套餐',
+  // '漢堡',
+  // '吐司',
+  // '蛋餅',
+  // '鬆餅',
+  // '麵食',
+  // '單品',
+  // '飲品',
   // 'Papayaya & Crisps',
   // 'Oatmeal',
 ];
 
 const ProductSidebar = () => {
-  const [selectedColor, setSelectedColor] = useState('');  
-  const [selectedSize, setSelectedSize] = useState('');
+  // const [selectedColor, setSelectedColor] = useState('');  
+  // const [selectedSize, setSelectedSize] = useState('');
   
   return (
     <div className="sidebar">
@@ -38,13 +45,13 @@ const ProductSidebar = () => {
         </ul>
 
       {/* <DepartmentFilter /> */}
-      <PriceRangeFilter />
-      <ColorFilter
+      {/* <PriceRangeFilter /> */}
+      {/* <ColorFilter
         selectedColor={selectedColor}
         onChange={setSelectedColor}
-      />
+      /> */}
 
-      <SizeFilter selectedSize={selectedSize} onChange={setSelectedSize} />
+      {/* <SizeFilter selectedSize={selectedSize} onChange={setSelectedSize} /> */}
 
       </div>
     </div>

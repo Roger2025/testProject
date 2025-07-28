@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import banner from '../../assets/images/hero/banner.jpg';
 import languageIcon from '../../assets/images/language.png';
+import CategoriesSection from './CategoriesSection';
 
 const HeroSection = () => {
+  const [showMenu, setShowMenu] = useState(false);
+ 
   return (
     <section className="hero">
       <div className="container">
         <div className="row">
 
-          {/* Categories Menu */}
+          {/* Categories Menu = 左側 Sidebar */}
           <div className="col-lg-3">
             <div className="hero__categories">
-              <div className="hero__categories__all">
+              <div className="hero__categories__all"
+              onClick={() => setShowMenu(!showMenu)} // 切換 Menu 顯示狀態
+              style={{ cursor: 'pointer' }}
+              >
                 <i className="fa fa-bars"></i>
                 <span>All departments</span>
               </div>
-              <ul>
+               <ul style={{ display: showMenu ? 'block' : 'none' }}> {/* 根據狀態顯示或隱藏 Menu */}
                 <li><a href="#">會員中心</a></li>
                 <li><a href="#">訂餐專區</a></li>
                 <li><a href="#">支付管理</a></li>
@@ -31,9 +37,10 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Search & Banner */}
+          {/* Search & Banner = 商品區 */}
           <div className="col-lg-9">
             <div className="hero__search">
+              {/* 左邊:搜尋列 */}
               <div className="hero__search__form">
                 <form action="#">
                   <div className="hero__search__categories">
@@ -44,6 +51,7 @@ const HeroSection = () => {
                   <button type="submit" className="site-btn">SEARCH</button>
                 </form>
               </div>
+              {/* 右邊:聯絡電話 */}
               <div className="hero__search__phone">
                 <div className="hero__search__phone__icon">
                   <i className="fa fa-phone"></i>
@@ -56,7 +64,7 @@ const HeroSection = () => {
             </div>
 
             {/* Hero Banner */}
-            <div
+            {/* <div
               className="hero__item"
               style={{
                 backgroundImage: `url(${banner})`,
@@ -70,7 +78,10 @@ const HeroSection = () => {
                 <p>Free Pickup and Delivery Available</p>
                 <a href="#" className="primary-btn">線上訂餐</a>
               </div>
-            </div>
+            </div> */}
+            {/* <div className="hero__item">   
+              <CategoriesSection />
+            </div> */}
           </div>
 
         </div>

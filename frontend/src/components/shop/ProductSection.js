@@ -33,14 +33,14 @@ const ProductSection = ({ products }) => {
           <div className="col-lg-9 col-md-7">
             <ProductDiscount />
 
-            <ProductFilters
+            {/* <ProductFilters
               productCount={products.length}
               onSortChange={handleSort}
               viewType={currentView}
               onViewToggle={setCurrentView}
-            />            
+            />             */}
 
-            <div className="row">
+            {/* <div className="row">
               {Array.isArray(products) &&
                 products
                   .filter(item => item && typeof item === 'object' && item.img)
@@ -49,7 +49,7 @@ const ProductSection = ({ products }) => {
                       <ProductCard data={item} />
                     </div>
                   ))}
-            </div>
+            </div> */}
             <ProductPagination />
           </div>
         </div>

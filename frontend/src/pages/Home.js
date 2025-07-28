@@ -13,7 +13,7 @@ import BannerSection from '../components/BannerSection';
 import LatestProducts from '../components/home/LatestProducts';
 import BlogSection from '../components/blog/BlogSection';
 import Footer from '../components/layout/Footer';
-
+import ProductPagination from '../components/shop/ProductPagination'; // 引入 ProductPagination
 
 const Home = () => {
   return (
@@ -22,11 +22,13 @@ const Home = () => {
       <MobileMenu />
       <Header />
       <HeroSection />
+      {/* <FeaturedProducts />   */}
       <CategoriesSection />
       <FeaturedProducts />
-      <BannerSection />
-      <LatestProducts />
-      <BlogSection />
+      <ProductPagination />
+      {/* <BannerSection /> */}
+      {/* <LatestProducts /> */}
+      {/* <BlogSection /> */}
       <Footer />
     </>
   );

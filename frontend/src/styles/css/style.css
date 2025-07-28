@@ -417,13 +417,11 @@ ol {
 
 .header__menu {
 	padding: 24px 0;
-	white-space: nowrap;  /* 2025/27/25 refer to Wayne */
 }
 
 .header__menu ul li {
 	list-style: none;
 	display: inline-block;
-	margin-top: 60px;  /* 2025/27/25 refer to Wayne */
 	margin-right: 50px;
 	position: relative;
 }
@@ -480,7 +478,7 @@ ol {
 }
 
 .header__menu ul li a {
-	font-size: 20px;  /* 2025/27/25 refer to Wayne, ogani=14px */
+	font-size: 14px;
 	color: #252525;
 	text-transform: uppercase;
 	font-weight: 700;
@@ -575,7 +573,7 @@ ol {
 }
 
 .hero.hero-normal .hero__categories ul {
-	display: none;
+	display: none; /* 預設隱藏。 */ 
 	position: absolute;
 	left: 0;
 	top: 46px;
@@ -787,7 +785,7 @@ ol {
 .categories__slider .col-lg-3 {
 	max-width: 100%;
 }
-
+/* ogani 的 左右按鈕元件 有關 */
 .categories__slider.owl-carousel .owl-nav button {
 	font-size: 18px;
 	color: #1c1c1c;
@@ -797,7 +795,7 @@ ol {
 	text-align: center;
 	border: 1px solid #ebebeb;
 	position: absolute;
-	left: -35px;
+	left: -35px; /* 是左邊的按鈕位置。 */
 	top: 50%;
 	-webkit-transform: translateY(-35px);
 	background: #ffffff;
@@ -805,7 +803,50 @@ ol {
 
 .categories__slider.owl-carousel .owl-nav button.owl-next {
 	left: auto;
-	right: -35px;
+	right: -35px; /* 是右邊的按鈕位置。 */
+}
+
+/*---------------------
+CategoriesSection.js // 單個滑動元件
+CarouselNav.js // 左右按鈕元件 
+---------------------*/
+.slider-row {
+  display: flex;
+  align-items: center;
+  min-height: 220px; /* 高度略高於圖片 */
+  width: 100%;
+  /* max-width: 100%; */
+  position: relative; /* 父層要有定位 */
+}
+
+/* .slider-row > div { */
+.slider-container {	
+  flex: 1;
+  min-width: 0; /* 防止 flex 子元素溢出 */
+}
+
+.owl-prev,.owl-next {
+	font-size: 18px;
+	color: #1c1c1c;
+	height: 70px;
+	width: 30px;
+	line-height: 70px;
+	text-align: center;
+	border: 1px solid #ebebeb;
+	background: #ffffff;
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+}
+
+.owl-prev {
+  	left: 0; /* 是左邊的按鈕位置。 */
+}
+
+.owl-next {
+	right: 0; /* 是右邊的按鈕位置。 */
 }
 
 /*---------------------
