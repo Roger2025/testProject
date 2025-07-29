@@ -7,27 +7,49 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// MongoDB 連線
+const mongoose = require('mongoose');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var merchantMenuRouter = require('./routes/merchant/menus');
+var merchantSetMenuRouter = require('./routes/merchant/setMenus');
 const cors = require('cors');
 
 var app = express();
+
+// MongoDB 連線設定
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB 連線成功');
+  })
+  .catch((error) => {
+    console.error('MongoDB 連線失敗:', error);
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // 增加請求大小限制，支援圖片上傳
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
+// CORS 設定 - 允許前端 React 開發服務器連線
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.use('/api/merchant', merchantMenuRouter);
+app.use('/api/merchant', merchantSetMenuRouter);
 
 // 測試路由
 const testRoutes = require('./routes/test');
@@ -48,7 +70,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
 
 module.exports = app;
