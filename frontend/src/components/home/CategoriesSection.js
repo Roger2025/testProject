@@ -7,16 +7,16 @@ import CategoriesSlider from './CategoriesSlider';
 
 // 類別資料清單，可從 API 或 props 傳入
 const categories = [
-  { title: '早餐店1', img: require('../../assets/images/categories/cat-1.jpg') },
-  { title: '早餐店2', img: require('../../assets/images/categories/cat-2.jpg') },
-  { title: '早餐店3', img: require('../../assets/images/categories/cat-3.jpg') },
-  { title: '早餐店4', img: require('../../assets/images/categories/cat-4.jpg') },
-  { title: '早餐店5', img: require('../../assets/images/categories/cat-5.jpg') },
-  { title: '早餐店6', img: require('../../assets/images/categories/cat-1.jpg') },
-  { title: '早餐店7', img: require('../../assets/images/categories/cat-2.jpg') },
-  { title: '早餐店8', img: require('../../assets/images/categories/cat-3.jpg') },
-  { title: '早餐店9', img: require('../../assets/images/categories/cat-4.jpg') },
-  { title: '早餐店10', img: require('../../assets/images/categories/cat-5.jpg') },  
+  { title: '早餐店1', img: require('../../assets/images/categories/cat-1.jpg'), url: '/shop1' },
+  { title: '早餐店2', img: require('../../assets/images/categories/cat-2.jpg'), url: '/shoptest' },
+  { title: '早餐店3', img: require('../../assets/images/categories/cat-3.jpg'), url: '/shoptest' },
+  { title: '早餐店4', img: require('../../assets/images/categories/cat-4.jpg'), url: '/shoptest' },
+  { title: '早餐店5', img: require('../../assets/images/categories/cat-5.jpg'), url: '/shoptest' },
+  { title: '早餐店6', img: require('../../assets/images/categories/cat-1.jpg'), url: '/shoptest' },
+  { title: '早餐店7', img: require('../../assets/images/categories/cat-2.jpg'), url: '/shoptest' },
+  { title: '早餐店8', img: require('../../assets/images/categories/cat-3.jpg'), url: '/shoptest' },
+  { title: '早餐店9', img: require('../../assets/images/categories/cat-4.jpg'), url: '/shoptest' },
+  { title: '早餐店10', img: require('../../assets/images/categories/cat-5.jpg'), url: '/shoptest' },  
 ];
 
 // const categories1 = [

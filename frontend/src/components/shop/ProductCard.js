@@ -4,14 +4,14 @@
 
 import React from 'react';
 
-const ProductCard = ({ product }) => {
-  // if (!product || !product.img) return null;
+const ProductCard = ({ data }) => {
+  if (!data || !data.img) return null;
 
   return (
     <div className="product__item">
       <div
         className="product__item__pic set-bg"
-        style={{ backgroundImage: `url(${product.img})` }}
+        style={{ backgroundImage: `url(${data.img})` }}
       >
         <ul className="product__item__pic__hover">
           <li><a href="#"><i className="fa fa-heart"></i></a></li>
@@ -20,8 +20,8 @@ const ProductCard = ({ product }) => {
         </ul>
       </div>
       <div className="product__item__text">
-        <h6><a href="#">{product.name}</a></h6>
-        <h5>${product.price.toFixed(2)}</h5>
+        <h6><a href="#">{data.title}</a></h6>
+        <h5>${data.price.toFixed(2)}</h5>
       </div>
     </div>
   );

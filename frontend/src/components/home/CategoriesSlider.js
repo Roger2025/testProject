@@ -31,7 +31,7 @@ const CategoriesSlider = ({ categories, sliderSettings }) => {
                 justifyContent: 'center',
               }}
             >
-              <h5><a href="#">{cat.title}</a></h5>
+              <h5><a href={cat.url}>{cat.title}</a></h5>
             </div>
           </div>
         ))}

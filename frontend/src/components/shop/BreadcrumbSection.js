@@ -15,7 +15,7 @@ const BreadcrumbSection = () => {
         <div className="row">
           <div className="col-lg-12 text-center">
             <div className="breadcrumb__text">
-              <h2>Organi Shop</h2> {/* 標題 可變 = Vegetable’s Package */}
+              <h2>Byte Eat Shop</h2> {/* 標題 可變 = Vegetable’s Package */}
               <div className="breadcrumb__option">
                 <Link to="/">Home</Link>
                 {/* <Link to="/">Vegetables</Link> */} {/* 差異在 shop-grid.html 沒有此一列 */}

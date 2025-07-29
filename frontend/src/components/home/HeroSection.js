@@ -1,3 +1,4 @@
+// src/components/home/HeroSection.js
 import React, { useState } from 'react';
 import banner from '../../assets/images/hero/banner.jpg';
 import languageIcon from '../../assets/images/language.png';
@@ -7,7 +8,7 @@ const HeroSection = () => {
   const [showMenu, setShowMenu] = useState(false);
  
   return (
-    <section className="hero">
+    <section className="hero hero-normal"> {/* .hero {position: relative;} 會影響區塊；.hero-normal {position: absolute;} 不會影響區塊 */}
       <div className="container">
         <div className="row">
 

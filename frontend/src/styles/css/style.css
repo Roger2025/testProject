@@ -569,12 +569,12 @@ ol {
 }
 
 .hero.hero-normal .hero__categories {
-	position: relative;
+	position: relative; /* 微調位置、不影響其他元素 */
 }
 
 .hero.hero-normal .hero__categories ul {
 	display: none; /* 預設隱藏。 */ 
-	position: absolute;
+	position: absolute; /* 精準定位、浮動元素、彈出視窗等 */
 	left: 0;
 	top: 46px;
 	width: 100%;

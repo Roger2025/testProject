@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 // import Preloader from '../components/Preloader';
 import MobileMenu from '../components/layout/MobileMenu';
-import HeaderShop from '../components/layout/HeaderShop';
+import Header from '../components/layout/Header';
 import HeroSection from '../components/home/HeroSection';
 import BreadcrumbSection from '../components/shop/BreadcrumbSection';
 import FeaturedProducts from '../components/home/FeaturedProducts';
@@ -14,8 +14,8 @@ import Footer from '../components/layout/Footer';
 // import product2 from '../assets/images/product/product-8.jpg';
 import ProductPagination from '../components/shop/ProductPagination'; // 引入 ProductPagination
 
-// 登入後的店家首頁 
-const Shop = () => {
+// 登入後的平台首頁 refer to Shop1.js
+const HomePage = () => {
   // const [products, setProducts] = useState([]);
 
   // useEffect(() => {
@@ -31,7 +31,7 @@ const Shop = () => {
     <>
       {/* <Preloader /> */}
       <MobileMenu />
-      <HeaderShop />
+      <Header />
       <HeroSection />
       <BreadcrumbSection />
       <ProductSection />
@@ -43,4 +43,4 @@ const Shop = () => {
   );
 };
 
-export default Shop;
+export default HomePage;

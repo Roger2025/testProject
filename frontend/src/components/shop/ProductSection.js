@@ -50,7 +50,7 @@ const ProductSection = ({ products }) => {
                     </div>
                   ))}
             </div> */}
-            <ProductPagination />
+            {/* <ProductPagination /> */}
           </div>
         </div>
       </div>

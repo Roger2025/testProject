@@ -58,11 +58,11 @@ const Header = () => {
           <div className="col-lg-6">
             <nav className="header__menu">
               <ul>
-                <li className="active"><Link to="/">首頁</Link></li>
-                <li><Link to="/shop">選定店家</Link></li>
-                <li><Link to="/register">線上訂餐</Link></li>
-                <li><Link to="/test">預約取餐</Link></li>  
-                <li><Link to="/login">登入/登出</Link></li> 
+                <li className="active"><Link to="/">平台首頁</Link></li>
+                <li><Link to="/shop">當前店家</Link></li>
+                <li><Link to="/register">線上訂餐</Link></li>          
+                <li><Link to="/test">購物車</Link></li>
+                <li><Link to="/login">登入/登出</Link></li>                 
                 {/* <li><Link to="/register">註冊</Link></li> */}
                 {/* <li><Link to="/test">Test</Link></li> */}
                 {/* <li><a href="#">Pages</a>
