@@ -1,6 +1,9 @@
 // src/components/layout/Header.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 標準樣式
+import '../../assets/ogani/css/style.css';          // Ogani 自定義樣式主檔
+import '../../assets/ogani/css/font-awesome.min.css'; // 如需圖示支援
 import logo from '../../assets/ogani/img/logo.png'; // 替換為實際 logo 圖片位置
 
 const Header = () => {

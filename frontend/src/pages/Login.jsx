@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../store/slices/authSlice';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 標準樣式
+import '../assets/ogani/css/style.css';          // Ogani 自定義樣式主檔
+import '../assets/ogani/css/font-awesome.min.css'; // 如需圖示支援
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
