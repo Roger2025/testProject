@@ -25,29 +25,31 @@ const MenuList = () => {
   
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
+  const [hasInitialFetch, setHasInitialFetch] = useState(false); // 新增：追蹤是否已初始化
   
   // 從 localStorage 或其他方式獲取商家ID
   const merchantId = localStorage.getItem('merchantId') || 'default_merchant';
 
   useEffect(() => {
-    // 如果沒有數據或數據過期，則重新獲取
-    const shouldRefetch = !items.length || !lastFetch || (Date.now() - lastFetch > 60000); // 1分鐘過期
+    // 修正：只在首次載入或數據過期時獲取，避免無限迴圈
+    const shouldRefetch = !hasInitialFetch || (!lastFetch || (Date.now() - lastFetch > 60000));
     
-    if (shouldRefetch) {
+    if (shouldRefetch && !loading) { // 新增：確保不在載入中時才發請求
+      setHasInitialFetch(true);
       dispatch(fetchMenuItems(merchantId));
     }
-  }, [dispatch, merchantId, items.length, lastFetch]);
+  }, [dispatch, merchantId, hasInitialFetch, lastFetch, loading]);
 
-  // 監聽錯誤，如果有錯誤且頁面刷新後，確保數據仍然存在
-  useEffect(() => {
-    if (error && items.length === 0) {
-      dispatch(fetchMenuItems(merchantId));
-    }
-  }, [error, items.length, dispatch, merchantId]);
+  // 移除這個 useEffect，因為會造成無限迴圈
+  // useEffect(() => {
+  //   if (error && items.length === 0) {
+  //     dispatch(fetchMenuItems(merchantId));
+  //   }
+  // }, [error, items.length, dispatch, merchantId]);
 
   const handleEdit = (item) => {
     dispatch(setCurrentItem(item));
-    navigate('/merchant/menu/edit', { state: { isEdit: true, itemId: item._id } });
+    navigate(`/merchant/menus/edit/${item._id}`, { state: { isEdit: true, itemId: item._id } });
   };
 
   const handleDelete = async (itemId) => {
@@ -65,7 +67,7 @@ const MenuList = () => {
 
   const handleAddNew = () => {
     dispatch(setCurrentItem(null));
-    navigate('/merchant/menu/edit', { state: { isEdit: false } });
+    navigate('/merchant/menus/new', { state: { isEdit: false } });
   };
 
   const getCategoryLabel = (categoryValue) => {
@@ -77,8 +79,8 @@ const MenuList = () => {
   const validItems = Array.isArray(items) ? items : [];
 
   const filteredItems = filterCategory === 'all' 
-    ? items 
-    : items.filter(item => item.category === filterCategory);
+    ? validItems 
+    : validItems.filter(item => item.category === filterCategory);
 
   const formatPrice = (price) => {
     return typeof price === 'number' ? `$${price}` : price;
@@ -94,7 +96,8 @@ const MenuList = () => {
     return optionTexts.join(' | ');
   };
 
-  if (loading && items.length === 0) {
+  // 修正：只在首次載入且正在載入時顯示載入畫面
+  if (loading && !hasInitialFetch) {
     return (
       <div className="container mt-4">
         <div className="text-center">

@@ -49,7 +49,7 @@ const MenuEdit = () => {
         name: currentItem.name || '',
         description: currentItem.description || '',
         price: currentItem.price || '',
-        category: currentItem.category || 'breakfast',
+        category: currentItem.category || 'burger',
         available: currentItem.available !== undefined ? currentItem.available : true,
         notes: currentItem.notes || '',
         options: currentItem.options || {}
@@ -73,7 +73,7 @@ const MenuEdit = () => {
         name: '',
         description: '',
         price: '',
-        category: 'breakfast',
+        category: 'burger',
         available: true,
         notes: '',
         options: {}

@@ -20,19 +20,19 @@ const Header = () => {
           <nav className="d-none d-lg-block">
             <ul className="nav">
               <li className="nav-item">
-                <Link className="nav-link active" as={Link} to="/">首頁</Link>
+                <Link className="nav-link active" as={Link} to="/merchant/dashboard">介面板</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/menu">菜單管理</Link>
+                <Link className="nav-link" to="/merchant/menu">菜單管理</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/orders">訂單紀錄</Link>
+                <Link className="nav-link" to="/merchant/orders">訂單紀錄</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/store-status">營業狀態</Link>
+                <Link className="nav-link" to="/merchant/store-status">營業狀態</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/admin">後台管理</Link>
+                <Link className="nav-link" to="/merchant/admin">店家資料</Link>
               </li>
             </ul>
           </nav>

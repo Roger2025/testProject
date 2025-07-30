@@ -2,7 +2,7 @@
 import React from 'react';
 // import { Routes, Route } from 'react-router-dom';
 // import AppNavbar from './components/layout/Navbar';
-// import AppHeader from './components/layout/MerchantHeader';
+import MerchantHeader from './components/layout/MerchantHeader';
 // import Home from './pages/Home'; 尚未製作,先註解
 // import Login from './pages/Login';
 import './styles/style.css';
@@ -12,8 +12,8 @@ import MerchantRoutes from './routes/MerchantRoutes';
 function App() {
   return (
     <div className="App">
-      <h1>測試畫面是否有 render</h1>
-      {/* <AppHeader/> */}
+      {/* <h1>測試畫面是否有 render</h1> */}
+      <MerchantHeader/>
       {/* <Routes> */}
         {/* <Route path="/" element={<Home />} /> */}
         {/* <Route path="/login" element={<Login />} /> */}
