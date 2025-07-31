@@ -3,7 +3,7 @@
 // for use in components like components/shop/ProductDiscount.js
 
 // src/utils/imageMap.js
-const images = require.context('../assets/images/product/discount', false, /\.(png|jpe?g|svg)$/);
+const images = require.context('../assets/images/merchant1/discount/', false, /\.(png|jpe?g|svg)$/);
 
 export const imageMap = images.keys().reduce((map, path) => {
   // path 例如 './pd-1.jpg'

@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import CarouselNav from './CarouselNav';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { Link } from 'react-router-dom';
 
 const CategoriesSlider = ({ categories, sliderSettings }) => {
   const sliderRef = useRef(null);
@@ -19,6 +20,11 @@ const CategoriesSlider = ({ categories, sliderSettings }) => {
       <Slider ref={sliderRef} {...sliderSettings}>
         {categories.map((cat, index) => (
           <div key={index}>
+          {/* <a href={cat.url} style={{ textDecoration: 'none', color: 'inherit' }}>  */}
+          {/* <a href={cat.url}>  */}
+            <Link to={cat.url} style={{ textDecoration: 'none' , color: 'inherit' }}>
+            {/* <Link to={cat.url}> */}
+            {/* 使用 Link 來實現 React Router 的導航 */}
             <div
               className="categories__item"
               style={{
@@ -29,10 +35,13 @@ const CategoriesSlider = ({ categories, sliderSettings }) => {
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'center',
+                cursor: 'pointer',
               }}
             >
-              <h5><a href={cat.url}>{cat.title}</a></h5>
+              <h5>{cat.title}</h5>
             </div>
+            </Link>
+            {/* </a>  */}
           </div>
         ))}
       </Slider>

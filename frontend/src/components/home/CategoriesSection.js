@@ -5,32 +5,39 @@ import 'slick-carousel/slick/slick-theme.css';
 import CarouselNav from './CarouselNav.js'; 
 import CategoriesSlider from './CategoriesSlider';
 
+// 透過後端 Node.js /public/images/ 下載圖片
+// 必須先打開 Node.js 伺服器 localhost:3001/images/merchant1
+export const getImageURL = (modulePath) => {
+  return `http://localhost:3001/images/${modulePath}`;
+};
+
 // 類別資料清單，可從 API 或 props 傳入
 const categories = [
-  { title: '早餐店1', img: require('../../assets/images/categories/cat-1.jpg'), url: '/shop1' },
-  { title: '早餐店2', img: require('../../assets/images/categories/cat-2.jpg'), url: '/shoptest' },
-  { title: '早餐店3', img: require('../../assets/images/categories/cat-3.jpg'), url: '/shoptest' },
-  { title: '早餐店4', img: require('../../assets/images/categories/cat-4.jpg'), url: '/shoptest' },
-  { title: '早餐店5', img: require('../../assets/images/categories/cat-5.jpg'), url: '/shoptest' },
-  { title: '早餐店6', img: require('../../assets/images/categories/cat-1.jpg'), url: '/shoptest' },
-  { title: '早餐店7', img: require('../../assets/images/categories/cat-2.jpg'), url: '/shoptest' },
-  { title: '早餐店8', img: require('../../assets/images/categories/cat-3.jpg'), url: '/shoptest' },
-  { title: '早餐店9', img: require('../../assets/images/categories/cat-4.jpg'), url: '/shoptest' },
-  { title: '早餐店10', img: require('../../assets/images/categories/cat-5.jpg'), url: '/shoptest' },  
-];
+  // 現在想要放在 node.js 設定的 backend/public/images/
+  { title: '早餐店1', img: getImageURL('merchant01.jpg'), url: '/shop1' },
+  { title: '早餐店2', img: getImageURL('merchant02.jpg'), url: '/shoptest' },
+  { title: '早餐店3', img: getImageURL('merchant03.jpg'), url: '/shoptest' },
+  { title: '早餐店4', img: getImageURL('merchant04.jpg'), url: '/shoptest' },
+  { title: '早餐店5', img: getImageURL('merchant05.jpg'), url: '/shoptest' },
+  { title: '早餐店6', img: getImageURL('merchant06.jpg'), url: '/shoptest' },
+  { title: '早餐店7', img: getImageURL('merchant07.jpg'), url: '/shoptest' },
+  { title: '早餐店8', img: getImageURL('merchant08.jpg'), url: '/shoptest' },
+  { title: '早餐店9', img: getImageURL('merchant09.jpg'), url: '/shoptest' },
+  { title: '早餐店10', img: getImageURL('merchant10.jpg'), url: '/shoptest' },  
 
-// const categories1 = [
-//   { title: '早餐店1', img: require('../../assets/images/categories/cat-1.jpg') },
-//   { title: '早餐店2', img: require('../../assets/images/categories/cat-2.jpg') },
-//   { title: '早餐店3', img: require('../../assets/images/categories/cat-3.jpg') },
-//   { title: '早餐店4', img: require('../../assets/images/categories/cat-4.jpg') },
-//   { title: '早餐店5', img: require('../../assets/images/categories/cat-5.jpg') },
-//   { title: '早餐店6', img: require('../../assets/images/categories/cat-1.jpg') },
-//   { title: '早餐店7', img: require('../../assets/images/categories/cat-2.jpg') },
-//   { title: '早餐店8', img: require('../../assets/images/categories/cat-3.jpg') },
-//   { title: '早餐店9', img: require('../../assets/images/categories/cat-4.jpg') },
-//   { title: '早餐店10', img: require('../../assets/images/categories/cat-5.jpg') },  
-// ];
+// 原本圖片放在 react 設定的 frontend/src/assets/images/
+  // { title: '早餐店1', img: require('../../assets/images/merchant01.jpg'), url: '/shop1' },
+  // { title: '早餐店2', img: require('../../assets/images/merchant02.jpg'), url: '/shoptest' },
+  // { title: '早餐店3', img: require('../../assets/images/merchant03.jpg'), url: '/shoptest' },
+  // { title: '早餐店4', img: require('../../assets/images/merchant04.jpg'), url: '/shoptest' },
+  // { title: '早餐店5', img: require('../../assets/images/merchant05.jpg'), url: '/shoptest' },
+  // { title: '早餐店6', img: require('../../assets/images/merchant06.jpg'), url: '/shoptest' },
+  // { title: '早餐店7', img: require('../../assets/images/merchant07.jpg'), url: '/shoptest' },
+  // { title: '早餐店8', img: require('../../assets/images/merchant08.jpg'), url: '/shoptest' },
+  // { title: '早餐店9', img: require('../../assets/images/merchant09.jpg'), url: '/shoptest' },
+  // { title: '早餐店10', img: require('../../assets/images/merchant10.jpg'), url: '/shoptest' },  
+
+];
 
 const sliderSettings = {
   dots: false,
@@ -50,7 +57,6 @@ const CategoriesSection = () => {
     <section className="categories">
       <div className="container">
           <CategoriesSlider categories={categories} sliderSettings={sliderSettings} />
-          {/* <CategoriesSlider categories={categories1} sliderSettings={sliderSettings} /> */}
       </div>
     </section>
   );

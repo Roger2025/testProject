@@ -16,66 +16,83 @@ import 'swiper/css/navigation';
 // import { imageMap } from '../../utils/discount/imageMap'; // 使用 discount 資料夾的映射
 // import { imageMap } from '../../utils/imageMaptest'; // 使用 imageMaptest.js 測試
 
-import { imageRegistry, getImageURL } from '../../utils/imageRegistry';
-const { discount: imageMap } = imageRegistry; // 從 imageRegistry 中獲取 discount 映射
+// import { imageRegistry, getImageURL } from '../../utils/imageRegistry';
+// const { discount: imageMap } = imageRegistry; // 從 imageRegistry 中獲取 discount 映射
 // 例如：const imageURL = getImageURL('discount/pd-1.jpg'); // 獲取特定圖片的 URL
 // 這樣可以保持圖片路徑的統一性和可維護性
+
+// 透過後端 Node.js /public/images/ 下載圖片
+// 必須先打開 Node.js 伺服器 localhost:3001/images/merchant1/discount/
+// 這樣可以避免使用 require.context 和 imageMap
+export const getImageURL = (modulePath) => {
+  return `http://localhost:3001/images/merchant1/discount/${modulePath}`;
+};
+
 
 const discountProducts = [
   {
     id: 1,
-    category: 'Dried Fruit',
-    name: '早餐店1',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'burgers',
+    name: '麥香雞堡',
+    price: 32.0,
+    oldPrice: 40.0,
     percent: '-20%',
-    img: 'pd-1.jpg',
+    img: 'discount01.jpg',
   },
   {
     id: 2,
-    category: 'Vegetables',
-    name: '早餐店2',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'toast',
+    name: '麥香雞吐司',
+    price: 28.0,
+    oldPrice: 35.0,
     percent: '-20%',
-    img: 'pd-2.jpg',
+    img: 'discount02.jpg',
   },
   {
     id: 3,
-    category: 'Dried Fruit',
-    name: '早餐店3',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'omelettes',
+    name: '培根蛋餅',
+    price: 44.0,
+    oldPrice: 55.0,
     percent: '-20%',
-    img: 'pd-3.jpg',
+    img: 'discount03.jpg',
   },
   {
     id: 4,
-    category: 'Dried Fruit',
-    name: '早餐店4',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'pasta',
+    name: '磨菇麵',
+    price: 40.0,
+    oldPrice: 50.0,
     percent: '-20%',
-    img: 'pd-4.jpg',
+    img: 'discount04.jpg',
   },
   {
     id: 5,
-    category: 'Vegetables',
-    name: '早餐店5',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'single',
+    name: '雞塊',
+    price: 32.0,
+    oldPrice: 40.0,
     percent: '-20%',
-    img: 'pd-5.jpg',
+    img: 'discount05.jpg',
   },
   {
     id: 6,
-    category: 'Dried Fruit',
-    name: '早餐店6',
-    price: 30.0,
-    oldPrice: 36.0,
+    category: 'drinks',
+    name: '豆漿',
+    price: 16.0,
+    oldPrice: 20.0,
     percent: '-20%',
-    img: 'pd-6.jpg',
+    img: 'discount06.jpg',
   },  
+  {
+    id: 7,
+    category: 'salad',
+    name: '地瓜沙拉',
+    price: 40.0,
+    oldPrice: 50.0,
+    percent: '-20%',
+    img: 'discount07.jpg',
+  },
   // 更多商品...
 ];
 
@@ -110,7 +127,8 @@ const ProductDiscount = () => {
               // const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL 
               // 這樣可以保持圖片路徑的統一性和可維護性
               // 例如：const imageURL = getImageURL('discount/pd-1.jpg'); // 獲取特定圖片的 URL 
-              const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL               
+              // const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL       
+              const imageURL = getImageURL(item.img); // item.img = 'discount01.jpg'        
               return (
               <SwiperSlide key={item.id}>
                 <div className="product__discount__item">
