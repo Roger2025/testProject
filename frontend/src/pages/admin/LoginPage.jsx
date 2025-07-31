@@ -53,10 +53,19 @@ function LoginPage() {
         setMessage(`❌ ${data.message || '登入失敗'}`);
       }
     } catch (error) {
-      setLoading(false);
-      setMessage('❌ 無法連線到伺服器，請稍後再試');
-      console.error('登入錯誤:', error);
-    }
+        setLoading(false);
+
+        if (error.response) {
+          // 伺服器有回應（如 403、401 等）
+          const msg = error.response.data?.message || '登入失敗';
+          setMessage(`❌ ${msg}`);
+        } else {
+          // 完全沒收到伺服器回應（後端沒開或網路問題）
+          setMessage('❌ 無法連線到伺服器，請稍後再試');
+        }
+
+        console.error('登入錯誤:', error);
+      }
   };
 
   return (
