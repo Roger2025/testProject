@@ -1092,6 +1092,12 @@ CarouselNav.js // 左右按鈕元件
 	color: #ffffff;
 	font-weight: 700;
 }
+/* homepage */
+.breakfast__text h2 {
+	font-size: 46px;
+	color: #1e7109;
+	font-weight: 700;
+}
 
 .breadcrumb__option a {
 	display: inline-block;
@@ -2108,6 +2114,42 @@ CarouselNav.js // 左右按鈕元件
 }
 
 /*---------------------
+  Order Status
+  src/components/cart/OrderTable.js
+-----------------------*/
+.order-number {
+  font-size: 30px;
+  color: #1c1c1c;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.order-status {
+  /* display: flex; */
+  /* gap: 10px; */
+  margin-top: 45px;
+}
+.order-status h5{
+  font-size: 30px;
+  color: #1c1c1c;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+/* 訂單狀態 取餐方式 的樣式 */
+.order-status .badge {
+  padding: 12px 24px 11px;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: blod;
+  color: white;
+  height: 40px;
+  letter-spacing: 4px;
+  justify-items: center;
+}
+.pending { background-color: #ff9900; }
+.confirmed { background-color: #3399ff; }
+.delivered { background-color: #33cc66; }
+
+/*---------------------
   Checkout
 -----------------------*/
 
@@ -2665,12 +2707,20 @@ CarouselNav.js // 左右按鈕元件
 .footer__about {
 	margin-bottom: 30px;
 }
+/* Update 2025/08/01 for FooterAbout.js */
+.footer__about ul {
+  padding-left: 0; /* 若你不希望有縮排 */
+  margin-left: 0;
+  text-align: left; /* 明確指示靠左對齊 */
+}
 
 .footer__about ul li {
 	font-size: 16px;
 	color: #1c1c1c;
 	line-height: 36px;
 	list-style: none;
+	text-align: left; /* 再加一層保險讓每個 li 靠左 for FooterAbout.js */
+	/* white-space: nowrap; /* CSS 強制不斷行（套用在整個 li）for FooterAbout.js */
 }
 
 .footer__about__logo {
@@ -2711,6 +2761,7 @@ CarouselNav.js // 左右按鈕元件
 	font-size: 14px;
 	color: #1c1c1c;
 	margin-bottom: 30px;
+	text-align: left; /* 明確指示靠左對齊 for FooterNewsletter.js */
 }
 
 .footer__widget form {
@@ -2784,6 +2835,13 @@ CarouselNav.js // 左右按鈕元件
 
 .footer__copyright__payment {
 	float: right;
+}
+
+/* For FooterLinks.js */
+.footer__map { 
+  width: 100%;
+  height: auto;
+  padding-top: 10px;
 }
 
 /*---------------------
@@ -3481,7 +3539,7 @@ CarouselNav.js // 左右按鈕元件
 	}
 	.primary-btn.cart-btn.cart-btn-right {
 		float: none;
-		margin-top: 10px;
+		margin-top: 10; 
 	}
 	.shoping__checkout .primary-btn {
 		display: block;

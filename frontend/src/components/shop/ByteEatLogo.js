@@ -11,9 +11,9 @@ export const getImageURL = (modulePath) => {
   return `http://localhost:3001/images/${modulePath}`;
 };
 
-const imageUrl = getImageURL('breadcrumb.jpg');
+const imageUrl = getImageURL('breakfast01.jpg');
 
-const BreadcrumbSection = () => {
+const ByteEatLogo = () => {
   return (
     <section
       className="breadcrumb-section set-bg"
@@ -23,8 +23,8 @@ const BreadcrumbSection = () => {
       <div className="container">
         <div className="row">
           <div className="col-lg-12 text-center">
-            <div className="breadcrumb__text">
-              <h2>Byte Eat 當前店家</h2> {/* 標題 可變 = Vegetable’s Package */}
+            <div className="breakfast__text">
+              <h2>Byte Eat 早餐店平台</h2> {/* 標題 可變 = Vegetable’s Package */}
               <div className="breadcrumb__option">
                 <Link to="/">首頁</Link>
                 {/* <Link to="/">Vegetables</Link> */} {/* 差異在 shop-grid.html 沒有此一列 */}
@@ -38,4 +38,4 @@ const BreadcrumbSection = () => {
   );
 };
 
-export default BreadcrumbSection;
+export default ByteEatLogo;

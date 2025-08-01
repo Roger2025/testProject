@@ -1,5 +1,5 @@
-// ogani：index.html 
-// Home.js   // 未登入前的平台首頁
+// ogani：shoping-cart.html 
+// ShopCart.js  
 // Path = pages/
 import React from 'react';
 // Sections
@@ -7,24 +7,23 @@ import React from 'react';
 import MobileMenu from '../components/layout/MobileMenu';
 import Header from '../components/layout/Header';
 import HeroSection from '../components/home/HeroSection';
-import CategoriesSection from '../components/home/CategoriesSection';
-import ShopList from '../components/home/ShopList';
-import ProductPagination from '../components/shop/ProductPagination'; 
+import BreadcrumbSection from '../components/shop/BreadcrumbSection';
+import ShoppingCart from '../components/cart/ShoppingCart';
 import Footer from '../components/layout/Footer';
-// 未登入前的平台首頁
-const Home = () => {
+// 購物車
+const ShopCart = () => {
   return (
     <>
       {/* <Preloader /> */}
       <MobileMenu />
       <Header />
       <HeroSection />
-      <CategoriesSection />
-      <ShopList />
-      <ProductPagination />
+      <BreadcrumbSection />
+      {/* 這裡可以加入訂單表單的內容 */}  
+      <ShoppingCart />
       <Footer />
     </>
   );
 };
 
-export default Home;
+export default ShopCart;

@@ -9,7 +9,7 @@ import ColorFilter from './ColorFilter';
 import SizeFilter from './SizeFilter';
 
 const departments = [
-  '會員中心',
+  '會員資訊',
   '訂餐專區',
   '支付管理',
   '優惠專區',
@@ -35,7 +35,7 @@ const ProductSidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar__item">
-        <h4>Department</h4>
+        <h4>會員中心</h4>
         <ul>
           {departments.map((dept, index) => (
             <li key={index}>

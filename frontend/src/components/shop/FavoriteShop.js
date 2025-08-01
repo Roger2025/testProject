@@ -1,5 +1,5 @@
 // ogani : shop-grid.html :　Pduct Section（第2-1～第2-2部分）
-// ProductDiscount.js
+// FavoriteShop.js is modified from ProductDiscount.js
 // Path = components/shop/
 
 // 安裝 Swiper：npm install swiper
@@ -10,7 +10,6 @@ import 'swiper/css';
 import '../../styles/css/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css/navigation';
-
 
 // 使用 imageMap.js 來獲取圖片路徑
 // import { imageMap } from '../../utils/discount/imageMap'; // 使用 discount 資料夾的映射
@@ -25,78 +24,24 @@ import 'swiper/css/navigation';
 // 必須先打開 Node.js 伺服器 localhost:3001/images/merchant1/discount/
 // 這樣可以避免使用 require.context 和 imageMap
 export const getImageURL = (modulePath) => {
-  return `http://localhost:3001/images/merchant1/${modulePath}`;
+  return `http://localhost:3001/images/${modulePath}`;
 };
 
-
-const discountProducts = [
-  {
-    id: 1,
-    category: 'burgers',
-    name: '麥香雞堡',
-    price: 32.0,
-    oldPrice: 40.0,
-    percent: '-20%',
-    img: 'burgers/burgers07.jpg',
-  },
-  {
-    id: 2,
-    category: 'toast',
-    name: '麥香雞吐司',
-    price: 28.0,
-    oldPrice: 35.0,
-    percent: '-20%',
-    img: 'toast/toast06.jpg',
-  },
-  {
-    id: 3,
-    category: 'omelettes',
-    name: '培根蛋餅',
-    price: 44.0,
-    oldPrice: 55.0,
-    percent: '-20%',
-    img: 'omelettes/omelettes04.jpg',
-  },
-  {
-    id: 4,
-    category: 'pasta',
-    name: '磨菇麵',
-    price: 40.0,
-    oldPrice: 50.0,
-    percent: '-20%',
-    img: 'pasta/pasta01.jpg',
-  },
-  {
-    id: 5,
-    category: 'single',
-    name: '雞塊',
-    price: 32.0,
-    oldPrice: 40.0,
-    percent: '-20%',
-    img: 'single/single05.jpg',
-  },
-  {
-    id: 6,
-    category: 'drinks',
-    name: '豆漿',
-    price: 16.0,
-    oldPrice: 20.0,
-    percent: '-20%',
-    img: 'drinks/drinks04.jpg',
-  },  
-  {
-    id: 7,
-    category: 'salad',
-    name: '地瓜沙拉',
-    price: 40.0,
-    oldPrice: 50.0,
-    percent: '-20%',
-    img: 'salad/salad02.jpg',
-  },
-  // 更多商品...
+const FavoriteShopList = [
+    { title: '早餐店1', img: getImageURL('merchant01.jpg'), url: '/shop1', category: ['Open','OnlinePay']  },
+    { title: '早餐店2', img: getImageURL('merchant02.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店3', img: getImageURL('merchant03.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店4', img: getImageURL('merchant04.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店5', img: getImageURL('merchant05.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店6', img: getImageURL('merchant06.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店7', img: getImageURL('merchant07.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店8', img: getImageURL('merchant08.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店9', img: getImageURL('merchant09.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  },
+    { title: '早餐店10', img: getImageURL('merchant10.jpg'), url: '/shoptest', category: ['Open','OnlinePay']  }, 
+  // 更多店家...
 ];
 
-const ProductDiscount = () => {
+const FavoriteShop = () => {
   return (
     <div className="product__discount">
       <div className="section-title product__discount__title">
@@ -122,15 +67,16 @@ const ProductDiscount = () => {
             },
           }}
           >
-            {discountProducts.map((item) => {
+            {FavoriteShopList.map((item, index) => {
               // 使用 getImageURL 函數來獲取圖片的 URL
               // const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL 
               // 這樣可以保持圖片路徑的統一性和可維護性
               // 例如：const imageURL = getImageURL('discount/pd-1.jpg'); // 獲取特定圖片的 URL 
               // const imageURL = getImageURL(`discount/${item.img}`); // 獲取特定圖片的 URL       
-              const imageURL = getImageURL(item.img); // item.img = 'discount01.jpg'        
+              // const imageURL = getImageURL(item.img); // item.img = 'discount01.jpg'  
+              const imageURL = item.img; // item.img = 'discount01.jpg'        
               return (
-              <SwiperSlide key={item.id}>
+              <SwiperSlide key={index}>
                 <div className="product__discount__item">
                   <div
                     className="product__discount__item__pic"
@@ -140,19 +86,19 @@ const ProductDiscount = () => {
                       backgroundSize: 'cover',
                     }}
                   >
-                    <div className="product__discount__percent">{item.percent}</div>
-                    <ul className="product__item__pic__hover">
+                    {/* <div className="product__discount__percent">{item.percent}</div> */}
+                    {/* <ul className="product__item__pic__hover">
                       <li><a href="#"><i className="fa fa-heart"></i></a></li>
                       <li><a href="#"><i className="fa fa-retweet"></i></a></li>
                       <li><a href="#"><i className="fa fa-shopping-cart"></i></a></li>
-                    </ul>
+                    </ul> */}
                   </div>
                   <div className="product__discount__item__text">
-                    <span>{item.category}</span>
-                    <h5><a href="#">{item.name}</a></h5>
-                    <div className="product__item__price">
+                    {/* <span>{item.category}</span> */}
+                    <h5><a href="#">{item.title}</a></h5>
+                    {/* <div className="product__item__price">
                       ${item.price.toFixed(2)} <span>${item.oldPrice.toFixed(2)}</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </SwiperSlide>
@@ -165,4 +111,5 @@ const ProductDiscount = () => {
   );
 };
 
-export default ProductDiscount;
+export default FavoriteShop
+;

@@ -15,6 +15,9 @@ import Shop1 from './pages/shop/Shop1'; // 引入 Shop1 頁面
 import Login from './pages/Login';
 import UserRegister from './pages/UserRegister';
 import Test from './pages/Test'; // 引入 Test 頁面
+import ShopCart from './pages/ShopCart'; // 引入 ShopCart 頁面
+import OrderPage from './pages/OrderPage'; // 引入 OrderPage 頁面
+
 
 function App() {
   return (
@@ -31,6 +34,10 @@ function App() {
         <Route path="/login" element={ <Login /> } />
         {/* 註冊頁面 */}
         <Route path="/register" element={ <UserRegister />} />
+        {/* 購物車頁面 */}
+        <Route path="/shopcart" element={ <ShopCart /> } />
+        {/* 訂單表單頁面 */}
+        <Route path="/orderpage" element={ <OrderPage /> } />
         <Route path="/test" element={ <Test /> } />
       </Routes>
     </div>

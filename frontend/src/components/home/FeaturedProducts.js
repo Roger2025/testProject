@@ -30,7 +30,7 @@ const products = [
   { title: '玉米蛋吐司', price: 50, img: getImageURL('toast/toast02.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
   { title: '吉士蔬菜吐司', price: 35, img: getImageURL('toast/toast03.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
   { title: '培根吐司', price: 45, img: getImageURL('toast/toast04.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
-  { title: '鮪魚堡吐司', price: 45, img: getImageURL('toast/toast05.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
+  { title: '鮪魚吐司', price: 45, img: getImageURL('toast/toast05.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
   { title: '麥香雞吐司', price: 35, img: getImageURL('toast/toast06.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
   { title: '燻雞吐司', price: 50, img: getImageURL('toast/toast07.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
   { title: '嫩雞吐司', price: 50, img: getImageURL('toast/toast08.jpg'), url: '/toast/', categories: ['toast', 'Serving'] },
@@ -46,7 +46,7 @@ const products = [
   { title: '吉士蔬菜蛋餅', price: 50, img: getImageURL('omelettes/omelettes02.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
   { title: '薯餅蛋餅', price: 50, img: getImageURL('omelettes/omelettes03.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
   { title: '培根蛋餅', price: 55, img: getImageURL('omelettes/omelettes04.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
-  { title: '鮪魚堡蛋餅', price: 55, img: getImageURL('omelettes/omelettes05.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
+  { title: '鮪魚蛋餅', price: 55, img: getImageURL('omelettes/omelettes05.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
   { title: '燻雞蛋餅', price: 60, img: getImageURL('omelettes/omelettes06.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
   { title: '照燒豬肉蛋餅', price: 55, img: getImageURL('omelettes/omelettes07.jpg'), url: '/omelettes/', categories: ['omelettes', 'Serving'] },
 

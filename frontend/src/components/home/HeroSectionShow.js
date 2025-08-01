@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // import banner from '../../assets/images/hero/banner.jpg';
 // import CategoriesSection from './CategoriesSection';
 
-const HeroSection = () => {
+const HeroSectionShow = () => {
   const [showMenu, setShowMenu] = useState(false);
  
   return (
@@ -21,7 +21,8 @@ const HeroSection = () => {
                 <i className="fa fa-bars"></i>
                 <span>會員中心</span>
               </div>
-               <ul style={{ display: showMenu ? 'block' : 'none' }}> {/* 根據狀態顯示或隱藏 Menu */}
+               {/*<ul style={{ display: showMenu ? 'block' : 'none' }}> {/* 根據狀態顯示或隱藏 Menu */}
+               <ul style={{ display: 'none'}}> 
                 <li><a href="/register">會員資訊</a></li>
                 <li><a href="/orderpage">訂餐專區</a></li>
                 <li><a href="/login">支付管理</a></li>
@@ -90,4 +91,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default HeroSectionShow;
