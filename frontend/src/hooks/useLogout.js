@@ -11,7 +11,7 @@ export default function useLogout() {
     
     try {
       await axios.post('http://localhost:5000/api/logout', {}, { withCredentials: true });
-      localStorage.removeItem('adminVerified');
+      localStorage.removeItem('adminVerified'); // ✅ 登出時清除 admin 驗證狀態
       alert('✅ 登出成功');
       navigate('/login');
     } catch (err) {
@@ -19,3 +19,4 @@ export default function useLogout() {
     }
   };
 }
+

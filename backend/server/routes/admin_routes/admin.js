@@ -1,21 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { roleCheck } = require('../../middlewares/roleCheck'); 
-const { users } = require('./shared');
+const Member = require('../../models/member'); // ✅ 引入真實資料表
 
-// ✅ 管理者才能存取：查看機密資料
+// ✅ 管理者專屬資料
 router.get('/admin-only-data', roleCheck(['admin']), (req, res) => {
-  console.log('✅ 進入 admin-only-data 路由');
   res.json({
     status: 'success',
     message: '這是管理者專屬資料',
-    user: req.user //  回傳當前登入者資訊（方便前端除錯）
+    user: req.user
   });
 });
 
-//  商家或管理者都能操作：新增商品
+// ✅ 商家或管理者都能操作：新增商品（未來可補 req.body）
 router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
-  // 這裡未來可以接收 req.body 做新增商品邏輯
   res.json({
     status: 'success',
     message: '新增商品成功',
@@ -23,80 +21,114 @@ router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
   });
 });
 
-// routes/admin.js
-router.get('/pending-users', roleCheck(['admin']), (req, res) => {
-  //const { users } = require('./shared');
-  console.log(users)
-  const pendingUsers = users.filter(u => u.role === 'pending');
-  res.json({ status: 'success', users: pendingUsers });
+// ✅ 查看待審核商家
+router.get('/pending-users', roleCheck(['admin']), async (req, res) => {
+  try {
+    const pendingUsers = await Member.find({ role: 'pending' });
+    res.json({ status: 'success', users: pendingUsers });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
+  }
 });
 
-// routes/admin.js
-router.patch('/approve-user/:account', roleCheck(['admin']), (req, res) => { //:account動態路由參數
+// ✅ 通過商家審核
+router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) => {
   const targetAccount = req.params.account;
+  try {
+    const user = await Member.findOne({ account: targetAccount });
 
-  const user = users.find(u => u.account === targetAccount);
+    if (!user) return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
+    if (user.role !== 'pending') {
+      return res.json({ status: 'fail', message: '該帳號不在審核狀態' });
+    }
 
-  if (!user) {
-    return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
+    user.role = 'shop';
+    await user.save();
+
+    res.json({ status: 'success', message: `✅ 帳號 ${targetAccount} 已審核通過並設為 shop`, user });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }
-
-  if (user.role !== 'pending') {
-    return res.json({ status: 'fail', message: '該帳號不在審核狀態' });
-  }
-
-  user.role = 'shop';
-
-  res.json({ status: 'success', message: `✅ 帳號 ${targetAccount} 已審核通過並設為 shop`, user });
 });
 
 // ✅ 取得所有使用者
-router.get('/all-users', roleCheck(['admin']), (req, res) => {
-  res.json({ status: 'success', users });
+router.get('/all-users', roleCheck(['admin']), async (req, res) => {
+  try {
+    const users = await Member.find();
+    res.json({ status: 'success', users });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
+  }
 });
 
-// ✅ 軟刪除 
-router.delete('/delete-user/:account', roleCheck(['admin']), (req, res) => {
+// ✅ 停權帳號（軟刪除）
+router.delete('/delete-user/:account', roleCheck(['admin']), async (req, res) => {
   const target = req.params.account;
-  const user = users.find(u => u.account === target); // ✅ 改用 find（不刪掉陣列資料）
 
-  if (!user) {
-    return res.status(404).json({ status: 'fail', message: '找不到使用者' });
+  try {
+    const user = await Member.findOne({ account: target });
+    console.log('🟡 查詢帳號:', user?.account);
+    console.log('🟡 原始狀態:', user?.status);
+
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: '找不到使用者' });
+    }
+
+    if (user.role === 'admin') {
+      return res.status(403).json({ status: 'fail', message: '❌ 不能停權管理者帳號' });
+    }
+
+    const result = await Member.updateOne({ account: target }, { $set: { status: 'disabled' } });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ status: 'fail', message: '找不到該帳號，無法更新' });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.json({ status: 'info', message: '此帳號已是停權狀態，無需再次更新' });
+    }
+
+    console.log('✅ 停權成功:', target);
+    res.json({ status: 'success', message: `✅ 帳號 ${target} 已被停權` });
+
+  } catch (err) {
+    console.error('❌ 停權時錯誤:', err);
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }
-
-  if (user.role === 'admin') {
-    return res.status(403).json({ status: 'fail', message: '❌ 不能停權管理者帳號' });
-  }
-
-  user.status = 'disabled'; // ✅ 軟刪除：標記狀態為停權
-
-  res.json({
-    status: 'success',
-    message: `✅ 已將帳號 ${target} 停權（軟刪除）`,
-    user
-  });
 });
 
-// ✅ 恢復使用者帳號
-router.patch('/restore-user/:account', roleCheck(['admin']), (req, res) => {
-  const targetAccount = req.params.account;
-  const user = users.find(u => u.account === targetAccount);
 
-  if (!user) {
-    return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
+
+// ✅ 恢復帳號
+router.patch('/restore-user/:account', roleCheck(['admin']), async (req, res) => {
+  const target = req.params.account;
+
+  try {
+    const user = await Member.findOne({ account: target });
+
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
+    }
+
+    if (user.status !== 'disabled') {
+      return res.json({ status: 'fail', message: '該帳號未被停權，無需恢復' });
+    }
+
+    const result = await Member.updateOne({ account: target }, { $set: { status: 'active' } });
+
+    if (result.modifiedCount === 1) {
+      console.log('✅ 恢復成功:', target);
+      res.json({
+        status: 'success',
+        message: `✅ 帳號 ${target} 已恢復使用權限`
+      });
+    } else {
+      res.status(400).json({ status: 'fail', message: '未成功更新帳號狀態' });
+    }
+  } catch (err) {
+    console.error('❌ 恢復帳號時發生錯誤:', err);
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }
-
-  if (user.status !== 'disabled') {
-    return res.json({ status: 'fail', message: '該帳號未被停權，無需恢復' });
-  }
-
-  user.status = 'active';
-
-  res.json({
-    status: 'success',
-    message: `✅ 帳號 ${targetAccount} 已恢復使用權限`,
-    user
-  });
 });
 
 

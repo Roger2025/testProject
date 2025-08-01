@@ -8,7 +8,6 @@ function AllUsersPage() {
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
 
-  //  取得所有使用者
   const fetchUsers = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/admin/all-users', {
@@ -24,10 +23,8 @@ function AllUsersPage() {
     fetchUsers();
   }, []);
 
-  //  停權使用者（軟刪除） 
   const handleDelete = async (account) => {
     if (!window.confirm(`確定要停權帳號 ${account} 嗎？`)) return;
-
     try {
       await axios.delete(`http://localhost:5000/api/admin/delete-user/${account}`, {
         withCredentials: true
@@ -39,10 +36,8 @@ function AllUsersPage() {
     }
   };
 
-  // ✅ 恢復使用者
   const handleRestore = async (account) => {
     if (!window.confirm(`確定要恢復帳號 ${account} 嗎？`)) return;
-
     try {
       await axios.patch(`http://localhost:5000/api/admin/restore-user/${account}`, {}, {
         withCredentials: true
@@ -54,7 +49,20 @@ function AllUsersPage() {
     }
   };
 
-  // ✅ 依據搜尋與角色篩選
+  // ✅ 新增：審核通過 pending 帳號
+  const handleApprove = async (account) => {
+    if (!window.confirm(`確定要審核通過帳號 ${account} 嗎？`)) return;
+    try {
+      await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, {}, {
+        withCredentials: true
+      });
+      fetchUsers();
+    } catch (err) {
+      console.error('❌ 審核失敗:', err);
+      alert('❌ 無法審核帳號');
+    }
+  };
+
   const filteredUsers = users.filter(u => {
     const matchesSearch = u.account.includes(search);
     const matchesRole = filterRole === 'all' || u.role === filterRole;
@@ -79,7 +87,7 @@ function AllUsersPage() {
           <option value="all">全部角色</option>
           <option value="user">一般會員</option>
           <option value="shop">商家</option>
-          <option value="pending">待審核</option> 
+          <option value="pending">待審核</option>
           <option value="admin">管理員</option>
         </select>
       </div>
@@ -92,7 +100,7 @@ function AllUsersPage() {
             <th>角色</th>
             <th>店名</th>
             <th>地址</th>
-            <th>狀態</th> {/* ✅ 新增欄位 */}
+            <th>狀態</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -104,16 +112,19 @@ function AllUsersPage() {
               <td>{u.role}</td>
               <td>{u.storeName || '-'}</td>
               <td>{u.storeAddress || '-'}</td>
-              <td className={`status-text ${u.status || 'active'}`}>{u.status || 'active'}</td> {/* ✅ 顯示狀態 */}
+              <td className={`status-text ${u.status || 'active'}`}>{u.status || 'active'}</td>
               <td>
-                {u.role !== 'admin' ? (
+                {/* ✅ 根據狀態與角色顯示對應按鈕 */}
+                {u.role === 'pending' ? (
+                  <button className="btn-approve" onClick={() => handleApprove(u.account)}>審核通過</button>
+                ) : u.role !== 'admin' ? (
                   u.status === 'disabled' ? (
-                    <button className="btn-restore" onClick={() => handleRestore(u.account)}>恢復帳號</button> // ✅ 恢復按鈕
+                    <button className="btn-restore" onClick={() => handleRestore(u.account)}>恢復帳號</button>
                   ) : (
-                    <button className="btn-disable" onClick={() => handleDelete(u.account)}>停權</button> // ✅ 停權按鈕
+                    <button className="btn-disable" onClick={() => handleDelete(u.account)}>停權</button>
                   )
                 ) : (
-                  <span style={{ color: '#aaa' }}>管理者不可停權</span>  // 🔒 顯示提示字也可
+                  <span style={{ color: '#aaa' }}>管理者不可停權</span>
                 )}
               </td>
             </tr>

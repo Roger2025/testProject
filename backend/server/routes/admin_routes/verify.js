@@ -16,15 +16,15 @@ router.post('/verify-email-code', (req, res) => {
 
   if (Date.now() > record.expiresAt) {
     // 驗證碼過期
-    delete verificationCodes[email]; // ✅ 過期自動清除
+    delete verificationCodes[email]; // 過期自動清除
     return res.json({
       status: 'fail',
       message: '❌ 驗證碼已過期，請重新登入以獲得新的驗證碼。'
     });
   }
 
+  // 驗證碼正確性
   if (record.code !== code) {
-    // 驗證碼錯誤
     return res.json({
       status: 'fail',
       message: '❌ 驗證碼錯誤，請重新輸入。'

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import '../../styles/admin_styles/VerifyEmailPage.css';
 
@@ -11,10 +11,11 @@ function VerifyEmailPage() {
   const location = useLocation();
   const email = location.state?.email;
   const { refetchUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleVerify = async () => {
     setLoading(true);
-    setMessage(''); // ✅ 每次驗證前清空訊息
+    setMessage('🔐 驗證中，請稍候...'); // ✅ 顯示驗證中提示
 
     try {
       const res = await fetch('http://localhost:5000/api/verify-email-code', {
@@ -30,11 +31,15 @@ function VerifyEmailPage() {
       if (data.status === 'success') {
         setMessage('✅ 驗證成功！轉跳後台中...');
         localStorage.setItem('adminVerified', 'true');
-        await refetchUser();
+
+        // ✅ refetchUser 加 timeout 防卡住
+        const timeout = new Promise((resolve) => setTimeout(resolve, 3000));
+        await Promise.race([refetchUser(), timeout]);
+
         console.log('✅ 準備導向 /admin');
         setTimeout(() => {
-          window.location.href = '/admin';
-        }, 1000);
+          navigate('/admin'); // ✅ 保留 React Router 狀態
+        }, 800); // ✅ 縮短等待時間
       } else {
         setMessage(data.message || '❌ 驗證失敗，請重新輸入。'); // ✅ 顯示後端錯誤訊息
       }

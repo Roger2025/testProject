@@ -10,46 +10,35 @@ import AllUsersPage from './pages/admin/AllUsersPage';
 
 function App() {
   const { user, authLoading } = useAuth();
+  const isAdminVerified = localStorage.getItem('adminVerified') === 'true';
 
   if (authLoading) return <p>🔄 載入中...</p>;
 
-  const isAdminVerified = localStorage.getItem('adminVerified') === 'true';
+  const requireAdmin = (Component) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (user.role !== 'admin') return <Navigate to="/login" replace />;
+    if (!isAdminVerified) return <Navigate to="/verify" replace />;
+    return <Component />;
+  };
 
   return (
     <Router>
-      {/* <div style={{ padding: '10px', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>
-        {user ? (
-          <>
-            👋 歡迎回來，<strong>{user.name}</strong>（角色：{user.role}）
-          </>
-        ) : (
-          <>未登入</>
-        )}
-      </div> */}
-
       <Routes>
+        {/* 公開頁面 */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
-        <Route
-          path="/admin"
-          element={
-            user?.role === 'admin'
-              ? (isAdminVerified ? <AdminPage /> : <Navigate to="/verify" replace />)
-              : <Navigate to="/login" replace />
-          }
-        />
+
+        {/* 使用者或商家首頁 */}
         <Route path="/user" element={<div>👤 使用者首頁</div>} />
         <Route path="/shop" element={<div>🏪 商家首頁</div>} />
-        <Route
-          path="/admin/pending-users"
-          element={
-            user?.role === 'admin'
-              ? <PendingUsersPage />
-              : <Navigate to="/login" replace />
-          }
-        />
-        <Route path="/admin/all-users" element={<AllUsersPage />} />
+
+        {/* 管理者專區，需登入 + 驗證碼 */}
+        <Route path="/admin" element={requireAdmin(AdminPage)} />
+        <Route path="/admin/pending-users" element={requireAdmin(PendingUsersPage)} />
+        <Route path="/admin/all-users" element={requireAdmin(AllUsersPage)} />
+
+        {/* 其他路徑導回登入 */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
