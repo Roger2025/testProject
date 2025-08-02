@@ -31,6 +31,9 @@ router.post('/verify-email-code', (req, res) => {
     });
   }
 
+  //  驗證成功：記錄到 session
+  req.session.user.adminVerified = true;
+
   // 驗證成功
   delete verificationCodes[email];
   res.json({ status: 'success', message: '✅ 驗證成功！' });

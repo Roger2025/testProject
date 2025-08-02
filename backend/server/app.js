@@ -10,6 +10,7 @@ const adminRouter = require('./routes/admin_routes/admin');
 const loginRouter = require('./routes/admin_routes/login');
 const registerRouter = require('./routes/admin_routes/register');
 const verifyRouter = require('./routes/admin_routes/verify');
+//const setAdminVerifiedRouter = require('./routes/admin_routes/setAdminVerified');
 
 const app = express();
 
@@ -43,5 +44,6 @@ app.use('/api/admin', adminRouter);
 app.use('/api', loginRouter);
 app.use('/api', registerRouter);
 app.use('/api', verifyRouter);
+//app.use('/api/set-admin-verified', setAdminVerifiedRouter);
 
 module.exports = app;

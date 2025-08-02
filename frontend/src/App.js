@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter , Route, Routes, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import LoginPage from './pages/admin/LoginPage';
 import RegisterPage from './pages/admin/RegisterPage';
@@ -10,38 +9,36 @@ import AllUsersPage from './pages/admin/AllUsersPage';
 
 function App() {
   const { user, authLoading } = useAuth();
-  const isAdminVerified = localStorage.getItem('adminVerified') === 'true';
 
-  if (authLoading) return <p>🔄 載入中...</p>;
-
-  const requireAdmin = (Component) => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (user.role !== 'admin') return <Navigate to="/login" replace />;
-    if (!isAdminVerified) return <Navigate to="/verify" replace />;
-    return <Component />;
-  };
+  // 檢查是否為管理員
+  const withAdminAuth = (Component) => {
+  if (authLoading) return <p>🔄 載入中...</p>; // 還沒拿到user資訊 等一下
+  if (!user || user.role !== 'admin') return <Navigate to="/login" replace />;
+  if (user.adminVerified !== true) return <Navigate to="/verify" replace />;
+  return <Component />; // 完成判斷 渲染
+ };
+ 
+  // 檢查是否為商家
+//  const withShopAuth = (Component) => {
+//     if (authLoading) return <p>載入中...</p>;
+//     if (!user || user.role !== 'shop') return <Navigate to="/login" />;
+//     return <Component />;
+//   };
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        {/* 公開頁面 */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
-
-        {/* 使用者或商家首頁 */}
+        <Route path="/admin" element={withAdminAuth(AdminPage)} />
+        <Route path="/admin/pending-users" element={withAdminAuth(PendingUsersPage)} />
+        <Route path="/admin/all-users" element={withAdminAuth(AllUsersPage)} />
         <Route path="/user" element={<div>👤 使用者首頁</div>} />
         <Route path="/shop" element={<div>🏪 商家首頁</div>} />
-
-        {/* 管理者專區，需登入 + 驗證碼 */}
-        <Route path="/admin" element={requireAdmin(AdminPage)} />
-        <Route path="/admin/pending-users" element={requireAdmin(PendingUsersPage)} />
-        <Route path="/admin/all-users" element={requireAdmin(AllUsersPage)} />
-
-        {/* 其他路徑導回登入 */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

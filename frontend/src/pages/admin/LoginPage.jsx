@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
 import '../../styles/admin_styles/LoginPage.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; 
@@ -11,13 +10,11 @@ function LoginPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { refetchUser } = useAuth();
 
   const handleLogin = async (e) => {
-    e.preventDefault(); //  防止表單預設行為（整頁刷新）
+    e.preventDefault(); //  防止表單預設行為（整頁刷新）session被洗掉
     setLoading(true);
-    setMessage('🔐 登入中，請稍候...'); // ✅① 加上登入中提示
-    localStorage.removeItem('adminVerified'); //  登入前清除 admin 驗證碼紀錄
+    setMessage('🔐 登入中，請稍候...'); // 加上登入中提示
 
     try {
       const res = await axios.post(
@@ -30,26 +27,22 @@ function LoginPage() {
       setLoading(false);
 
       if (data.status === 'success') {
-        const user = data.user;
+        const user = data.user; //  後端回傳的 user 最準
 
-        //  顯示登入者資訊
+        // 顯示成功訊息
         setMessage(`✅ 登入成功！歡迎 ${user.name}（角色：${user.role}），準備導頁中...`);
-        console.log(' 登入成功，使用者資訊:', user);
+        console.log('登入成功，使用者資訊:', user);
 
-        //  重新取得登入狀態（加 timeout 保護） ✅②
-        const timeout = new Promise((resolve) => setTimeout(resolve, 3000));
-        await Promise.race([refetchUser(), timeout]);
+        // ✅ 用回傳 user 角色導頁（準確！）
+        if (user.role === 'admin') {
+          navigate('/verify', { state: { email: user.email } });
+        } else if (user.role === 'shop') {
+          navigate('/shop');
+        } else {
+          navigate('/user');
+        }
 
-        //  根據角色導頁 ✅③ 改成 800ms，使用者體感更快
-        setTimeout(() => {
-          if (user.role === 'admin') {
-            navigate('/verify', { state: { email: user.email } });
-          } else if (user.role === 'shop') {
-            navigate('/shop');
-          } else {
-            navigate('/user');
-          }
-        }, 800);
+
       } else {
         setMessage(`❌ ${data.message || '登入失敗'}`);
       }

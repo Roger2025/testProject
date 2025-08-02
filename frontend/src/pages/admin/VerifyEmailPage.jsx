@@ -1,51 +1,59 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import '../../styles/admin_styles/VerifyEmailPage.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 function VerifyEmailPage() {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const location = useLocation();
+  const location = useLocation(); // 使用 useLocation 取得路由狀態 (讀取導頁前email)
   const email = location.state?.email;
   const { refetchUser } = useAuth();
   const navigate = useNavigate();
-
   const handleVerify = async () => {
     setLoading(true);
-    setMessage('🔐 驗證中，請稍候...'); // ✅ 顯示驗證中提示
+    setMessage('🔐 驗證中，請稍候...');
 
     try {
-      const res = await fetch('http://localhost:5000/api/verify-email-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code })
-      });
+      // ✅ 驗證碼驗證
+      const res = await axios.post(
+        'http://localhost:5000/api/verify-email-code',
+        { email, code },
+        { withCredentials: true }
+      );
 
-      const data = await res.json();
-      console.log('🔥 後端回傳資料:', data);
+      const data = res.data;
       setLoading(false);
 
       if (data.status === 'success') {
-        setMessage('✅ 驗證成功！轉跳後台中...');
-        localStorage.setItem('adminVerified', 'true');
+        setMessage('✅ 驗證成功，重新取得登入狀態...');
 
-        // ✅ refetchUser 加 timeout 防卡住
-        const timeout = new Promise((resolve) => setTimeout(resolve, 3000));
-        await Promise.race([refetchUser(), timeout]);
+        // ✅ 更新 user 狀態（會讓 App.jsx 自動判斷是否跳轉）
+        
+        const user = await refetchUser();
 
-        console.log('✅ 準備導向 /admin');
+        console.log('✅ 最新使用者資訊:', user);
+
+
+        // 強制導頁，不讓 App.jsx 的判斷卡住
+        // window.location.href = '/admin';
+
         setTimeout(() => {
-          navigate('/admin'); // ✅ 保留 React Router 狀態
-        }, 800); // ✅ 縮短等待時間
+          navigate('/admin');
+        }, 300); // 給 useAuth 更新 React state 的時間
+
+        
       } else {
-        setMessage(data.message || '❌ 驗證失敗，請重新輸入。'); // ✅ 顯示後端錯誤訊息
+        setMessage(data.message || '❌ 驗證失敗，請重新輸入。');
       }
     } catch (err) {
-      console.error('❌ 發送驗證請求失敗:', err);
-      setMessage('❌ 發送驗證請求失敗，請稍後再試');
+      console.error('❌ 驗證失敗:', err);
+      setMessage('❌ 發送失敗，請稍後再試');
       setLoading(false);
     }
   };
@@ -63,7 +71,7 @@ function VerifyEmailPage() {
       <button
         className={`login-button ${loading ? 'loading' : ''}`}
         onClick={handleVerify}
-        disabled={loading}
+        disabled={loading} // 控制按鈕點擊
       >
         {loading ? '驗證中...' : '驗證'}
       </button>

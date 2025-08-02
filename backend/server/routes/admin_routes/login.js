@@ -10,7 +10,10 @@ router.get('/me', (req, res) => {
   if (req.session.user) {
     res.json({ status: 'ok', user: req.session.user });
   } else {
-    res.status(401).json({ status: 'unauthorized', message: '未登入' }); //鏈式方法寫法
+    res.status(401).json({
+       status: 'unauthorized',
+       message: '未登入',
+       adminVerified: req.session.adminVerified || false }); //鏈式方法寫法
   }
 });
 
@@ -57,12 +60,14 @@ router.post('/login', async (req, res) => {
 
   //  設定 session
   req.session.user = {
+    //sessionId: req.sessionID,
     id: dbUser.member_id, // 目前沒資料 可能是資料庫問題
     account: dbUser.account,
     role: dbUser.role,
     name: dbUser.name,
     email: dbUser.email,
-    status: dbUser.status
+    status: dbUser.status,
+    adminVerified: dbUser.role === 'admin' ? false : undefined // 一開始是 false，等驗證成功再改 true
   };
 
   console.log('登入成功並寫入 session', req.session.user);
@@ -83,7 +88,7 @@ router.post('/login', async (req, res) => {
       });
       console.log('✅ 郵件發送成功:', info.response);
     } catch (err) {
-      console.error('❌ 郵件發送失敗:', err);
+      console.error('❌ 郵件發送失敗:', err); // 顯示終端機錯誤
     }
   }
 
@@ -99,7 +104,6 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      console.error(' 登出失敗:', err);
       return res.status(500).json({ status: 'error', message: '登出失敗' });
     }
 
