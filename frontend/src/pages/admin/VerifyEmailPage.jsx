@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import '../../styles/admin_styles/VerifyEmailPage.css';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
 
 function VerifyEmailPage() {
@@ -14,7 +14,7 @@ function VerifyEmailPage() {
   const location = useLocation(); // 使用 useLocation 取得路由狀態 (讀取導頁前email)
   const email = location.state?.email;
   const { refetchUser } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const handleVerify = async () => {
     setLoading(true);
     setMessage('🔐 驗證中，請稍候...');

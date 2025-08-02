@@ -64,10 +64,10 @@ function AllUsersPage() {
   };
 
   const filteredUsers = users.filter(u => {
-    const matchesSearch = u.account.includes(search);
+    const matchesSearch = (u.account || '').includes(search);  // 防止 undefined
     const matchesRole = filterRole === 'all' || u.role === filterRole;
     return matchesSearch && matchesRole;
-  });
+    });
 
   return (
     <div className="all-users-page">

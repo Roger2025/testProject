@@ -9,7 +9,10 @@ const memberSchema = new Schema({
   phone: { type: String },
   created_at: { type: Date, default: Date.now },
   role: { type: String, default: 'user', enum: ['user', 'shop', 'admin'] }, 
-  status: { type: String, default: 'active', enum: ['pending', 'active', 'disabled'] }
+  status: { type: String, default: 'active', enum: ['pending', 'active', 'disabled'] },
+  storename: { type: String },
+  address: { type: String },
+  member_ID: { type: Number },
 });
 
 // 🔺明確指定 collection 名稱為 "members"

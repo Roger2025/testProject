@@ -1,4 +1,3 @@
-// 📁 pages/PendingUsersPage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin_styles/PendingUsersPage.css'; // 引入樣式
@@ -20,7 +19,7 @@ const PendingUsersPage = () => {
 
   const handleApprove = async (account) => {
     try {
-      // ✅ 改為完整後端路徑 + withCredentials
+      //  改為完整後端路徑 + withCredentials
       const res = await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, null, { // 發出修改角色請求
         withCredentials: true
       });
@@ -48,7 +47,7 @@ const PendingUsersPage = () => {
               <th>帳號</th>
               <th>店家名稱</th>
               <th>店家地址</th>
-              <th>角色</th>
+              <th>狀態</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -57,12 +56,12 @@ const PendingUsersPage = () => {
               //你加上 key={p.account} 是告訴 React：這一列的資料代表帳號為 shop123 的用戶，下次重新渲染時請記得他
               <tr key={p.account}>
                 <td>{p.account}</td>
-                <td>{p.storeName}</td>
-                <td>{p.storeAddress}</td>
-                <td className="pending-role">{p.role}</td>
+                <td>{p.storename}</td>
+                <td>{p.address}</td>
+                <td className="pending-role">{p.status}</td>
                 <td>
                     <button onClick={() => {
-                        const confirmApprove = window.confirm(`確定要通過帳號 ${p.account} 的審核嗎？`);
+                        const confirmApprove = window.confirm(`確定要通過帳號 ${p.account} 的審核嗎？`); // 彈出對話框
                         if (confirmApprove) {
                         handleApprove(p.account);
                         }

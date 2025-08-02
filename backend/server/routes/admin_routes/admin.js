@@ -21,35 +21,49 @@ router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
   });
 });
 
-// ✅ 查看待審核商家
+//  查看待審核商家
 router.get('/pending-users', roleCheck(['admin']), async (req, res) => {
   try {
-    const pendingShops = await Member.find({ role: 'pending' });
+    const pendingShops = await Member.find({ status: 'pending' });
     res.json({ status: 'success', pendingShops: pendingShops });
   } catch (err) {
     res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }
 });
 
-// ✅ 通過商家審核
+// 通過商家審核
 router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) => {
   const targetAccount = req.params.account;
   try {
     const user = await Member.findOne({ account: targetAccount });
 
-    if (!user) return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
-    if (user.role !== 'pending') {
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
+    }
+
+    if (user.status !== 'pending') {
       return res.json({ status: 'fail', message: '該帳號不在審核狀態' });
     }
 
-    user.role = 'shop';
+    user.status = 'active';
     await user.save();
 
-    res.json({ status: 'success', message: `✅ 帳號 ${targetAccount} 已審核通過並設為 shop`, user });
+    res.json({
+      status: 'success',
+      message: `✅ 帳號 ${targetAccount} 已審核通過並設為 shop`,
+      user
+    });
   } catch (err) {
-    res.status(500).json({ status: 'error', message: '伺服器錯誤' });
+    console.error('❌ 審核失敗錯誤：', err); // ✅ 這行現在安全了
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤',
+      error: err.message
+    });
   }
 });
+
+
 
 // ✅ 取得所有使用者
 router.get('/all-users', roleCheck(['admin']), async (req, res) => {
