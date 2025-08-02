@@ -33,21 +33,23 @@ function VerifyEmailPage() {
       if (data.status === 'success') {
         setMessage('✅ 驗證成功，重新取得登入狀態...');
 
-        // ✅ 更新 user 狀態（會讓 App.jsx 自動判斷是否跳轉）
-        
+        //  更新 user 狀態（會讓 App.jsx 自動判斷是否跳轉）
         const user = await refetchUser();
 
         console.log('✅ 最新使用者資訊:', user);
 
-
         // 強制導頁，不讓 App.jsx 的判斷卡住
         // window.location.href = '/admin';
 
-        setTimeout(() => {
-          navigate('/admin');
-        }, 300); // 給 useAuth 更新 React state 的時間
+        // setTimeout(() => {
+        //   navigate('/admin');
+        // }, 500); // 給 useAuth 更新 React state 的時間
 
-        
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 500); // 刷新整個頁面
+
+  
       } else {
         setMessage(data.message || '❌ 驗證失敗，請重新輸入。');
       }

@@ -12,7 +12,11 @@ function App() {
 
   // 檢查是否為管理員
   const withAdminAuth = (Component) => {
+  console.log("最新user資訊:", user);
+  console.log("authLoading:", authLoading);
   if (authLoading) return <p>🔄 載入中...</p>; // 還沒拿到user資訊 等一下
+    console.log("最新user資訊:", user);
+  console.log("authLoading:", authLoading);
   if (!user || user.role !== 'admin') return <Navigate to="/login" replace />;
   if (user.adminVerified !== true) return <Navigate to="/verify" replace />;
   return <Component />; // 完成判斷 渲染

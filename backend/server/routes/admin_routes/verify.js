@@ -33,6 +33,7 @@ router.post('/verify-email-code', (req, res) => {
 
   //  驗證成功：記錄到 session
   req.session.user.adminVerified = true;
+  console.log('✅ 驗證後的 session 狀態:', req.session);
 
   // 驗證成功
   delete verificationCodes[email];

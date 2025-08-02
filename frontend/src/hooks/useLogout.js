@@ -10,7 +10,7 @@ export default function useLogout() {
     if (!window.confirm('你確定要登出嗎？')) return;
     
     try {
-      await axios.post('http://localhost:5000/api/logout', {}, { withCredentials: true });
+      await axios.post('http://localhost:5000/api/logout', {}, { withCredentials: true }); // 參數(url,data,config)
 
       alert('✅ 登出成功');
       navigate('/login');

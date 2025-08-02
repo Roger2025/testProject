@@ -24,8 +24,8 @@ router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
 // ✅ 查看待審核商家
 router.get('/pending-users', roleCheck(['admin']), async (req, res) => {
   try {
-    const pendingUsers = await Member.find({ role: 'pending' });
-    res.json({ status: 'success', users: pendingUsers });
+    const pendingShops = await Member.find({ role: 'pending' });
+    res.json({ status: 'success', pendingShops: pendingShops });
   } catch (err) {
     res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }

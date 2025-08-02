@@ -14,7 +14,7 @@ export default function useAuth() {
       .then(res => {
         setUser(res.data.user);
         console.log(' 取得 user:', res.data.user);
-        return res.data.user;
+        return res.data.user; // 確保驗證後拿到true
       })
       .catch(() => {
         setUser(null);
