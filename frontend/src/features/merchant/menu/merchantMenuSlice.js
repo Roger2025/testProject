@@ -1,6 +1,7 @@
 // features/merchant/menu/merchantMenuSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { merchantApi } from '../../../services/merchantApi';
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId';  // 開發環境中提供預設merchantId
 
 // 餐點類別選項
 export const MENU_CATEGORIES = [
@@ -28,84 +29,124 @@ export const DRINK_OPTIONS = {
   ]
 };
 
-// Async thunks
+// Fetch menu items (需要傳 merchantId)
 export const fetchMenuItems = createAsyncThunk(
   'merchantMenu/fetchMenuItems',
-  async (merchantId, { rejectWithValue }) => {
+  async (merchantIdArg, { rejectWithValue }) => {
     try {
+      let merchantId = merchantIdArg;
+      if (!merchantId) {
+        const rawMerchantId = localStorage.getItem('merchantId');
+        merchantId = getEffectiveMerchantId(rawMerchantId);
+      }
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
       const response = await merchantApi.getMenuItems(merchantId);
-      return response.data.data; // 只取陣列本體
+      // 後端格式 { success, data: [...] }
+      return response.data?.data || [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '獲取菜單失敗');
     }
   }
 );
 
+// Create menu item
 export const createMenuItem = createAsyncThunk(
   'merchantMenu/createMenuItem',
-  async ({ merchantId, menuData, imageFile }, { rejectWithValue }) => {
+  async ({ merchantId: merchantIdArg, menuData, imageFile }, { rejectWithValue }) => {
     try {
+      let merchantId = merchantIdArg;
+      if (!merchantId) {
+        const rawMerchantId = localStorage.getItem('merchantId');
+        merchantId = getEffectiveMerchantId(rawMerchantId);
+      }
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
       const formData = new FormData();
-      
-      // 添加菜單數據
       Object.keys(menuData).forEach(key => {
-        if (menuData[key] !== null && menuData[key] !== undefined) {
-          if (typeof menuData[key] === 'object') {
-            formData.append(key, JSON.stringify(menuData[key]));
+        const val = menuData[key];
+        if (val !== null && val !== undefined) {
+          if (typeof val === 'object') {
+            formData.append(key, JSON.stringify(val));
           } else {
-            formData.append(key, menuData[key]);
+            formData.append(key, val);
           }
         }
       });
-      
-      // 添加圖片文件
+
       if (imageFile) {
         formData.append('image', imageFile);
       }
-      
+
+      // 保留 merchantId 作為備援（路由通常帶）
       formData.append('merchantId', merchantId);
-      
-      const response = await merchantApi.createMenuItem(formData);
-      return response.data;
+
+      const response = await merchantApi.createMenuItem(merchantId, formData);
+      return response.data?.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '新增餐點失敗');
     }
   }
 );
 
+// Update menu item
 export const updateMenuItem = createAsyncThunk(
   'merchantMenu/updateMenuItem',
-  async ({ itemId, menuData, imageFile }, { rejectWithValue }) => {
+  async ({ merchantId: merchantIdArg, itemId, menuData, imageFile }, { rejectWithValue }) => {
     try {
+      let merchantId = merchantIdArg;
+      if (!merchantId) {
+        const rawMerchantId = localStorage.getItem('merchantId');
+        merchantId = getEffectiveMerchantId(rawMerchantId);
+      }
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
       const formData = new FormData();
-      
+
       Object.keys(menuData).forEach(key => {
-        if (menuData[key] !== null && menuData[key] !== undefined) {
-          if (typeof menuData[key] === 'object') {
-            formData.append(key, JSON.stringify(menuData[key]));
+        const val = menuData[key];
+        if (val !== null && val !== undefined) {
+          if (typeof val === 'object') {
+            formData.append(key, JSON.stringify(val));
           } else {
-            formData.append(key, menuData[key]);
+            formData.append(key, val);
           }
         }
       });
-      
+
       if (imageFile) {
         formData.append('image', imageFile);
       }
-      
-      const response = await merchantApi.updateMenuItem(itemId, formData);
-      return response.data;
+
+      formData.append('merchantId', merchantId);
+
+      // DEBUG log 可以保留開發期
+      for (const pair of formData.entries()) {
+        console.log('updateMenuItem formData:', pair[0], pair[1]);
+      }
+
+      const response = await merchantApi.updateMenuItem(merchantId, itemId, formData);
+      return response.data?.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || '更新餐點失敗');
+      const msg = error.response?.data?.message || error.message || '更新餐點失敗';
+      return rejectWithValue(msg);
     }
   }
 );
 
+// Delete menu item
 export const deleteMenuItem = createAsyncThunk(
   'merchantMenu/deleteMenuItem',
-  async (itemId, { rejectWithValue }) => {
+  async ({ merchantId: merchantIdArg, itemId }, { rejectWithValue }) => {
     try {
-      await merchantApi.deleteMenuItem(itemId);
+      let merchantId = merchantIdArg;
+      if (!merchantId) {
+        const rawMerchantId = localStorage.getItem('merchantId');
+        merchantId = getEffectiveMerchantId(rawMerchantId);
+      }
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
+      await merchantApi.deleteMenuItem(merchantId, itemId);
       return itemId;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '刪除餐點失敗');
@@ -139,7 +180,6 @@ const merchantMenuSlice = createSlice({
     clearCurrentItem: (state) => {
       state.currentItem = null;
     },
-    // 本地更新項目，避免不必要的API調用
     updateItemLocally: (state, action) => {
       const { id, updates } = action.payload;
       const index = state.items.findIndex(item => item._id === id);
@@ -150,14 +190,14 @@ const merchantMenuSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch menu items
+      // fetch
       .addCase(fetchMenuItems.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchMenuItems.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = Array.isArray(action.payload) ? action.payload : [];  // 加入防呆避免卡在304導致state.items = undefined
+        state.items = Array.isArray(action.payload) ? action.payload : [];
         state.lastFetch = Date.now();
         state.error = null;
       })
@@ -165,32 +205,32 @@ const merchantMenuSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
-      // Create menu item
+
+      // create
       .addCase(createMenuItem.pending, (state) => {
         state.operationStatus.creating = true;
         state.error = null;
       })
       .addCase(createMenuItem.fulfilled, (state, action) => {
         state.operationStatus.creating = false;
-        state.items.push(action.payload);
+        if (action.payload) state.items.push(action.payload);
         state.error = null;
       })
       .addCase(createMenuItem.rejected, (state, action) => {
         state.operationStatus.creating = false;
         state.error = action.payload;
       })
-      
-      // Update menu item
+
+      // update
       .addCase(updateMenuItem.pending, (state) => {
         state.operationStatus.updating = true;
         state.error = null;
       })
       .addCase(updateMenuItem.fulfilled, (state, action) => {
         state.operationStatus.updating = false;
-        const index = state.items.findIndex(item => item._id === action.payload._id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
+        const idx = state.items.findIndex(item => item._id === action.payload?._id);
+        if (idx !== -1 && action.payload) {
+          state.items[idx] = action.payload;
         }
         state.error = null;
       })
@@ -198,8 +238,8 @@ const merchantMenuSlice = createSlice({
         state.operationStatus.updating = false;
         state.error = action.payload;
       })
-      
-      // Delete menu item
+
+      // delete
       .addCase(deleteMenuItem.pending, (state) => {
         state.operationStatus.deleting = true;
         state.error = null;

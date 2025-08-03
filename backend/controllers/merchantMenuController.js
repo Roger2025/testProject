@@ -1,24 +1,64 @@
-// controllers/merchantMenuController.js
 const MerchantMenu = require('../models/merchant/merchantMenu');
 const path = require('path');
 const fs = require('fs');
 
+// helper: 從 req.params 或 req.body（支援 array）提取 merchantId
+function extractMerchantId(req) {
+  let raw = req.params.merchantId || req.body.merchantId;
+  if (Array.isArray(raw)) raw = raw[0];
+  return raw;
+}
+
+// helper：根據 item.imagePath 與 category 提供最終可用的 imageUrl
+function buildImageUrl(item) {
+  if (!item.imagePath) return null;
+
+  // 統一為 forward slash
+  let normalizedPath = item.imagePath.replace(/\\+/g, '/'); // e.g., default_merchant/burger2.jpg or default_merchant/burger/burger2.jpg
+  let imageUrl = `/images/${normalizedPath}`; // 預設
+
+  const fullPhysical = path.join(__dirname, '../public', normalizedPath);
+  if (fs.existsSync(fullPhysical)) {
+    return imageUrl;
+  }
+
+  // fallback：若缺 category 夾層（像 default_merchant/burger2.jpg），嘗試插入 item.category
+  if (item.category) {
+    const parts = normalizedPath.split('/');
+    if (parts.length === 2) {
+      const merchantId = parts[0];
+      const filename = parts[1];
+      const fallbackPath = path.posix.join(merchantId, item.category, filename); // default_merchant/burger/burger2.jpg
+      const fallbackPhysical = path.join(__dirname, '../public', fallbackPath);
+      if (fs.existsSync(fallbackPhysical)) {
+        return `/images/${fallbackPath}`;
+      }
+    }
+  }
+
+  // 最後退回原始（即便可能 404）
+  return imageUrl;
+}
+
 const merchantMenuController = {
+
   // 獲取商家所有菜單項目
   async getMenuItems(req, res) {
     try {
       const { merchantId } = req.params;
-      
-      const menuItems = await MerchantMenu.find({ 
+
+      const menuItems = await MerchantMenu.find({
         merchantId: merchantId,
         isDeleted: { $ne: true }
       }).sort({ createdAt: -1 });
 
-      // 處理圖片URL
-      const itemsWithImageUrl = menuItems.map(item => ({
-        ...item.toObject(),
-        imageUrl: item.imagePath ? `/public/${item.imagePath}` : null
-      }));
+      const itemsWithImageUrl = menuItems.map(item => {
+        const obj = item.toObject();
+        return {
+          ...obj,
+          imageUrl: buildImageUrl(obj)
+        };
+      });
 
       res.status(200).json({
         success: true,
@@ -38,7 +78,7 @@ const merchantMenuController = {
   async getMenuItem(req, res) {
     try {
       const { merchantId, itemId } = req.params;
-      
+
       const menuItem = await MerchantMenu.findOne({
         _id: itemId,
         merchantId: merchantId,
@@ -52,10 +92,10 @@ const merchantMenuController = {
         });
       }
 
-      // 處理圖片URL
+      const obj = menuItem.toObject();
       const itemWithImageUrl = {
-        ...menuItem.toObject(),
-        imageUrl: menuItem.imagePath ? `/public/${menuItem.imagePath}` : null
+        ...obj,
+        imageUrl: buildImageUrl(obj)
       };
 
       res.status(200).json({
@@ -63,21 +103,30 @@ const merchantMenuController = {
         data: itemWithImageUrl
       });
     } catch (error) {
-      console.error('獲取菜單項目錯誤:', error);
+      console.error('獲取單個菜單項目錯誤:', error);
       res.status(500).json({
         success: false,
-        message: '獲取菜單項目失敗',
+        message: '獲取單個菜單項目失敗',
         error: error.message
       });
     }
   },
 
-  // 創建新的菜單項目
+// 創建新的菜單項目
   async createMenuItem(req, res) {
+    console.log('received req.file:', req.file);
+    console.log('received req.body:', req.body);
     try {
-      const { merchantId, name, description, price, category, available, notes, options } = req.body;
-      
-      // 驗證必填欄位
+      // normalize merchantId
+      let merchantIdRaw = req.body.merchantId;
+      let merchantId = Array.isArray(merchantIdRaw) ? merchantIdRaw[0] : merchantIdRaw;
+      if (req.params.merchantId) {
+        merchantId = req.params.merchantId;
+      }
+      req.body.merchantId = merchantId;
+
+      const { name, description, price, category, available, notes, options } = req.body;
+
       if (!merchantId || !name || !price || !category) {
         return res.status(400).json({
           success: false,
@@ -85,7 +134,6 @@ const merchantMenuController = {
         });
       }
 
-      // 處理選項數據
       let parsedOptions = {};
       if (options) {
         try {
@@ -95,13 +143,13 @@ const merchantMenuController = {
         }
       }
 
-      // 處理圖片路徑
       let imagePath = null;
       if (req.file) {
-        imagePath = path.join(merchantId, req.file.filename);
+        // 把 category folder 加進去，並用 posix 正規化斜線
+        const categoryName = category;
+        imagePath = path.posix.join(merchantId, categoryName, req.file.filename);
       }
 
-      // 創建菜單項目
       const menuItem = new MerchantMenu({
         merchantId,
         name: name.trim(),
@@ -118,10 +166,9 @@ const merchantMenuController = {
 
       const savedMenuItem = await menuItem.save();
 
-      // 返回包含圖片URL的數據
       const responseData = {
         ...savedMenuItem.toObject(),
-        imageUrl: imagePath ? `/public/${imagePath}` : null
+        imageUrl: imagePath ? `/images/${imagePath}` : null
       };
 
       res.status(201).json({
@@ -131,14 +178,11 @@ const merchantMenuController = {
       });
     } catch (error) {
       console.error('創建菜單項目錯誤:', error);
-      
-      // 如果有上傳的文件但保存失敗，刪除文件
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
           if (err) console.error('刪除文件錯誤:', err);
         });
       }
-      
       res.status(500).json({
         success: false,
         message: '創建菜單項目失敗',
@@ -147,33 +191,41 @@ const merchantMenuController = {
     }
   },
 
+
   // 更新菜單項目
+// 更新菜單項目
   async updateMenuItem(req, res) {
+    console.log('received req.file:', req.file);
+    console.log('received req.body:', req.body);
     try {
+      // normalize merchantId (雖然通常用 params)
+      let merchantIdRaw = req.body.merchantId;
+      let merchantId = Array.isArray(merchantIdRaw) ? merchantIdRaw[0] : merchantIdRaw;
+      if (req.params.merchantId) {
+        merchantId = req.params.merchantId;
+      }
+      req.body.merchantId = merchantId;
+
       const { itemId } = req.params;
       const { name, description, price, category, available, notes, options } = req.body;
 
-      // 查找現有項目
       const existingItem = await MerchantMenu.findOne({
         _id: itemId,
         isDeleted: { $ne: true }
       });
 
       if (!existingItem) {
-        // 如果有新上傳的文件但項目不存在，刪除文件
         if (req.file) {
           fs.unlink(req.file.path, (err) => {
             if (err) console.error('刪除文件錯誤:', err);
           });
         }
-        
         return res.status(404).json({
           success: false,
           message: '菜單項目不存在'
         });
       }
 
-      // 處理選項數據
       let parsedOptions = existingItem.options;
       if (options) {
         try {
@@ -183,22 +235,21 @@ const merchantMenuController = {
         }
       }
 
-      // 處理圖片更新
+      // 預設使用現有 imagePath
       let imagePath = existingItem.imagePath;
       if (req.file) {
-        // 刪除舊圖片
+        // 刪除舊圖片（existingItem.imagePath 可能包含不一致斜線）
         if (existingItem.imagePath) {
           const oldImagePath = path.join(__dirname, '../public', existingItem.imagePath);
           fs.unlink(oldImagePath, (err) => {
             if (err) console.error('刪除舊圖片錯誤:', err);
           });
         }
-        
-        // 設置新圖片路徑
-        imagePath = path.join(existingItem.merchantId, req.file.filename);
+        // 新 imagePath 需包含 category folder（優先用 body 的 category）
+        const categoryName = category || existingItem.category;
+        imagePath = path.posix.join(existingItem.merchantId, categoryName, req.file.filename);
       }
 
-      // 更新數據
       const updateData = {
         name: name?.trim() || existingItem.name,
         description: description?.trim() || existingItem.description,
@@ -217,10 +268,9 @@ const merchantMenuController = {
         { new: true, runValidators: true }
       );
 
-      // 返回包含圖片URL的數據
       const responseData = {
         ...updatedMenuItem.toObject(),
-        imageUrl: imagePath ? `/public/${imagePath}` : null
+        imageUrl: imagePath ? `/images/${imagePath}` : null
       };
 
       res.status(200).json({
@@ -230,14 +280,11 @@ const merchantMenuController = {
       });
     } catch (error) {
       console.error('更新菜單項目錯誤:', error);
-      
-      // 如果有新上傳的文件但更新失敗，刪除文件
       if (req.file) {
         fs.unlink(req.file.path, (err) => {
           if (err) console.error('刪除文件錯誤:', err);
         });
       }
-      
       res.status(500).json({
         success: false,
         message: '更新菜單項目失敗',
@@ -263,15 +310,13 @@ const merchantMenuController = {
         });
       }
 
-      // 軟刪除
       await MerchantMenu.findByIdAndUpdate(itemId, {
         isDeleted: true,
         deletedAt: new Date()
       });
 
-      // 可選：實際刪除圖片文件
       if (menuItem.imagePath) {
-        const imagePath = path.join(__dirname, '../public', menuItem.imagePath);
+        const imagePath = path.join(__dirname, '../public/images', menuItem.imagePath);
         fs.unlink(imagePath, (err) => {
           if (err) console.error('刪除圖片文件錯誤:', err);
         });
@@ -294,7 +339,9 @@ const merchantMenuController = {
   // 批量更新菜單項目狀態
   async updateMenuItemsStatus(req, res) {
     try {
-      const { merchantId } = req.params;
+      const merchantId = extractMerchantId(req);
+      req.body.merchantId = merchantId;
+
       const { itemIds, available } = req.body;
 
       if (!Array.isArray(itemIds) || itemIds.length === 0) {

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+import { getFullImageUrl } from '../../../utils/getImageUrl';
 import { 
   createMenuItem, 
   updateMenuItem, 
@@ -20,9 +22,9 @@ const MenuEdit = () => {
   const isEdit = location.state?.isEdit || false;
   const itemId = location.state?.itemId;
   
-  // 從 localStorage 或其他方式獲取商家ID
-  const merchantId = localStorage.getItem('merchantId') || 'default_merchant';
-  
+  const rawMerchantId = localStorage.getItem('merchantId');
+  const merchantId = getEffectiveMerchantId(rawMerchantId);
+
   // 表單狀態
   const [formData, setFormData] = useState({
     name: '',
@@ -33,7 +35,6 @@ const MenuEdit = () => {
     notes: '',
     options: {}
   });
-  
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [showOptions, setShowOptions] = useState(false);
@@ -42,7 +43,7 @@ const MenuEdit = () => {
     temperature: []
   });
 
-  // 初始化表單數據
+  // 初始化或 category 變動同步選項顯示
   useEffect(() => {
     if (isEdit && currentItem) {
       setFormData({
@@ -54,21 +55,22 @@ const MenuEdit = () => {
         notes: currentItem.notes || '',
         options: currentItem.options || {}
       });
-      
-      if (currentItem.imageUrl) {
-        setImagePreview(currentItem.imageUrl);
-      }
-      
-      // 設置選項
+
+      // 設置 drink 選項顯示
+      setShowOptions(currentItem.category === 'drink');
+
       if (currentItem.options) {
         setSelectedOptions({
           size: currentItem.options.size || [],
           temperature: currentItem.options.temperature || []
         });
-        setShowOptions(currentItem.category === 'drink');
+      }
+
+      if (currentItem.imageUrl) {
+        setImagePreview(getFullImageUrl(currentItem.imageUrl));
       }
     } else {
-      // 新增模式，重置表單
+      // 新增模式重置
       setFormData({
         name: '',
         description: '',
@@ -85,7 +87,15 @@ const MenuEdit = () => {
     }
   }, [isEdit, currentItem]);
 
-  // 清理錯誤
+  // 當 category 在表單變更時也同步 showOptions
+  useEffect(() => {
+    setShowOptions(formData.category === 'drink');
+    if (formData.category !== 'drink') {
+      setSelectedOptions({ size: [], temperature: [] });
+    }
+  }, [formData.category]);
+
+  // 清理錯誤 on unmount
   useEffect(() => {
     return () => {
       dispatch(clearError());
@@ -94,14 +104,6 @@ const MenuEdit = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    if (name === 'category') {
-      setShowOptions(value === 'drink');
-      if (value !== 'drink') {
-        setSelectedOptions({ size: [], temperature: [] });
-      }
-    }
-    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -110,28 +112,23 @@ const MenuEdit = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // 檢查文件大小 (限制5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('圖片大小不能超過 5MB');
-        return;
-      }
-      
-      // 檢查文件類型
-      if (!file.type.startsWith('image/')) {
-        alert('請選擇圖片文件');
-        return;
-      }
-      
-      setImageFile(file);
-      
-      // 創建預覽
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 300 * 1024) {
+      alert('圖片大小不能超過 300KB');
+      return;
     }
+    if (!file.type.startsWith('image/')) {
+      alert('請選擇圖片文件');
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setImagePreview(ev.target.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleOptionChange = (optionType, option, checked) => {
@@ -145,29 +142,31 @@ const MenuEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // 驗證必填欄位
+    if (!merchantId) {
+      alert('缺少商家身份，請先登入');
+      return;
+    }
+
     if (!formData.name.trim()) {
       alert('請輸入餐點名稱');
       return;
     }
-    
     if (!formData.price || parseFloat(formData.price) <= 0) {
       alert('請輸入有效的價格');
       return;
     }
-    
-    // 準備提交數據
+
     const submitData = {
       ...formData,
       price: parseFloat(formData.price),
       options: showOptions ? selectedOptions : {}
     };
-    
+
     try {
       if (isEdit) {
         await dispatch(updateMenuItem({
-          itemId: itemId,
+          merchantId,
+          itemId,
           menuData: submitData,
           imageFile
         })).unwrap();
@@ -178,11 +177,11 @@ const MenuEdit = () => {
           imageFile
         })).unwrap();
       }
-      
-      // 成功後返回列表頁
+
       navigate('/merchant/menu');
-    } catch (error) {
-      console.error('提交失敗:', error);
+    } catch (err) {
+      console.error('提交失敗:', err);
+      alert(typeof err === 'string' ? err : '提交失敗，請稍後再試');
     }
   };
 
@@ -199,18 +198,12 @@ const MenuEdit = () => {
         <div className="col-md-8">
           <div className="card">
             <div className="card-header">
-              <h4 className="mb-0">
-                {isEdit ? '編輯餐點' : '新增餐點'}
-              </h4>
+              <h4 className="mb-0">{isEdit ? '編輯餐點' : '新增餐點'}</h4>
             </div>
-            
             <div className="card-body">
               {error && (
-                <div className="alert alert-danger">
-                  {error}
-                </div>
+                <div className="alert alert-danger">{error}</div>
               )}
-              
               <form onSubmit={handleSubmit}>
                 {/* 基本資訊 */}
                 <div className="row mb-3">
@@ -285,9 +278,7 @@ const MenuEdit = () => {
                         onChange={handleInputChange}
                         disabled={isSubmitting}
                       />
-                      <label className="form-check-label">
-                        供應中
-                      </label>
+                      <label className="form-check-label">供應中</label>
                     </div>
                   </div>
                 </div>
@@ -303,9 +294,8 @@ const MenuEdit = () => {
                     disabled={isSubmitting}
                   />
                   <div className="form-text">
-                    支援 JPG、PNG、GIF 格式，檔案大小不超過 5MB
+                    支援 JPG、PNG、GIF 格式，檔案大小不超過 300KB
                   </div>
-                  
                   {imagePreview && (
                     <div className="mt-2">
                       <img
@@ -322,8 +312,6 @@ const MenuEdit = () => {
                 {showOptions && (
                   <div className="mb-3">
                     <h6>飲料選項設定</h6>
-                    
-                    {/* 尺寸選項 */}
                     <div className="mb-3">
                       <label className="form-label">尺寸選項</label>
                       <div className="row">
@@ -345,8 +333,6 @@ const MenuEdit = () => {
                         ))}
                       </div>
                     </div>
-
-                    {/* 溫度選項 */}
                     <div className="mb-3">
                       <label className="form-label">溫度選項</label>
                       <div className="row">
@@ -360,9 +346,7 @@ const MenuEdit = () => {
                                 onChange={(e) => handleOptionChange('temperature', temp, e.target.checked)}
                                 disabled={isSubmitting}
                               />
-                              <label className="form-check-label">
-                                {temp.label}
-                              </label>
+                              <label className="form-check-label">{temp.label}</label>
                             </div>
                           </div>
                         ))}
@@ -385,7 +369,7 @@ const MenuEdit = () => {
                   />
                 </div>
 
-                {/* 提交按鈕 */}
+                {/* 操作按鈕 */}
                 <div className="d-flex gap-2 justify-content-end">
                   <button
                     type="button"

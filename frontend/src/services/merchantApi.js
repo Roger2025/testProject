@@ -7,9 +7,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  //不要自己設定headers的Content-Type避免圖片傳不出去,axios會自己加
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 });
 
 // 請求攔截器 - 添加認證token
@@ -57,26 +58,43 @@ export const merchantApi = {
   },
 
   // 創建菜單項目
-  createMenuItem: (formData) => {
-    return apiClient.post('/api/merchant/menu', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  // createMenuItem: (formData) => {
+  //   return apiClient.post('/api/merchant/menu', formData, {
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data',
+  //     },
+  //   });
+  // },
+
+  // 新增餐點修改加入merchantId
+  createMenuItem: (merchantId, formData) => {
+    // formData.append('merchantId', merchantId); // 傳給後端保險
+    return apiClient.post(`/api/merchant/${merchantId}/menu`, formData);
   },
 
   // 更新菜單項目
-  updateMenuItem: (itemId, formData) => {
-    return apiClient.put(`/api/merchant/menu/${itemId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  // updateMenuItem: (itemId, formData) => {
+  //   return apiClient.put(`/api/merchant/menu/${itemId}`, formData, {
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data',
+  //     },
+  //   });
+  // },
+
+  // 更新餐點修改加入merchantId
+  updateMenuItem: (merchantId, itemId, formData) => {
+    // formData.append('merchantId', merchantId);
+    return apiClient.put(`/api/merchant/${merchantId}/menu/${itemId}`, formData);
   },
 
   // 刪除菜單項目
-  deleteMenuItem: (itemId) => {
-    return apiClient.delete(`/api/merchant/menu/${itemId}`);
+  // deleteMenuItem: (itemId) => {
+  //   return apiClient.delete(`/api/merchant/menu/${itemId}`);
+  // },
+
+  // 刪除餐點修改加入merchantId
+  deleteMenuItem: (merchantId, itemId) => {
+    return apiClient.delete(`/api/merchant/${merchantId}/menu/${itemId}`);
   },
 
   // 批量更新菜單項目狀態

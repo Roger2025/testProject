@@ -12,8 +12,8 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var merchantMenuRouter = require('./routes/merchant/menus');
-var merchantSetMenuRouter = require('./routes/merchant/setMenus');
+var merchantMenuRouter = require('./routes/merchant/merchantMenu');
+var merchantSetMenuRouter = require('./routes/merchant/merchantSetMenu');
 const cors = require('cors');
 
 var app = express();

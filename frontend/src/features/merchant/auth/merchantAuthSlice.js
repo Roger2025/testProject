@@ -1,41 +1,3 @@
-// // src/features/merchant/auth/merchantAuthSlice.js
-// import { createSlice } from '@reduxjs/toolkit';
-
-// const initialState = {
-//   merchant: null,
-//   token: null,
-//   loading: false,
-//   error: null,
-// };
-
-// const merchantAuthSlice = createSlice({
-//   name: 'merchantAuth',
-//   initialState,
-//   reducers: {
-//     loginStart: (state) => {
-//       state.loading = true;
-//       state.error = null;
-//     },
-//     loginSuccess: (state, action) => {
-//       state.merchant = action.payload.merchant;
-//       state.token = action.payload.token;
-//       state.loading = false;
-//     },
-//     loginFailure: (state, action) => {
-//       state.error = action.payload;
-//       state.loading = false;
-//     },
-//     logout: (state) => {
-//       state.merchant = null;
-//       state.token = null;
-//     },
-//   },
-// });
-
-// export const { loginStart, loginSuccess, loginFailure, logout } = merchantAuthSlice.actions;
-
-// export default merchantAuthSlice.reducer;
-
 // features/merchantAuth/merchantAuthSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -51,8 +13,12 @@ const merchantAuthSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.merchant = action.payload;
-      state.isAuthenticated = true;
+      state.isAuthenticated = false;
+      state.merchantId = null;
+      state.merchantInfo = null;
+      state.token = null;
+      state.loading = false;
+      state.error = null;
     },
     logout: (state) => {
       state.merchant = null;
