@@ -56,8 +56,8 @@ const PendingUsersPage = () => {
               //你加上 key={p.account} 是告訴 React：這一列的資料代表帳號為 shop123 的用戶，下次重新渲染時請記得他
               <tr key={p.account}>
                 <td>{p.account}</td>
-                <td>{p.storename}</td>
-                <td>{p.address}</td>
+                <td>{p.storeName}</td>
+                <td>{p.storeAddress}</td>
                 <td className="pending-role">{p.status}</td>
                 <td>
                     <button onClick={() => {

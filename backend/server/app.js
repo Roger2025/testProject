@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo'); 
 
 const { roleCheck } = require('./middlewares/roleCheck');
 const adminRouter = require('./routes/admin_routes/admin');
@@ -22,15 +23,20 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
+  rolling: true, // ✅ ← 加這一行！每次請求都刷新時間
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,   // ✅ 用你原本的 MongoDB 連線字串
+    collectionName: 'sessions',          // ✅ 存在資料庫中的 collection 名稱
+    ttl: 60 * 60                         // ✅ session 有效時間（秒）這裡是 1 小時
+  }),
   cookie: {
     httpOnly: true,
     secure: false,
-    maxAge: 1000 * 60 * 60
+    maxAge: 1000 * 60 * 60               // ✅ cookie 保留時間（毫秒）同樣是 1 小時
   }
 }));
 

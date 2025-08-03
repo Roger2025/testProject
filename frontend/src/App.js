@@ -7,6 +7,7 @@ import AdminPage from './pages/admin/AdminPage';
 import PendingUsersPage from './pages/admin/PendingUsersPage';
 import AllUsersPage from './pages/admin/AllUsersPage';
 
+
 function App() {
   const { user, authLoading } = useAuth();
 
@@ -18,7 +19,10 @@ function App() {
     console.log("最新user資訊:", user);
   console.log("authLoading:", authLoading);
   if (!user || user.role !== 'admin') return <Navigate to="/login" replace />;
-  if (user.adminVerified !== true) return <Navigate to="/verify" replace />;
+  // 新增這段 → 如果 adminVerified 還是 undefined，就顯示載入中，不跳轉
+  if (user.adminVerified !== true) {
+    return <p>🔄 正在驗證中，請稍候...</p>; // 或 loading spinner
+  }
   return <Component />; // 完成判斷 渲染
  };
  

@@ -12,7 +12,7 @@ const memberSchema = new Schema({
   status: { type: String, default: 'active', enum: ['pending', 'active', 'disabled'] },
   storename: { type: String },
   address: { type: String },
-  member_ID: { type: Number },
+  merchant_ID: { type: String }, // 商家 ID，可能為空
 });
 
 // 🔺明確指定 collection 名稱為 "members"

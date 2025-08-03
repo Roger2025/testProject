@@ -6,9 +6,9 @@ require('dotenv').config(); // 載入 .env 檔案 (管理者專屬資料)
 
 // 檢查登入狀態
 router.get('/me', (req, res) => {
-  console.log('檢查 session：', req.session.user);
-  if (req.session.user) {
-    res.json({ status: 'ok', user: req.session.user });
+  console.log('檢查 session：', req.user);
+  if (req.user) {
+    res.json({ status: 'ok', user: req.user });
   } else {
     res.status(401).json({
        status: 'unauthorized',
@@ -61,7 +61,7 @@ router.post('/login', async (req, res) => {
   //  設定 session
   req.session.user = {
     //sessionId: req.sessionID,
-    id: dbUser.member_id, // 目前沒資料 可能是資料庫問題
+    merchant_ID: dbUser?.merchant_ID || 'unknown', // 目前沒資料 可能是資料庫問題
     account: dbUser.account,
     role: dbUser.role,
     name: dbUser.name,
