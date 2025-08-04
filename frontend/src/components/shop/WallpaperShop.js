@@ -1,34 +1,31 @@
-// ogani : shop-grid.html : Breadcrumb Section 
-// BreadcrumbSection.js
-// Path = components/shop/ 
-import React from 'react';
+// ogani: shop-grid.html - Breadcrumb Section 
+// src/components/shop/WallpaperShop.js
 import { Link } from 'react-router-dom';
-// import breadcrumbImage from '../../assets/images/breadcrumb.jpg'; // React 端 
+
+// React 端 
+// import imageUrl from '../../assets/images/breadcrumb.jpg'; 
 
 // 透過後端 Node.js /public/images/ 下載圖片
 // 必須先打開 Node.js 伺服器 localhost:3001/images/merchant1
 export const getImageURL = (modulePath) => {
   return `http://localhost:3001/images/${modulePath}`;
 };
-
 const imageUrl = getImageURL('breadcrumb.jpg');
 
-const BreadcrumbSection = () => {
+const WallpaperShop = () => {
   return (
     <section
       className="breadcrumb-section set-bg"
-      // style={{ backgroundImage: `url(${breadcrumbImage})` }} // React
-      style={{ backgroundImage: `url(${imageUrl})` }}  // Node.js
+      style={{ backgroundImage: `url(${imageUrl})` }}
     >
       <div className="container">
         <div className="row">
           <div className="col-lg-12 text-center">
             <div className="breadcrumb__text">
-              <h2>Byte Eat 當前店家</h2> {/* 標題 可變 = Vegetable’s Package */}
+              <h2>Byte Eat 當前店家</h2>
               <div className="breadcrumb__option">
                 <Link to="/">首頁</Link>
-                {/* <Link to="/">Vegetables</Link> */} {/* 差異在 shop-grid.html 沒有此一列 */}
-                <span>Btye Eat</span> {/* 標題 可變 = Vegetable’s Package */}
+                <span>Btye Eat</span>
               </div>
             </div>
           </div>
@@ -38,4 +35,4 @@ const BreadcrumbSection = () => {
   );
 };
 
-export default BreadcrumbSection;
+export default WallpaperShop;

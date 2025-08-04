@@ -1,13 +1,14 @@
-// src/components/home/HeroSection.js
+// src/components/home/HeroLogin.js
 import React, { useState } from 'react';
-// import banner from '../../assets/images/hero/banner.jpg';
-// import CategoriesSection from './CategoriesSection';
 
-const HeroSectionShow = () => {
+const HeroLogin = () => {
   const [showMenu, setShowMenu] = useState(false);
  
   return (
-    <section className="hero hero-normal"> {/* .hero {position: relative;} 會影響區塊；.hero-normal {position: absolute;} 不會影響區塊 */}
+    // src/styles/css/style.css
+    // .hero {position: relative;} 會影響區塊；
+    // .hero.hero-normal {position: absolute;} 不會影響區塊;     
+    <section className="hero hero-normal"> 
       <div className="container">
         <div className="row">
 
@@ -25,15 +26,11 @@ const HeroSectionShow = () => {
                <ul style={{ display: 'none'}}> 
                 <li><a href="/register">會員資訊</a></li>
                 <li><a href="/orderpage">訂餐專區</a></li>
-                <li><a href="/login">支付管理</a></li>
                 <li><a href="/test">優惠專區</a></li>
                 <li><a href="/test">評價與收藏</a></li>
                 <li><a href="/test">客戶服務</a></li>
                 <li><a href="/test">聯絡我們</a></li>
-                {/* <li><a href="#">Fresh Onion</a></li>
-                <li><a href="#">Papayaya & Crisps</a></li>
-                <li><a href="#">Oatmeal</a></li>
-                <li><a href="#">Fresh Bananas</a></li> */}
+                <li><a href="/login">登入/登出</a></li>  
               </ul>
             </div>
           </div>
@@ -52,37 +49,7 @@ const HeroSectionShow = () => {
                   <button type="submit" className="site-btn">搜尋</button>
                 </form>
               </div>
-              {/* 右邊:聯絡電話 */}
-              {/* <div className="hero__search__phone">
-                <div className="hero__search__phone__icon">
-                  <i className="fa fa-phone"></i>
-                </div>
-                <div className="hero__search__phone__text">
-                  <h5>+886 2 8861 4338</h5>
-                  <span>support 24/7 time</span>
-                </div>
-              </div> */}
             </div>
-
-            {/* Hero Banner */}
-            {/* <div
-              className="hero__item"
-              style={{
-                backgroundImage: `url(${banner})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              <div className="hero__text">
-                <span>FRUIT FRESH</span>
-                <h2>Vegetable <br />100% Organic</h2>
-                <p>Free Pickup and Delivery Available</p>
-                <a href="#" className="primary-btn">線上訂餐</a>
-              </div>
-            </div> */}
-            {/* <div className="hero__item">   
-              <CategoriesSection />
-            </div> */}
           </div>
 
         </div>
@@ -91,4 +58,4 @@ const HeroSectionShow = () => {
   );
 };
 
-export default HeroSectionShow;
+export default HeroLogin;

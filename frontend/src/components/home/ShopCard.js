@@ -1,9 +1,5 @@
-// ogani : shop-grid.html :　Pduct Section（第2-4～第2-15部分）單一商品卡片/動態渲染商品列表	
-// ShopCard.js is modified from ProductCard.js
-// Path = components/home/
-
-import React from 'react';
-// import { Link } from 'react-router-dom';
+// ogani: shop-grid.html - Product Section（第2-4～第2-15部分）單一商品卡片/動態渲染商品列表	
+// src/components/home/ShopCard.js 
 
 const ShopCard = ({ data }) => {
   if (!data || !data.img) return null;
@@ -22,8 +18,7 @@ const ShopCard = ({ data }) => {
         </ul>
       </div>
       <div className="product__item__text">
-        <h6>{data.title}</h6>
-        {/* <h5>${data.price.toFixed(2)}</h5> */}
+        <h6>{data.name}</h6>
       </div>
       </a>
     </div>

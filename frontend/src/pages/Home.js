@@ -1,27 +1,18 @@
-// ogani：index.html 
-// Home.js   // 未登入前的平台首頁
-// Path = pages/
-import React from 'react';
-// Sections
-// import Preloader from '../components/Preloader';
-import MobileMenu from '../components/layout/MobileMenu';
+// ogani: index.html 
+// src/pages/Home.js
 import Header from '../components/layout/Header';
-import HeroSection from '../components/home/HeroSection';
-import CategoriesSection from '../components/home/CategoriesSection';
+import Hero from '../components/layout/Hero';
+import PopularShop from '../components/home/PopularShop';
 import ShopList from '../components/home/ShopList';
-import ProductPagination from '../components/shop/ProductPagination'; 
 import Footer from '../components/layout/Footer';
-// 未登入前的平台首頁
+// 未登入的平台首頁
 const Home = () => {
   return (
     <>
-      {/* <Preloader /> */}
-      <MobileMenu />
       <Header />
-      <HeroSection />
-      <CategoriesSection />
+      <Hero />
+      <PopularShop />
       <ShopList />
-      <ProductPagination />
       <Footer />
     </>
   );
