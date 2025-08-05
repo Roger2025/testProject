@@ -10,7 +10,7 @@ export default function useAuth() {
   const fetchUser = () => {
     setChecking(true);
 
-    axios.get('http://localhost:5000/api/me')
+    axios.get('http://localhost:3001/api/me')
       .then(res => {
         setUser(res.data.user);
         console.log(' 取得 user:', res.data.user);

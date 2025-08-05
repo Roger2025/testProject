@@ -11,7 +11,7 @@ function AllUsersPage() {
   // 更新畫面
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/all-users', {
+      const res = await axios.get('http://localhost:3001/api/admin/all-users', {
         withCredentials: true
       });
       setUsers(res.data.users);
@@ -27,7 +27,7 @@ function AllUsersPage() {
   const handleDelete = async (account) => {
     if (!window.confirm(`確定要停權帳號 ${account} 嗎？`)) return;
     try {
-      const res = await axios.delete(`http://localhost:5000/api/admin/delete-user/${account}`, {
+      const res = await axios.delete(`http://localhost:3001/api/admin/delete-user/${account}`, {
         withCredentials: true
       });
       if (res.data.status === 'success') {
@@ -46,7 +46,7 @@ function AllUsersPage() {
   const handleRestore = async (account) => {
     if (!window.confirm(`確定要恢復帳號 ${account} 嗎？`)) return;
     try {
-      const res = await axios.patch(`http://localhost:5000/api/admin/restore-user/${account}`, {}, {
+      const res = await axios.patch(`http://localhost:3001/api/admin/restore-user/${account}`, {}, {
         withCredentials: true
       });
       if (res.data.status === 'success') {
@@ -65,7 +65,7 @@ function AllUsersPage() {
   const handleApprove = async (account) => {
     if (!window.confirm(`確定要審核通過帳號 ${account} 嗎？`)) return;
     try {
-      const res = await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, {}, {
+      const res = await axios.patch(`http://localhost:3001/api/admin/approve-user/${account}`, {}, {
         withCredentials: true
       });
       if (res.data.status === 'success') {

@@ -8,7 +8,7 @@ const PendingUsersPage = () => {
   const fetchPendingShops = async () => {
     try {
       
-      const res = await axios.get('http://localhost:5000/api/admin/pending-users', {
+      const res = await axios.get('http://localhost:3001/api/admin/pending-users', {
         withCredentials: true
       });
       setPendingShops(res.data.pendingShops);
@@ -20,7 +20,7 @@ const PendingUsersPage = () => {
   const handleApprove = async (account) => {
     try {
       //  改為完整後端路徑 + withCredentials
-      const res = await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, null, { // 發出修改角色請求
+      const res = await axios.patch(`http://localhost:3001/api/admin/approve-user/${account}`, null, { // 發出修改角色請求
         withCredentials: true
       });
       alert(res.data.message);  //  顯示後端回應訊息
