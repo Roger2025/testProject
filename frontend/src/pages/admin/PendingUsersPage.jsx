@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../styles/admin_styles/PendingUsersPage.css'; // 引入樣式
+import '../../styles/admin_styles/PendingUsersPage.css'; 
 
 const PendingUsersPage = () => {
   const [pendingShops, setPendingShops] = useState([]);
@@ -53,14 +53,14 @@ const PendingUsersPage = () => {
           </thead>
           <tbody>
             {pendingShops.map((p) => (
-              //你加上 key={p.account} 是告訴 React：這一列的資料代表帳號為 shop123 的用戶，下次重新渲染時請記得他
+              // 加上 key={p.account} 是告訴 React：這一列的資料代表帳號為 shop123 的用戶 下次重新渲染時請記得他
               <tr key={p.account}>
                 <td>{p.account}</td>
                 <td>{p.storeName}</td>
                 <td>{p.storeAddress}</td>
                 <td className="pending-role">{p.status}</td>
                 <td>
-                    <button onClick={() => {
+                    <button className="btn-approve" onClick={() => {
                         const confirmApprove = window.confirm(`確定要通過帳號 ${p.account} 的審核嗎？`); // 彈出對話框
                         if (confirmApprove) {
                         handleApprove(p.account);

@@ -1,4 +1,3 @@
-// 📁 pages/AllUsersPage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin_styles/AllUsersPage.css';
@@ -7,6 +6,7 @@ function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all'); 
 
   const fetchUsers = async () => {
     try {
@@ -49,7 +49,6 @@ function AllUsersPage() {
     }
   };
 
-  // ✅ 新增：審核通過 pending 帳號
   const handleApprove = async (account) => {
     if (!window.confirm(`確定要審核通過帳號 ${account} 嗎？`)) return;
     try {
@@ -63,11 +62,13 @@ function AllUsersPage() {
     }
   };
 
+  // role + status + search 多條件過濾
   const filteredUsers = users.filter(u => {
-    const matchesSearch = (u.account || '').includes(search);  // 防止 undefined
+    const matchesSearch = (u.account || '').includes(search);
     const matchesRole = filterRole === 'all' || u.role === filterRole;
-    return matchesSearch && matchesRole;
-    });
+    const matchesStatus = filterStatus === 'all' || u.status === filterStatus;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   return (
     <div className="all-users-page">
@@ -87,8 +88,16 @@ function AllUsersPage() {
           <option value="all">全部角色</option>
           <option value="user">一般會員</option>
           <option value="shop">商家</option>
-          <option value="pending">待審核</option>
           <option value="admin">管理員</option>
+        </select>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="all">全部狀態</option>
+          <option value="active">已啟用</option>
+          <option value="pending">待審核</option>
+          <option value="disabled">已停權</option>
         </select>
       </div>
 
@@ -114,8 +123,7 @@ function AllUsersPage() {
               <td>{u.storeAddress || '-'}</td>
               <td className={`status-text ${u.status || 'active'}`}>{u.status || 'active'}</td>
               <td>
-                {/* ✅ 根據狀態與角色顯示對應按鈕 */}
-                {u.role === 'pending' ? (
+                {u.status === 'pending' ? (
                   <button className="btn-approve" onClick={() => handleApprove(u.account)}>審核通過</button>
                 ) : u.role !== 'admin' ? (
                   u.status === 'disabled' ? (

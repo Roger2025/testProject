@@ -1,9 +1,8 @@
-// server/server.js
-const app = require('./app'); // ✅ 正確引用 app.js
-const mongoose = require('mongoose'); // ✅ 引入 mongoose
-require('dotenv').config(); // ✅ 載入 .env
+const app = require('./app'); // 
+const mongoose = require('mongoose'); // 
+require('dotenv').config(); // 
 
-// ✅ 資料庫連線（搬來這裡更清楚）
+// 資料庫連線 確保連線成功才啟動伺服器
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log('✅ 成功連線 MongoDB');
   const PORT = process.env.PORT || 5000;

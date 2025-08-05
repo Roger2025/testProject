@@ -30,3 +30,12 @@
   color: orange;
   font-weight: 600;
 }
+
+.btn-approve {
+  background-color: #2196f3; /* 藍色 */
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}

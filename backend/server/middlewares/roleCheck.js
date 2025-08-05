@@ -7,7 +7,7 @@ function roleCheck(allowedRoles = []) {
     }
 
     if (allowedRoles.includes(user.role)) {
-      return next(); // ✅ 放行
+      return next(); // 放行
     } else {
       return res.status(403).json({ status: 'forbidden', message: '❌ 沒有權限訪問' });
     }

@@ -1,72 +1,102 @@
-.all-users-container {
+.all-users-page {
   padding: 20px;
 }
 
-.filter-bar {
+h2 {
+  margin-bottom: 20px;
+}
+
+/* 搜尋與篩選列 */
+.controls {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
 }
 
-.all-users-table {
+.controls input,
+.controls select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 表格樣式 */
+.users-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.all-users-table th,
-.all-users-table td {
+.users-table th,
+.users-table td {
   border: 1px solid #ddd;
   padding: 8px;
-}
-
-.all-users-table th {
-  background-color: #f4f4f4;
   text-align: left;
 }
 
-.all-users-role {
+.users-table th {
+  background-color: #f4f4f4;
   font-weight: bold;
-  color: #666;
 }
 
-.all-users-store-info {
-  font-style: italic;
-  color: #888;
-}
-
-/* ✅ 新增：根據使用者狀態標記整列背景色 */
+/* 行背景依據狀態變色 */
 .disabled-row {
-  background-color: #fdf1f1; /* 紅色淡淡底 */
+  background-color: #fdf1f1;
 }
 
 .enabled-row {
-  background-color: #ffffff; /* 正常白底 */
+  background-color: #ffffff;
 }
 
-/* ✅ 新增：狀態文字顏色 */
+/* 狀態文字顏色 */
 .status-text.active {
   color: green;
+  font-weight: bold;
+}
+
+.status-text.pending {
+  color: orange;
+  font-weight: bold;
 }
 
 .status-text.disabled {
   color: red;
+  font-weight: bold;
 }
 
-/* ✅ 新增：按鈕樣式 */
+/* 按鈕樣式 */
+.btn-disable,
+.btn-restore,
+.btn-approve {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .btn-disable {
   background-color: #f44336;
   color: white;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 .btn-restore {
   background-color: #4caf50;
   color: white;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
+}
+
+.btn-approve {
+  background-color: #2196f3;
+  color: white;
+}
+
+.btn-disable:hover {
+  background-color: #d32f2f;
+}
+
+.btn-restore:hover {
+  background-color: #388e3c;
+}
+
+.btn-approve:hover {
+  background-color: #1976d2;
 }

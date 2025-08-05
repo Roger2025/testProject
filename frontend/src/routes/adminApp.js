@@ -1,11 +1,11 @@
 import { BrowserRouter , Route, Routes, Navigate } from 'react-router-dom';
-import useAuth from './hooks/useAuth';
-import LoginPage from './pages/admin/LoginPage';
-import RegisterPage from './pages/admin/RegisterPage';
-import VerifyEmailPage from './pages/admin/VerifyEmailPage';
-import AdminPage from './pages/admin/AdminPage';
-import PendingUsersPage from './pages/admin/PendingUsersPage';
-import AllUsersPage from './pages/admin/AllUsersPage';
+import useAuth from '../hooks/useAuth';
+import LoginPage from '../pages/admin/LoginPage';
+import RegisterPage from '../pages/admin/RegisterPage';
+import VerifyEmailPage from '../pages/admin/VerifyEmailPage';
+import AdminPage from '../pages/admin/AdminPage';
+import PendingUsersPage from '../pages/admin/PendingUsersPage';
+import AllUsersPage from '../pages/admin/AllUsersPage';
 
 
 function App() {
@@ -37,6 +37,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
         <Route path="/admin" element={withAdminAuth(AdminPage)} />

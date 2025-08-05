@@ -20,7 +20,7 @@ function AdminPage() {
           📋 查看待審核商家
         </button>
         <button className="admin-button" onClick={() => navigate('/admin/all-users')}>
-          查看所有使用者
+          📝查看所有使用者 有審核、停權/恢復功能
         </button>
         <button onClick={logout}>登出</button>
       </div>

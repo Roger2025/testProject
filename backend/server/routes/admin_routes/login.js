@@ -3,6 +3,7 @@ const router = express.Router();
 const { verificationCodes, transporter } = require('./shared'); //保留共用
 const Member = require('../../models/member');
 require('dotenv').config(); // 載入 .env 檔案 (管理者專屬資料)
+const bcrypt = require('bcryptjs');
 
 // 檢查登入狀態
 router.get('/me', (req, res) => {
@@ -19,6 +20,10 @@ router.get('/me', (req, res) => {
 
 //  登入邏輯
 router.post('/login', async (req, res) => { 
+
+  // 清空舊 session，避免殘留前一個帳號資料
+  req.session.user = null;
+
   const { account, password  } = req.body;
 
   let dbUser;
@@ -37,8 +42,10 @@ router.post('/login', async (req, res) => {
   if (!dbUser) {
     return res.json({ status: 'fail', message: '查無此帳號' });
   }
-
-  if (dbUser.password !== password) {
+  
+  // 使用 bcrypt 比較密碼
+  const isMatch = await bcrypt.compare(password, dbUser.password); 
+  if (!isMatch) {
     return res.json({ status: 'fail', message: '密碼錯誤' });
   }
 
@@ -61,13 +68,15 @@ router.post('/login', async (req, res) => {
   //  設定 session
   req.session.user = {
     //sessionId: req.sessionID,
-    merchant_ID: dbUser?.merchant_ID || 'unknown', // 目前沒資料 可能是資料庫問題
+    //merchantid: dbUser?.merchantid || 'unknown',
     account: dbUser.account,
     role: dbUser.role,
     name: dbUser.name,
     email: dbUser.email,
     status: dbUser.status,
-    adminVerified: dbUser.role === 'admin' ? false : undefined // 一開始是 false，等驗證成功再改 true
+    adminVerified: dbUser.role === 'admin' ? false : undefined,
+    nickName: dbUser?.nickName || 'unknown',
+    merchantId: dbUser?.merchantId || 'unknown',
   };
 
   console.log('登入成功並寫入 session', req.session.user);
