@@ -1,4 +1,3 @@
-// src/hooks/useLogout.js
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 

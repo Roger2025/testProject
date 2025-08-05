@@ -3,7 +3,7 @@ const router = express.Router();
 const { roleCheck } = require('../../middlewares/roleCheck'); 
 const Member = require('../../models/member'); // ✅ 引入真實資料表
 
-// ✅ 管理者專屬資料
+// 管理者專屬資料
 router.get('/admin-only-data', roleCheck(['admin']), (req, res) => {
   res.json({
     status: 'success',
@@ -12,7 +12,7 @@ router.get('/admin-only-data', roleCheck(['admin']), (req, res) => {
   });
 });
 
-// ✅ 商家或管理者都能操作：新增商品（未來可補 req.body）
+// 商家或管理者都能操作：新增商品（未來可補 req.body）
 router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
   res.json({
     status: 'success',
@@ -21,7 +21,7 @@ router.post('/create-product', roleCheck(['shop', 'admin']), (req, res) => {
   });
 });
 
-//  查看待審核商家
+// 查看待審核商家
 router.get('/pending-users', roleCheck(['admin']), async (req, res) => {
   try {
     const pendingShops = await Member.find({ status: 'pending' });
@@ -32,10 +32,13 @@ router.get('/pending-users', roleCheck(['admin']), async (req, res) => {
 });
 
 // 通過商家審核
-router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) => {
+router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) => { // :account是路由中的動態參數
   const targetAccount = req.params.account;
   try {
     const user = await Member.findOne({ account: targetAccount });
+    console.log('🟡 要審核帳號:', user?.account);
+    console.log('🟡 原始狀態:', user?.status);
+
 
     if (!user) {
       return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
@@ -45,7 +48,9 @@ router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) =>
       return res.json({ status: 'fail', message: '該帳號不在審核狀態' });
     }
 
-    user.status = 'active';
+    user.status = 'active'; // 改為正常狀態並儲存
+    console.log('✅ 審核成功:', targetAccount);
+    console.log('✅ 狀態改為:', user.status);
     await user.save();
 
     res.json({
@@ -54,7 +59,7 @@ router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) =>
       user
     });
   } catch (err) {
-    console.error('❌ 審核失敗錯誤：', err); // ✅ 這行現在安全了
+    console.error('❌ 審核失敗錯誤：', err); 
     res.status(500).json({
       status: 'error',
       message: '伺服器錯誤',
@@ -65,7 +70,7 @@ router.patch('/approve-user/:account', roleCheck(['admin']), async (req, res) =>
 
 
 
-// ✅ 取得所有使用者
+// 取得所有使用者
 router.get('/all-users', roleCheck(['admin']), async (req, res) => {
   try {
     const users = await Member.find();
@@ -75,13 +80,13 @@ router.get('/all-users', roleCheck(['admin']), async (req, res) => {
   }
 });
 
-// ✅ 停權帳號（軟刪除）
+// 停權帳號（軟刪除）
 router.delete('/delete-user/:account', roleCheck(['admin']), async (req, res) => {
   const target = req.params.account;
 
   try {
     const user = await Member.findOne({ account: target });
-    console.log('🟡 查詢帳號:', user?.account);
+    console.log('🟡 要停權帳號:', user?.account);
     console.log('🟡 原始狀態:', user?.status);
 
     if (!user) {
@@ -103,6 +108,7 @@ router.delete('/delete-user/:account', roleCheck(['admin']), async (req, res) =>
     }
 
     console.log('✅ 停權成功:', target);
+    console.log('✅ 狀態改為:', 'disabled');
     res.json({ status: 'success', message: `✅ 帳號 ${target} 已被停權` });
 
   } catch (err) {
@@ -113,12 +119,14 @@ router.delete('/delete-user/:account', roleCheck(['admin']), async (req, res) =>
 
 
 
-// ✅ 恢復帳號
+// 恢復帳號
 router.patch('/restore-user/:account', roleCheck(['admin']), async (req, res) => {
   const target = req.params.account;
 
   try {
     const user = await Member.findOne({ account: target });
+    console.log('🟡 要恢復帳號:', target);
+    console.log('🟡 原始狀態:', user?.status);
 
     if (!user) {
       return res.status(404).json({ status: 'fail', message: '找不到此帳號' });
@@ -128,10 +136,12 @@ router.patch('/restore-user/:account', roleCheck(['admin']), async (req, res) =>
       return res.json({ status: 'fail', message: '該帳號未被停權，無需恢復' });
     }
 
-    const result = await Member.updateOne({ account: target }, { $set: { status: 'active' } });
+    // 尋找帳號為target並將狀態改為active到資料庫
+    const result = await Member.updateOne({ account: target }, { $set: { status: 'active' } }); 
 
-    if (result.modifiedCount === 1) {
+    if (result.modifiedCount === 1) { //改好result會是個物件可用.modifiedCount看改幾筆
       console.log('✅ 恢復成功:', target);
+      console.log('✅ 狀態改為:', 'active');
       res.json({
         status: 'success',
         message: `✅ 帳號 ${target} 已恢復使用權限`

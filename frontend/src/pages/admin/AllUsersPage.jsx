@@ -6,8 +6,9 @@ function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all'); 
+  const [filterStatus, setFilterStatus] = useState('active'); 
 
+  // 更新畫面
   const fetchUsers = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/admin/all-users', {
@@ -26,36 +27,54 @@ function AllUsersPage() {
   const handleDelete = async (account) => {
     if (!window.confirm(`確定要停權帳號 ${account} 嗎？`)) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/delete-user/${account}`, {
+      const res = await axios.delete(`http://localhost:5000/api/admin/delete-user/${account}`, {
         withCredentials: true
       });
-      fetchUsers();
+      if (res.data.status === 'success') {
+        alert(res.data.message);   // 成功提示
+        fetchUsers();              // 更新畫面
+      } else {
+        alert('⚠️ ' + res.data.message); // 顯示後端錯誤原因
+      }
     } catch (err) {
       console.error('❌ 停權失敗:', err);
       alert('❌ 無法停權使用者');
     }
   };
 
+  // 恢復帳號
   const handleRestore = async (account) => {
     if (!window.confirm(`確定要恢復帳號 ${account} 嗎？`)) return;
     try {
-      await axios.patch(`http://localhost:5000/api/admin/restore-user/${account}`, {}, {
+      const res = await axios.patch(`http://localhost:5000/api/admin/restore-user/${account}`, {}, {
         withCredentials: true
       });
-      fetchUsers();
+      if (res.data.status === 'success') {
+        alert(res.data.message);   // 成功提示
+        fetchUsers();              // 重新整理資料
+      } else {
+        alert('⚠️ ' + res.data.message); // 顯示後端錯誤原因
+      }
     } catch (err) {
       console.error('❌ 恢復失敗:', err);
       alert('❌ 無法恢復帳號');
     }
   };
 
+  // 通過商家審核
   const handleApprove = async (account) => {
     if (!window.confirm(`確定要審核通過帳號 ${account} 嗎？`)) return;
     try {
-      await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, {}, {
+      const res = await axios.patch(`http://localhost:5000/api/admin/approve-user/${account}`, {}, {
         withCredentials: true
       });
-      fetchUsers();
+      if (res.data.status === 'success') {
+        alert(res.data.message);    // 成功提示
+        fetchUsers();               // 更新畫面
+      } else {
+        alert('⚠️ ' + res.data.message); // 顯示後端邏輯錯誤
+      }
+
     } catch (err) {
       console.error('❌ 審核失敗:', err);
       alert('❌ 無法審核帳號');
@@ -64,9 +83,9 @@ function AllUsersPage() {
 
   // role + status + search 多條件過濾
   const filteredUsers = users.filter(u => {
-    const matchesSearch = (u.account || '').includes(search);
-    const matchesRole = filterRole === 'all' || u.role === filterRole;
-    const matchesStatus = filterStatus === 'all' || u.status === filterStatus;
+    const matchesSearch = (u.account || '').includes(search); // includes模糊比對
+    const matchesRole = filterRole === 'all' || u.role === filterRole; // filterRole下拉式選單的腳色
+    const matchesStatus = filterStatus === 'all' || u.status === filterStatus; // filterStatus下拉式選單狀態
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -115,14 +134,14 @@ function AllUsersPage() {
         </thead>
         <tbody>
           {filteredUsers.map(u => (
-            <tr key={u.account} className={u.status === 'disabled' ? 'disabled-row' : 'enabled-row'}>
-              <td>{u.account}</td>
+            <tr key={u.account} className={u.status === 'disabled' ? 'disabled-row' : 'enabled-row'}> {/* 控制停權恢復樣式*/}
+              <td>{u.account}</td>  { /*帳號作為唯一識別值 讓React在重新渲染時可以有效比對DOM提高效能 */}
               <td>{u.email}</td>
               <td>{u.role}</td>
               <td>{u.storeName || '-'}</td>
               <td>{u.storeAddress || '-'}</td>
               <td className={`status-text ${u.status || 'active'}`}>{u.status || 'active'}</td>
-              <td>
+              <td> 
                 {u.status === 'pending' ? (
                   <button className="btn-approve" onClick={() => handleApprove(u.account)}>審核通過</button>
                 ) : u.role !== 'admin' ? (
