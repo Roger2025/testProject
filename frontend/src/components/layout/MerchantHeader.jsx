@@ -79,7 +79,7 @@ const MerchantHeader = () => {
               <li className="nav-item">
                 <button 
                   className="nav-link btn btn-link" 
-                  onClick={() => handleNavigation('/merchant/store-status')}
+                  onClick={() => handleNavigation('/merchant/storestatus')}
                 >
                   營業狀態
                 </button>
@@ -131,7 +131,7 @@ const MerchantHeader = () => {
             </button>
             <button 
               className="nav-link btn btn-link text-start" 
-              onClick={() => handleNavigation('/merchant/store-status')}
+              onClick={() => handleNavigation('/merchant/storestatus')}
             >
               營業狀態
             </button>

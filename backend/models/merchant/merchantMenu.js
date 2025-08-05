@@ -53,7 +53,7 @@ const MerchantMenuSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['burger', 'egg-pancake', 'toast', 'noodles', 'single', 'drink'], 
+    enum: ['burger', 'egg-pancake', 'toast', 'noodles', 'single', 'drink','set-meal'], 
     default: 'burger'
   },
   

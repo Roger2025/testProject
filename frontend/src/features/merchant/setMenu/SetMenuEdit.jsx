@@ -1,207 +1,441 @@
 // features/merchant/setMenu/SetMenuEdit.jsx
-import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { addSetMenu, updateSetMenu } from './merchantSetMenuSlice';
-import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+import { getFullImageUrl } from '../../../utils/getImageUrl';
+import {
+  fetchMenuItems as fetchSingleMenuItems
+} from '../menu/merchantMenuSlice'; // 從單品的slice拿取單品內容
+import {
+  createSetMenuItem,
+  updateSetMenuItem,
+  clearCurrentItem,
+  clearError,
+  SET_MENU_CATEGORIES 
+} from './merchantSetMenuSlice';
 
-const SetMenuEdit = ({ merchantId }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const SetMenuEdit = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // 判斷是否為編輯模式
-  const isEditMode = location.pathname.includes('/edit');
-  const data = useMemo(() => location.state || {}, [location.state]);
+  const { currentItem, operationStatus, error } = useSelector(state => state.merchantSetMenu);
+  const { items: singleItems = [] } = useSelector(state => state.merchantMenu); // 單品清單
+  const isEdit = location.state?.isEdit || false;
+  const itemId = location.state?.itemId;
 
-  const [form, setForm] = useState({
+  const rawMerchantId = localStorage.getItem('merchantId');
+  const merchantId = getEffectiveMerchantId(rawMerchantId);
+
+  const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    imageUrl: '',
+    category: 'breakfast',
     available: true,
+    notes: '',
+    items: [] // 每個 { menuId, quantity, note }
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 當處於編輯模式並有資料時，初始化表單
+  // 載入單品供下拉選
   useEffect(() => {
-    if (isEditMode && data._id) {
-      setForm({
-        name: data.name || '',
-        description: data.description || '',
-        price: data.price || '',
-        imageUrl: data.imageUrl || '',
-        available: data.available ?? true,
-      });
+    if (merchantId) {
+      dispatch(fetchSingleMenuItems()); // slice 內會自己 resolve merchantId
     }
-  }, [isEditMode, data]);
+  }, [dispatch, merchantId]);
 
-  const handleChange = (e) => {
+  // 初始化表單
+  useEffect(() => {
+    if (isEdit && currentItem) {
+      setFormData({
+        name: currentItem.name || '',
+        description: currentItem.description || '',
+        price: currentItem.price || '',
+        category: currentItem.category || 'breakfast',
+        available: currentItem.available !== undefined ? currentItem.available : true,
+        notes: currentItem.notes || '',
+        // Normalize existing items: if they have menuId or previous representation
+        items: Array.isArray(currentItem.items) ? currentItem.items.map(it => ({
+          menuId: it.menuId || it._id || '', // fallback
+          quantity: it.quantity ?? 1,
+          note: it.note || ''
+        })) : []
+      });
+
+      if (currentItem.imageUrl) {
+        setImagePreview(getFullImageUrl(currentItem.imageUrl));
+      } else if (currentItem.imagePath) {
+        setImagePreview(getFullImageUrl(`/images/${currentItem.imagePath.replace(/\\+/g, '/')}`));
+      }
+    } else {
+      setFormData({
+        name: '',
+        description: '',
+        price: '',
+        category: 'breakfast',
+        available: true,
+        notes: '',
+        items: []
+      });
+      setImageFile(null);
+      setImagePreview('');
+    }
+  }, [isEdit, currentItem]);
+
+  // 清理錯誤
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 300 * 1024) {
+      alert('圖片大小不能超過 300KB');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      alert('請選擇圖片文件');
+      return;
+    }
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  // 套餐項目操作
+  const handleAddItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, { menuId: '', quantity: 1, note: '' }]
+    }));
+  };
+
+  const handleRemoveItem = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleItemChange = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map((it, i) =>
+        i === index ? { ...it, [field]: value } : it
+      )
+    }));
+  };
+
+  const validateItems = (items) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      return '套餐至少要包含一個餐點';
+    }
+    for (const it of items) {
+      if (!it.menuId) return '每個套餐項目必須選擇一個已存在的餐點';
+      if (!it.quantity || Number(it.quantity) < 1) return '每個餐點數量至少為 1';
+    }
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!merchantId) {
+      alert('缺少商家身份，請先登入');
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      alert('請輸入套餐名稱');
+      return;
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      alert('請輸入有效的價格');
+      return;
+    }
+
+    const itemsError = validateItems(formData.items);
+    if (itemsError) {
+      alert(itemsError);
+      return;
+    }
+
+    const submitData = {
+      ...formData,
+      price: parseFloat(formData.price),
+      items: formData.items.map(it => ({
+        menuId: it.menuId,
+        quantity: Number(it.quantity),
+        note: it.note?.trim() || ''
+      }))
+    };
+
+    const payload = {
+      merchantId,
+      setMenuData: submitData,
+      imageFile
+    };
 
     try {
-      const payload = {
-        ...form,
-        merchantId: "60f1b2e3c4d5e6f7a8b9c0d1", // 測試用 merchantId
-        price: Number(form.price) || 0, // 防呆：確保是數字
-        imageUrl: form.imageUrl || undefined,
-        items: [
-          {
-            menuId: "68863ddaec2c6428b4a6edc3", // 用你剛新增成功的 menu ID
-            quantity: 1,
-            note: "測試用餐點"
-          }
-        ] // 暫時給測試資料
-      };
-
-      if (isEditMode && data._id) {
-        await dispatch(updateSetMenu({ id: data._id, data: payload }));
+      if (isEdit) {
+        await dispatch(updateSetMenuItem({ ...payload, itemId })).unwrap();
       } else {
-        await dispatch(addSetMenu(payload));
+        await dispatch(createSetMenuItem(payload)).unwrap();
       }
-
-      // 成功後導航回菜單頁面
       navigate('/merchant/menu');
-    } catch (error) {
-      console.error('提交失敗:', error);
-      // 這裡可以加入錯誤處理 UI
-    } finally {
-      setIsSubmitting(false);
+    } catch (err) {
+      console.error('提交失敗:', err);
+      alert(typeof err === 'string' ? err : '提交失敗，請稍後再試');
     }
   };
 
   const handleCancel = () => {
+    dispatch(clearCurrentItem());
     navigate('/merchant/menu');
   };
 
+  const isSubmitting = operationStatus.creating || operationStatus.updating;
+
   return (
-    <Container className="py-4">
-      <Row className="justify-content-center">
-        <Col md={8} lg={6}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-success text-white">
-              <h4 className="mb-0">
-                {isEditMode ? '編輯套餐' : '新增套餐'}
-              </h4>
-            </Card.Header>
-            <Card.Body>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>套餐名稱 <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="請輸入套餐名稱"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </Form.Group>
+    <div className="container mt-4">
+      <div className="row justify-content-center">
+        <div className="col-md-8">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="mb-0">{isEdit ? '編輯套餐' : '新增套餐'}</h4>
+            </div>
+            <div className="card-body">
+              {error && <div className="alert alert-danger">{error}</div>}
+              <form onSubmit={handleSubmit}>
+                {/* 基本資訊 */}
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">套餐名稱 *</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">類別 *</label>
+                    <select
+                      className="form-select"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                    >
+                      {SET_MENU_CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>套餐描述</Form.Label>
-                  <Form.Control
-                    as="textarea"
+                <div className="mb-3">
+                  <label className="form-label">套餐描述</label>
+                  <textarea
+                    className="form-control"
                     name="description"
-                    rows={3}
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="套餐內容描述（選填）"
+                    rows="3"
+                    value={formData.description}
+                    onChange={handleInputChange}
                     disabled={isSubmitting}
                   />
-                </Form.Group>
+                </div>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>套餐價格（元） <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="price"
-                    min="0"
-                    step="1"
-                    value={form.price}
-                    onChange={handleChange}
-                    placeholder="0"
-                    required
-                    disabled={isSubmitting}
-                  />
-                </Form.Group>
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">價格 *</label>
+                    <div className="input-group">
+                      <span className="input-group-text">$</span>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        min="0"
+                        step="1"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">狀態</label>
+                    <div className="form-check mt-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        name="available"
+                        checked={formData.available}
+                        onChange={handleInputChange}
+                        disabled={isSubmitting}
+                      />
+                      <label className="form-check-label">供應中</label>
+                    </div>
+                  </div>
+                </div>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>套餐圖片連結</Form.Label>
-                  <Form.Control
-                    type="url"
-                    name="imageUrl"
-                    value={form.imageUrl}
-                    onChange={handleChange}
-                    placeholder="https://example.com/setmenu-image.jpg"
+                {/* 圖片 */}
+                <div className="mb-3">
+                  <label className="form-label">套餐圖片</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*"
+                    onChange={handleImageChange}
                     disabled={isSubmitting}
                   />
-                  {form.imageUrl && (
+                  <div className="form-text">
+                    支援 JPG、PNG、GIF 格式，檔案大小不超過 300KB
+                  </div>
+                  {imagePreview && (
                     <div className="mt-2">
                       <img
-                        src={form.imageUrl}
-                        alt="套餐預覽"
+                        src={imagePreview}
+                        alt="預覽"
                         className="img-thumbnail"
-                        style={{ maxWidth: '200px', maxHeight: '150px' }}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
+                        style={{ maxWidth: '200px', maxHeight: '200px' }}
                       />
                     </div>
                   )}
-                </Form.Group>
+                </div>
 
-                <Form.Group className="mb-4">
-                  <Form.Check
-                    type="checkbox"
-                    name="available"
-                    label="是否上架販售"
-                    checked={form.available}
-                    onChange={handleChange}
+                {/* 套餐內容：從已有單品選 */}
+                <div className="mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h6>套餐內容</h6>
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={handleAddItem}
+                      disabled={isSubmitting}
+                    >
+                      新增商品
+                    </button>
+                  </div>
+                  {formData.items.map((it, idx) => (
+                    <div key={idx} className="card mb-2 p-2">
+                      <div className="row g-2 align-items-center">
+                        <div className="col-md-5">
+                          <label className="form-label small">已選餐點 *</label>
+                          <select
+                            className="form-select"
+                            value={it.menuId}
+                            onChange={(e) => handleItemChange(idx, 'menuId', e.target.value)}
+                            disabled={isSubmitting}
+                            required
+                          >
+                            <option value="">-- 選擇餐點 --</option>
+                            {singleItems.map(si => (
+                              <option key={si._id} value={si._id}>
+                                {si.name} {typeof si.price === 'number' ? `($${si.price})` : ''}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-md-2">
+                          <label className="form-label small">數量</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            min="1"
+                            value={it.quantity}
+                            onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div className="col-md-4">
+                          <label className="form-label small">備註</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={it.note}
+                            onChange={(e) => handleItemChange(idx, 'note', e.target.value)}
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                        <div className="col-md-1 d-flex align-items-end">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleRemoveItem(idx)}
+                            disabled={isSubmitting}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {formData.items.length === 0 && (
+                    <div className="text-muted">請新增至少一個已有的餐點作為套餐內容。</div>
+                  )}
+                </div>
+
+                {/* 備註 */}
+                <div className="mb-3">
+                  <label className="form-label">備註</label>
+                  <textarea
+                    className="form-control"
+                    name="notes"
+                    rows="2"
+                    value={formData.notes}
+                    onChange={handleInputChange}
                     disabled={isSubmitting}
                   />
-                </Form.Group>
+                </div>
 
-                <div className="d-flex justify-content-end gap-2">
-                  <Button 
-                    variant="outline-secondary" 
+                {/* 按鈕 */}
+                <div className="d-flex gap-2 justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
                     onClick={handleCancel}
                     disabled={isSubmitting}
                   >
                     取消
-                  </Button>
-                  <Button 
-                    variant="success" 
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {isEditMode ? '儲存中...' : '新增中...'}
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        {isEdit ? '更新中...' : '新增中...'}
                       </>
                     ) : (
-                      isEditMode ? '儲存變更' : '新增套餐'
+                      isEdit ? '更新套餐' : '新增套餐'
                     )}
-                  </Button>
+                  </button>
                 </div>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

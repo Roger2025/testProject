@@ -12,7 +12,8 @@ const CATEGORY_MAP = {
   toast: 'toast',
   noodles: 'noodles',
   single: 'single',
-  drink: 'drink'
+  drink: 'drink',
+  'set-meal': 'set-meal'
 };
 
 function getCategoryName(category) {

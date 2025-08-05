@@ -7,9 +7,17 @@ import { devFlags } from '../constants/devFlags';
  * @returns {string|null} 最終生效的 merchantId，沒有則回 null
  */
 export function getEffectiveMerchantId(authMerchantId) {
-  if (authMerchantId) return authMerchantId;
+  const id = authMerchantId;
+  const isValidObjectId = /^[a-f\d]{24}$/i.test(id);
+
+  if (isValidObjectId){
+    return id
+  };
+
   if (devFlags.bypassAuth) {
-    return process.env.REACT_APP_DEFAULT_MERCHANT || 'default_merchant';
-  }
+    console.warn('[開發模式] 使用 fallback merchantId');
+    return process.env.REACT_APP_DEFAULT_MERCHANT || '662f41ac1234567890abcde1';
+  };
+
   return null;
 }

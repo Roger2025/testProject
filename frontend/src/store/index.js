@@ -7,6 +7,7 @@ import merchantMenuReducer from '../features/merchant/menu/merchantMenuSlice';
 // import merchantStatusReducer from '../features/merchant/storeStatus/merchantStatusSlice';
 // import merchantDashboardReducer from '../features/merchant/dashboard/merchantDashboardSlice';
 import merchantSetMenuReducer from '../features/merchant/setMenu/merchantSetMenuSlice';
+import merchantScheduleReducer from '../features/merchant/storeStatus/merchantScheduleSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,7 +18,15 @@ const store = configureStore({
     // merchantStatus: merchantStatusReducer,
     // merchantDashboard: merchantDashboardReducer,
     merchantSetMenu: merchantSetMenuReducer,
+    merchantSchedule: merchantScheduleReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }
+  ),
 });
 
 export default store;

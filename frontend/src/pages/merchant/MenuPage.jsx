@@ -2,21 +2,24 @@
 import React from 'react';
 import MenuList from '../../features/merchant/menu/MenuList';
 import SetMenuList from '../../features/merchant/setMenu/SetMenuList';
+const FEATURE_ENABLE_SET_MENU = false; // 開發期間關閉，正式時設 true
 
 const MenuPage = () => {
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">菜單管理</h2>
+      <h2 className="mb-4">菜單管理頁</h2>
 
       <section className="mb-5">
-        <h4>單一品項</h4>
+        {/* <h4>單一品項</h4> */}
         <MenuList />
       </section>
 
+    {FEATURE_ENABLE_SET_MENU && (
       <section>
         <h4>套餐</h4>
         <SetMenuList />
       </section>
+    )}
     </div>
   );
 };

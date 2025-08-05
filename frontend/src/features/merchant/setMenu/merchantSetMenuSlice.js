@@ -1,178 +1,233 @@
 // features/merchant/setMenu/merchantSetMenuSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import merchantApi from '../../../services/merchantApi';
+import { merchantApi } from '../../../services/merchantApi';
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
 
-const {
-  getSetMenus,
-  createSetMenu,
-  updateSetMenu: apiUpdateSetMenu,  //改名避免衝突
-  deleteSetMenu: apiDeleteSetMenu //改名避免衝突
-}  = merchantApi;
-// 初始狀態
-const initialState = {
-  setMenus: [],
-  loading: false,
-  error: null,
+// 套餐類別選項（可以根據需要調整）
+export const SET_MENU_CATEGORIES = [
+  { value: 'breakfast', label: '早餐套餐', code: '01' },
+  { value: 'brunch', label: '早午餐套餐', code: '02' },
+  { value: 'value', label: '超值套餐', code: '03' },
+  { value: 'premium', label: '精選套餐', code: '04' },
+  { value: 'family', label: '家庭套餐', code: '05' }
+];
+
+// helpers
+const resolveMerchantId = (override) => {
+  if (override) return override;
+  const rawMerchantId = localStorage.getItem('merchantId');
+  return getEffectiveMerchantId(rawMerchantId);
 };
 
-// === Async Thunks ===
+const extractErrorMessage = (error, fallback) => {
+  return error?.response?.data?.message || error?.message || fallback;
+};
 
-// 取得某商家的所有套餐
-export const fetchMerchantSetMenus = createAsyncThunk(
-  'merchantSetMenu/fetchMerchantSetMenus',
-  async (merchantId, thunkAPI) => {
+// Fetch set menu items
+export const fetchSetMenuItems = createAsyncThunk(
+  'merchantSetMenu/fetchSetMenuItems',
+  async (merchantIdArg, { rejectWithValue }) => {
     try {
-      const response = await getSetMenus(merchantId);
-      return response.data;
+      const merchantId = resolveMerchantId(merchantIdArg);
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
+      const response = await merchantApi.getSetMenus(merchantId);
+      return response.data?.data || [];
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Fetch failed');
+      return rejectWithValue(extractErrorMessage(error, '獲取套餐失敗'));
     }
   }
 );
 
-// 新增套餐
-export const addSetMenu = createAsyncThunk(
-  'merchantSetMenu/addSetMenu',
-  async (setMenuData, thunkAPI) => {
+// Create set menu item
+export const createSetMenuItem = createAsyncThunk(
+  'merchantSetMenu/createSetMenuItem',
+  async ({ merchantId: merchantIdArg, setMenuData, imageFile }, { rejectWithValue }) => {
     try {
-      const response = await createSetMenu(setMenuData);
-      return response.data;
+      const merchantId = resolveMerchantId(merchantIdArg);
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
+      const formData = new FormData();
+      Object.entries(setMenuData || {}).forEach(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          if (typeof val === 'object') {
+            formData.append(key, JSON.stringify(val));
+          } else {
+            formData.append(key, val);
+          }
+        }
+      });
+
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      formData.append('merchantId', merchantId);
+
+      const response = await merchantApi.createSetMenu(merchantId, formData);
+      return response.data?.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Create failed');
+      return rejectWithValue(extractErrorMessage(error, '新增套餐失敗'));
     }
   }
 );
 
-// 更新套餐
-export const updateSetMenu = createAsyncThunk(
-  'merchantSetMenu/updateSetMenu',
-  async ({ id, data }, thunkAPI) => {
+// Update set menu item
+export const updateSetMenuItem = createAsyncThunk(
+  'merchantSetMenu/updateSetMenuItem',
+  async ({ merchantId: merchantIdArg, itemId, setMenuData, imageFile }, { rejectWithValue }) => {
     try {
-      const response = await apiUpdateSetMenu(id, data);
-      return response.data;
+      const merchantId = resolveMerchantId(merchantIdArg);
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
+      const formData = new FormData();
+      Object.entries(setMenuData || {}).forEach(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          if (typeof val === 'object') {
+            formData.append(key, JSON.stringify(val));
+          } else {
+            formData.append(key, val);
+          }
+        }
+      });
+
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      formData.append('merchantId', merchantId);
+
+      const response = await merchantApi.updateSetMenu(merchantId, itemId, formData);
+      return response.data?.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Update failed');
+      return rejectWithValue(extractErrorMessage(error, '更新套餐失敗'));
     }
   }
 );
 
-// 刪除套餐
-export const deleteSetMenu = createAsyncThunk(
-  'merchantSetMenu/deleteSetMenu',
-  async (id, thunkAPI) => {
+// Delete set menu item
+export const deleteSetMenuItem = createAsyncThunk(
+  'merchantSetMenu/deleteSetMenuItem',
+  async ({ merchantId: merchantIdArg, itemId }, { rejectWithValue }) => {
     try {
-      await apiDeleteSetMenu(id);
-      return id;
+      const merchantId = resolveMerchantId(merchantIdArg);
+      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
+
+      await merchantApi.deleteSetMenu(merchantId, itemId);
+      return itemId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Delete failed');
+      return rejectWithValue(extractErrorMessage(error, '刪除套餐失敗'));
     }
   }
 );
 
-// 切換套餐上架狀態
-export const toggleSetMenuStatus = createAsyncThunk(
-  'merchantSetMenu/toggleSetMenuStatus',
-  async ({ id, available }, thunkAPI) => {
-    try {
-      const response = await updateSetMenu(id, { available });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Toggle status failed');
-    }
+const initialState = {
+  items: [],
+  currentItem: null,
+  loading: false,
+  error: null,
+  lastFetch: null,
+  operationStatus: {
+    creating: false,
+    updating: false,
+    deleting: false
   }
-);
-
-// === Slice ===
+};
 
 const merchantSetMenuSlice = createSlice({
   name: 'merchantSetMenu',
   initialState,
   reducers: {
-    // 清除錯誤狀態
     clearError: (state) => {
       state.error = null;
     },
-    // 重置狀態
-    resetSetMenuState: (state) => {
-      state.setMenus = [];
-      state.loading = false;
-      state.error = null;
+    setCurrentItem: (state, action) => {
+      state.currentItem = action.payload;
     },
+    clearCurrentItem: (state) => {
+      state.currentItem = null;
+    },
+    updateItemLocally: (state, action) => {
+      const { id, updates } = action.payload;
+      const index = state.items.findIndex(item => item._id === id);
+      if (index !== -1) {
+        state.items[index] = { ...state.items[index], ...updates };
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
-      // 取得所有套餐
-      .addCase(fetchMerchantSetMenus.pending, (state) => {
+      // fetch
+      .addCase(fetchSetMenuItems.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchMerchantSetMenus.fulfilled, (state, action) => {
+      .addCase(fetchSetMenuItems.fulfilled, (state, action) => {
         state.loading = false;
-        // 依照 createdAt 新→舊 排序
-        state.setMenus = action.payload.slice().sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        state.items = Array.isArray(action.payload) ? action.payload : [];
+        state.lastFetch = Date.now();
+        state.error = null;
       })
-      .addCase(fetchMerchantSetMenus.rejected, (state, action) => {
+      .addCase(fetchSetMenuItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // 新增套餐
-      .addCase(addSetMenu.pending, (state) => {
+      // create
+      .addCase(createSetMenuItem.pending, (state) => {
+        state.operationStatus.creating = true;
         state.error = null;
       })
-      .addCase(addSetMenu.fulfilled, (state, action) => {
-        // 新增的項目放在陣列最前面
-        state.setMenus.unshift(action.payload);
+      .addCase(createSetMenuItem.fulfilled, (state, action) => {
+        state.operationStatus.creating = false;
+        if (action.payload) state.items.push(action.payload);
+        state.error = null;
       })
-      .addCase(addSetMenu.rejected, (state, action) => {
+      .addCase(createSetMenuItem.rejected, (state, action) => {
+        state.operationStatus.creating = false;
         state.error = action.payload;
       })
 
-      // 更新套餐
-      .addCase(updateSetMenu.pending, (state) => {
+      // update
+      .addCase(updateSetMenuItem.pending, (state) => {
+        state.operationStatus.updating = true;
         state.error = null;
       })
-      .addCase(updateSetMenu.fulfilled, (state, action) => {
-        const index = state.setMenus.findIndex((item) => item._id === action.payload._id);
-        if (index !== -1) {
-          state.setMenus[index] = action.payload;
+      .addCase(updateSetMenuItem.fulfilled, (state, action) => {
+        state.operationStatus.updating = false;
+        const idx = state.items.findIndex(item => item._id === action.payload?._id);
+        if (idx !== -1 && action.payload) {
+          state.items[idx] = action.payload;
         }
+        state.error = null;
       })
-      .addCase(updateSetMenu.rejected, (state, action) => {
+      .addCase(updateSetMenuItem.rejected, (state, action) => {
+        state.operationStatus.updating = false;
         state.error = action.payload;
       })
 
-      // 刪除套餐
-      .addCase(deleteSetMenu.pending, (state) => {
+      // delete
+      .addCase(deleteSetMenuItem.pending, (state) => {
+        state.operationStatus.deleting = true;
         state.error = null;
       })
-      .addCase(deleteSetMenu.fulfilled, (state, action) => {
-        state.setMenus = state.setMenus.filter((item) => item._id !== action.payload);
-      })
-      .addCase(deleteSetMenu.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
-      // 切換套餐狀態
-      .addCase(toggleSetMenuStatus.pending, (state) => {
+      .addCase(deleteSetMenuItem.fulfilled, (state, action) => {
+        state.operationStatus.deleting = false;
+        state.items = state.items.filter(item => item._id !== action.payload);
         state.error = null;
       })
-      .addCase(toggleSetMenuStatus.fulfilled, (state, action) => {
-        const index = state.setMenus.findIndex((item) => item._id === action.payload._id);
-        if (index !== -1) {
-          state.setMenus[index] = action.payload;
-        }
-      })
-      .addCase(toggleSetMenuStatus.rejected, (state, action) => {
+      .addCase(deleteSetMenuItem.rejected, (state, action) => {
+        state.operationStatus.deleting = false;
         state.error = action.payload;
       });
-  },
+  }
 });
 
-// 匯出 actions
-export const { clearError, resetSetMenuState } = merchantSetMenuSlice.actions;
+export const { 
+  clearError, 
+  setCurrentItem, 
+  clearCurrentItem, 
+  updateItemLocally 
+} = merchantSetMenuSlice.actions;
 
-// 匯出 reducer
 export default merchantSetMenuSlice.reducer;

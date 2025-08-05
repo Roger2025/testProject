@@ -1,254 +1,247 @@
-//src/features/merchant/setMenu/SetMenuList.jsx
+// features/merchant/setMenu/SetMenuList.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMerchantSetMenus, deleteSetMenu, toggleSetMenuStatus } from './merchantSetMenuSlice';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Table, Button, Badge, Alert, Modal, Spinner as BootstrapSpinner } from 'react-bootstrap';
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+import { getFullImageUrl } from '../../../utils/getImageUrl';
 import '../../../styles/style.css';
+import { 
+  fetchSetMenuItems, 
+  deleteSetMenuItem, 
+  setCurrentItem, 
+  clearError,
+  SET_MENU_CATEGORIES 
+} from './merchantSetMenuSlice';
 
-const SetMenuList = ({ merchantId }) => {
+const SetMenuList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { setMenus, loading, error } = useSelector((state) => state.merchantSetMenu);
+  const { 
+    items = [], 
+    loading, 
+    error, 
+    operationStatus,
+    lastFetch 
+  } = useSelector(state => state.merchantSetMenu);
   
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedSetMenu, setSelectedSetMenu] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [filterCategory, setFilterCategory] = useState('all');
+  const rawMerchantId = localStorage.getItem('merchantId');
+  const merchantId = getEffectiveMerchantId(rawMerchantId);
 
   useEffect(() => {
-    if (merchantId) {
-      dispatch(fetchMerchantSetMenus(merchantId));
+    if (!merchantId) return;
+    const shouldRefetch = !lastFetch || (Date.now() - lastFetch > 60000);
+    if (shouldRefetch && !loading) {
+      dispatch(fetchSetMenuItems());
     }
-  }, [dispatch, merchantId]);
+  }, [dispatch, merchantId, lastFetch, loading]);
 
-  const handleEdit = (setMenu) => {
-    navigate(`/merchant/set-menus/edit/${setMenu._id}`, { state: setMenu });
+  const handleEdit = (item) => {
+    dispatch(setCurrentItem(item));
+    navigate(`/merchant/set-menu/edit/${item._id}`, { state: { isEdit: true, itemId: item._id } });
+  };
+
+  const handleDelete = async (itemId) => {
+    if (deleteConfirm === itemId) {
+      try {
+        await dispatch(deleteSetMenuItem({ itemId })).unwrap();
+        setDeleteConfirm(null);
+      } catch (err) {
+        console.error('刪除失敗:', err);
+      }
+    } else {
+      setDeleteConfirm(itemId);
+    }
   };
 
   const handleAddNew = () => {
-    navigate('/merchant/set-menus/new');
+    dispatch(setCurrentItem(null));
+    navigate('/merchant/set-menu/new', { state: { isEdit: false } });
   };
 
-  const handleDeleteClick = (setMenu) => {
-    setSelectedSetMenu(setMenu);
-    setShowDeleteModal(true);
+  const getCategoryLabel = (categoryValue) => {
+    const category = SET_MENU_CATEGORIES.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
   };
 
-  const handleDeleteConfirm = async () => {
-    if (selectedSetMenu) {
-      setIsDeleting(true);
-      try {
-        await dispatch(deleteSetMenu(selectedSetMenu._id));
-        setShowDeleteModal(false);
-        setSelectedSetMenu(null);
-      } catch (error) {
-        console.error('刪除失敗:', error);
-      } finally {
-        setIsDeleting(false);
-      }
-    }
+  const filteredItems = filterCategory === 'all' 
+    ? items 
+    : items.filter(item => item.category === filterCategory);
+
+  const formatPrice = (price) => (typeof price === 'number' ? `$${price}` : price);
+
+  const formatItems = (items) => {
+    if (!items || !Array.isArray(items)) return '無商品資訊';
+    return items.map(item => `${item.name || '未知商品'} x${item.quantity || 1}`).join(', ');
   };
 
-  const handleToggleStatus = async (setMenu) => {
-    try {
-      await dispatch(toggleSetMenuStatus({ 
-        id: setMenu._id, 
-        available: !setMenu.available 
-      }));
-    } catch (error) {
-      console.error('狀態更新失敗:', error);
-    }
-  };
-
-  const handleCloseModal = () => {
-    if (!isDeleting) {
-      setShowDeleteModal(false);
-      setSelectedSetMenu(null);
-    }
-  };
-
-  if (loading) {
+  if (!merchantId) {
     return (
-      <Container className="py-4 text-center">
-        <BootstrapSpinner animation="border" variant="success" />
-        <p className="mt-2">載入套餐資料中...</p>
-      </Container>
+      <div className="container mt-4">
+        <div className="alert alert-warning">
+          無法取得商家身份，請登入或開啟開發 bypass。 
+        </div>
+      </div>
     );
   }
 
-  if (error) {
+  if (loading && !items.length) {
     return (
-      <Container className="py-4">
-        <Alert variant="danger">
-          <Alert.Heading>載入失敗</Alert.Heading>
-          <p>錯誤訊息：{error}</p>
-          <Button variant="outline-danger" onClick={() => window.location.reload()}>
-            重新載入
-          </Button>
-        </Alert>
-      </Container>
+      <div className="container mt-4">
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">載入中...</span>
+          </div>
+          <p className="mt-2">載入套餐中...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container className="py-4">
-      <Row className="mb-4">
-        <Col>
-          <div className="d-flex justify-content-between align-items-center">
-            <h2 className="mb-0">我的套餐列表</h2>
-            <Button variant="success" onClick={handleAddNew}>
-              <i className="bi bi-plus-circle me-2"></i>
-              新增套餐
-            </Button>
-          </div>
-        </Col>
-      </Row>
+    <div className="container mt-4">
+      {/* 標題與操作區 */}
+      <div className="row mb-4">
+        <div className="col-md-6"><h2>套餐管理</h2></div>
+        <div className="col-md-6 text-end">
+          <button 
+            className="btn btn-primary"
+            onClick={handleAddNew}
+            disabled={operationStatus.creating}
+          >
+            {operationStatus.creating ? '新增中...' : '新增套餐'}
+          </button>
+        </div>
+      </div>
 
-      {setMenus.length === 0 ? (
-        <Row>
-          <Col>
-            <Alert variant="info" className="text-center">
-              <Alert.Heading>尚無套餐資料</Alert.Heading>
-              <p>您還沒有新增任何套餐，立即開始建立您的套餐組合吧！</p>
-              <Button variant="success" onClick={handleAddNew}>
-                新增第一個套餐
-              </Button>
-            </Alert>
-          </Col>
-        </Row>
-      ) : (
-        <Row>
-          <Col>
-            <div className="table-responsive">
-              <Table striped bordered hover className="align-middle">
-                <thead className="table-success">
-                  <tr>
-                    <th style={{ width: '100px' }}>圖片</th>
-                    <th>套餐名稱</th>
-                    <th>套餐描述</th>
-                    <th style={{ width: '100px' }}>價格</th>
-                    <th style={{ width: '100px' }}>狀態</th>
-                    <th style={{ width: '200px' }}>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {setMenus.map((setMenu) => (
-                    <tr key={setMenu._id}>
-                      <td className="text-center">
-                        {setMenu.imageUrl ? (
-                          <img
-                            src={setMenu.imageUrl}
-                            alt={setMenu.name}
-                            className="img-thumbnail"
-                            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                            onError={(e) => {
-                              e.target.src = '/placeholder-setmenu.jpg'; // 可替換為預設圖片
-                            }}
-                          />
-                        ) : (
-                          <div className="bg-light d-flex align-items-center justify-content-center" 
-                               style={{ width: '80px', height: '80px', borderRadius: '4px' }}>
-                            <i className="bi bi-collection text-muted"></i>
-                            <span className="text-muted small">無圖片</span>
-                          </div>
-                        )}
-                      </td>
-                      <td>
-                        <strong>{setMenu.name}</strong>
-                      </td>
-                      <td>
-                        <span className="text-muted">
-                          {setMenu.description || '無描述'}
-                        </span>
-                      </td>
-                      <td className="text-end">
-                        <strong>NT$ {setMenu.price}</strong>
-                      </td>
-                      <td className="text-center">
-                        <Badge 
-                          bg={setMenu.available ? 'success' : 'secondary'}
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleToggleStatus(setMenu)}
-                          title="點擊切換狀態"
-                        >
-                          {setMenu.available ? '上架中' : '已下架'}
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="d-flex gap-2">
-                          <Button 
-                            variant="outline-success" 
-                            size="sm"
-                            onClick={() => handleEdit(setMenu)}
-                          >
-                            <i className="bi bi-pencil me-1"></i>
-                            編輯
-                          </Button>
-                          <Button 
-                            variant="outline-danger" 
-                            size="sm"
-                            onClick={() => handleDeleteClick(setMenu)}
-                          >
-                            <i className="bi bi-trash me-1"></i>
-                            刪除
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </Col>
-        </Row>
+      {error && (
+        <div className="alert alert-danger alert-dismissible fade show" role="alert">
+          {error}
+          <button type="button" className="btn-close" onClick={() => dispatch(clearError())}></button>
+        </div>
       )}
 
-      {/* 刪除確認對話框 */}
-      <Modal show={showDeleteModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton={!isDeleting}>
-          <Modal.Title>確認刪除</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedSetMenu && (
-            <p>
-              確定要刪除套餐「<strong>{selectedSetMenu.name}</strong>」嗎？
-              <br />
-              <small className="text-muted">此操作無法復原。</small>
-            </p>
+      {/* 分類篩選 */}
+      <div className="row mb-3">
+        <div className="col-md-4">
+          <select className="form-select" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+            <option value="all">所有類別</option>
+            {SET_MENU_CATEGORIES.map(category => (
+              <option key={category.value} value={category.value}>{category.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-8">
+          <small className="text-muted">共 {filteredItems.length} 項套餐</small>
+        </div>
+      </div>
+
+      {/* 套餐列表 */}
+      {filteredItems.length === 0 ? (
+        <div className="text-center py-5">
+          <p className="text-muted">
+            {filterCategory === 'all' ? '尚未新增任何套餐' : '此類別暫無套餐'}
+          </p>
+          {filterCategory === 'all' && (
+            <button className="btn btn-outline-primary" onClick={handleAddNew}>
+              新增第一個套餐
+            </button>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button 
-            variant="secondary" 
-            onClick={handleCloseModal}
-            disabled={isDeleting}
-          >
-            取消
-          </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleDeleteConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <>
-                <BootstrapSpinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="me-2"
-                />
-                刪除中...
-              </>
-            ) : (
-              '確認刪除'
-            )}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+        </div>
+      ) : (
+        <div className="row">
+          {filteredItems.map((item) => {
+            const imageUrlRaw = item.imageUrl || (item.imagePath ? `/images/${item.imagePath.replace(/\\+/g, '/')}` : null);
+            return (
+              <div key={item._id} className="col-lg-6 col-xl-4 mb-4">
+                <div className="card h-100">
+                  {imageUrlRaw && (
+                    <img
+                      src={getFullImageUrl(imageUrlRaw)}
+                      className="card-img-top"
+                      alt={item.name}
+                      style={{ height: '200px', objectFit: 'cover' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  )}
+                  <div className="card-body d-flex flex-column">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <h5 className="card-title mb-0">{item.name}</h5>
+                      <span className="badge bg-info">{getCategoryLabel(item.category)}</span>
+                    </div>
+                    {item.description && (
+                      <p className="card-text text-muted small mb-2">{item.description}</p>
+                    )}
+                    <div className="mb-2">
+                      <strong className="text-primary">{formatPrice(item.price)}</strong>
+                    </div>
+                    {item.items && item.items.length > 0 && (
+                      <div className="mb-2">
+                        <small className="text-info">
+                          <strong>包含:</strong> {formatItems(item.items)}
+                        </small>
+                      </div>
+                    )}
+                    {item.notes && (
+                      <div className="mb-2">
+                        <small className="text-secondary">
+                          <strong>備註:</strong> {item.notes}
+                        </small>
+                      </div>
+                    )}
+                    <div className="mb-3">
+                      <span className={`badge ${item.available ? 'bg-success' : 'bg-danger'}`}>
+                        {item.available ? '供應中' : '暫停供應'}
+                      </span>
+                    </div>
+                    <div className="mt-auto">
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-outline-primary btn-sm flex-fill"
+                          onClick={() => handleEdit(item)}
+                          disabled={operationStatus.updating}
+                        >
+                          編輯
+                        </button>
+                        <button
+                          className={`btn btn-sm flex-fill ${deleteConfirm === item._id ? 'btn-danger' : 'btn-outline-danger'}`}
+                          onClick={() => handleDelete(item._id)}
+                          disabled={operationStatus.deleting}
+                        >
+                          {deleteConfirm === item._id ? '確認刪除' : '刪除'}
+                        </button>
+                      </div>
+                      {deleteConfirm === item._id && (
+                        <button className="btn btn-link btn-sm mt-1 p-0" onClick={() => setDeleteConfirm(null)}>
+                          取消
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {(operationStatus.creating || operationStatus.updating || operationStatus.deleting) && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999 }}
+        >
+          <div className="text-center text-white">
+            <div className="spinner-border mb-2" role="status"></div>
+            <div>
+              {operationStatus.creating && '新增中...'}
+              {operationStatus.updating && '更新中...'}
+              {operationStatus.deleting && '刪除中...'}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

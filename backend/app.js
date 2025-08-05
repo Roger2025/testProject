@@ -14,6 +14,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var merchantMenuRouter = require('./routes/merchant/merchantMenu');
 var merchantSetMenuRouter = require('./routes/merchant/merchantSetMenu');
+var merchantScheduleRouter = require('./routes/merchant/merchantSchedule');
 const cors = require('cors');
 
 var app = express();
@@ -50,7 +51,7 @@ app.use('/users', usersRouter);
 
 app.use('/api/merchant', merchantMenuRouter);
 app.use('/api/merchant', merchantSetMenuRouter);
-
+app.use('/api/merchant/schedule', merchantScheduleRouter);
 // 測試路由
 const testRoutes = require('./routes/test');
 app.use('/api', testRoutes);

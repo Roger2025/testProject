@@ -10,7 +10,8 @@ export const MENU_CATEGORIES = [
   { value: 'toast', label: '吐司類', code: '03' },
   { value: 'noodles', label: '麵食類', code: '04' },
   { value: 'single', label: '單品類', code: '05' },
-  { value: 'drink', label: '飲料類', code: '06' }
+  { value: 'drink', label: '飲料類', code: '06' },
+  { value: 'set-meal', label: '套餐類', code: '07' }
 ];
 
 // 飲料選項配置
