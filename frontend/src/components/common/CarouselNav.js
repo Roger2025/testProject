@@ -1,4 +1,4 @@
-// /src/components/common/CarouselNav.js（左右按鈕元件）
+// src/components/common/CarouselNav.js（左右按鈕元件）
 // import './CarouselNav.css'; // 若有樣式可獨立管理
 
 const CarouselNav = ({ onPrevClick, onNextClick, side }) => {

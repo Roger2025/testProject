@@ -1,3 +1,4 @@
+// src/pages/LocationFetcher.js (抓取目前定位的經緯度)
 import React, { useEffect, useState } from "react";
 
 const LocationFetcher = () => {

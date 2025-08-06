@@ -1,5 +1,6 @@
 // ogani: shop-grid.html - Product Section　
-// src/components/shop/Product.js
+// src/components/shop/Product.js (優惠餐點的自動瀏覽)
+
 import ProductDiscount from './ProductDiscount';
 
 const Product = () => {

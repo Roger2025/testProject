@@ -1,4 +1,5 @@
-// src/components/home/HeroLogin.js
+// src/components/home/HeroLogin.js (已登入: Menu + 搜尋列)
+
 import React, { useState } from 'react';
 
 const HeroLogin = () => {

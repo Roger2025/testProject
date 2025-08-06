@@ -1,5 +1,6 @@
 // ogani: shop-grid.html - Pduct Section（第2-1～第2-2部分）
-// src/components/shop/ProductDiscount.js
+// src/components/shop/ProductDiscount.js (優惠餐點的資訊)
+
 // 安裝 Swiper：npm install swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';

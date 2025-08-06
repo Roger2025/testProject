@@ -1,3 +1,5 @@
+// src/components/shop/ProductList.js (所有餐點清單)
+
 import React, { useState } from 'react';
 import ProductCard from '../shop/ProductCard';
 import Pagination from '../common/Pagination';

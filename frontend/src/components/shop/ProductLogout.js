@@ -1,4 +1,5 @@
-// src/components/shop/ProductLogout.js
+// src/components/shop/ProductLogout.js (未登入-優惠餐點的自動瀏覽)
+
 import React, { useRef } from 'react';
 // import Slider from 'react-slick';
 // import 'slick-carousel/slick/slick.css';

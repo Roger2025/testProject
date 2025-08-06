@@ -1,4 +1,5 @@
-// src/components/home/Hero.js
+// src/components/home/Hero.js (Menu + 搜尋列)
+
 import React, { useState } from 'react';
 
 const Hero = () => {

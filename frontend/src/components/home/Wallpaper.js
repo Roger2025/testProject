@@ -1,5 +1,6 @@
 // ogani: shop-grid.html - Breadcrumb Section 
-// src/components/home/Wallpaper.js
+// src/components/home/Wallpaper.js (已登入-平台壁紙)
+
 import { Link } from 'react-router-dom';
 
 // import imageUrl from '../../assets/images/wallpaper.jpg'; // React 端 

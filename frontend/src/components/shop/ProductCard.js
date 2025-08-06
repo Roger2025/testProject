@@ -1,5 +1,6 @@
 // ogani: shop-grid.html - Pduct Section（第2-4～第2-15部分）單一商品卡片/動態渲染商品列表	
-// src/components/shop/ProductCard.js
+// src/components/shop/ProductCard.js (餐點卡)
+
 const ProductCard = ({ data }) => {
   if (!data || !data.img) return null;
 

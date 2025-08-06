@@ -1,13 +1,12 @@
+// src/pages/home/Login.js (登入)
+// Design by Wayne
+
 import React, { useState } from "react";
 
-export default function UserRegister() {
+export default function Login() {
   const [form, setForm] = useState({
     username: "",
     password: "",
-    name: "",
-    email: "",
-    phone: "",
-    lineId: "",
   });
   const [msg, setMsg] = useState("");
 
@@ -17,26 +16,20 @@ export default function UserRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMsg("註冊中...");
+    setMsg("登入中...");
+    // 範例 API 請依實際修改
     try {
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       if (res.ok) {
-        setMsg("✅ 註冊成功！");
-        setForm({
-          username: "",
-          password: "",
-          name: "",
-          email: "",
-          phone: "",
-          lineId: "",
-        });
+        setMsg("✅ 登入成功！");
+        // 你可以在這裡導向首頁或其他頁面
       } else {
         const err = await res.text();
-        setMsg("❌ 註冊失敗：" + err);
+        setMsg("❌ 登入失敗：" + err);
       }
     } catch (err) {
       setMsg("❌ 網路錯誤：" + err.message);
@@ -47,8 +40,7 @@ export default function UserRegister() {
     <div
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+        background: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -60,7 +52,7 @@ export default function UserRegister() {
           borderRadius: 24,
           boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
           padding: "36px 40px 32px 40px",
-          width: 380,
+          width: 350,
           maxWidth: "90vw",
         }}
       >
@@ -74,7 +66,7 @@ export default function UserRegister() {
             textAlign: "center",
           }}
         >
-          使用者註冊
+          使用者登入
         </h2>
         <form onSubmit={handleSubmit} autoComplete="off">
           <FormInput
@@ -92,41 +84,13 @@ export default function UserRegister() {
             onChange={handleChange}
             required
           />
-          <FormInput
-            label="姓名"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-          <FormInput
-            label="Email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-          <FormInput
-            label="電話"
-            name="phone"
-            value={form.phone}
-            onChange={handleChange}
-          />
-          <FormInput
-            label="Line ID"
-            name="lineId"
-            value={form.lineId}
-            onChange={handleChange}
-          />
           <button
             type="submit"
             style={{
               marginTop: 16,
               width: "100%",
               padding: "12px 0",
-              background:
-                "linear-gradient(90deg,#f6d365 0%,#ff9256 100%)",
+              background: "linear-gradient(90deg,#f6d365 0%,#ff9256 100%)",
               color: "#fff",
               border: "none",
               borderRadius: 8,
@@ -137,11 +101,17 @@ export default function UserRegister() {
               boxShadow: "0 2px 8px rgba(255,146,86,0.16)",
               transition: "transform 0.08s",
             }}
-            onMouseDown={e => (e.currentTarget.style.transform = "scale(0.97)")}
-            onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
-            onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+            onMouseDown={(e) =>
+              (e.currentTarget.style.transform = "scale(0.97)")
+            }
+            onMouseUp={(e) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
           >
-            註冊
+            登入
           </button>
         </form>
         {msg && (
@@ -163,7 +133,6 @@ export default function UserRegister() {
   );
 }
 
-// 表單欄位元件 (更整齊美觀)
 function FormInput({
   label,
   name,
@@ -185,7 +154,8 @@ function FormInput({
           letterSpacing: 0.5,
         }}
       >
-        {label}{required && <span style={{ color: "#ff9256" }}> *</span>}
+        {label}
+        {required && <span style={{ color: "#ff9256" }}> *</span>}
       </label>
       <input
         id={name}
@@ -204,8 +174,12 @@ function FormInput({
           background: "#faf9f8",
           transition: "border 0.2s",
         }}
-        onFocus={e => (e.target.style.border = "1.5px solid #ff9256")}
-        onBlur={e => (e.target.style.border = "1.5px solid #e0e0e0")}
+        onFocus={(e) =>
+          (e.target.style.border = "1.5px solid #ff9256")
+        }
+        onBlur={(e) =>
+          (e.target.style.border = "1.5px solid #e0e0e0")
+        }
         autoComplete="off"
       />
     </div>

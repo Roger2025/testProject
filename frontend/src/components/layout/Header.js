@@ -1,7 +1,13 @@
+// src/commponents/layout/Header.js (平台開頭)
+
+import { useParams } from 'react-router-dom';
 import JpImg from '../../components/common/JumpImg';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
+  const { merchantId } = useParams();
+  const currentMerchantId = merchantId || 'store1'; // 預設為 store1
+
   return (
     <header className="header">
       <div className="container">
@@ -17,7 +23,7 @@ const Header = () => {
             <nav className="header__menu">
               <ul>
                 <li className="active"><Link to="/">首頁</Link></li>
-                <li><Link to="/shop">選定店家</Link></li>
+                <li><Link to={`/shop/${currentMerchantId}`}>選定店家</Link></li>
                 {/* <li><Link to="/shopcart">購物車</Link></li> */}
                 <li><Link to="/orderpage">訂單專區</Link></li>  
                 <li><Link to="/login">登入/登出</Link></li> 

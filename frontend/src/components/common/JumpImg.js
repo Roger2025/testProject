@@ -1,3 +1,6 @@
+// src/components/common/JumpImg.js (Byte Eat Logo)
+// Desgin by Wayne
+
 // import logo from '../assets/images/ByteEat.png';
 import { motion } from 'framer-motion'; // npm install framer-motion
 

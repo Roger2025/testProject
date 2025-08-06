@@ -1,4 +1,5 @@
-// src/components/shop/ProductLogoutSlider.js（單個滑動元件）
+// src/components/shop/ProductLogoutSlider.js（未登入-單個滑動元件）
+
 import React, { useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';

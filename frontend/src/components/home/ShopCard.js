@@ -1,5 +1,5 @@
 // ogani: shop-grid.html - Product Section（第2-4～第2-15部分）單一商品卡片/動態渲染商品列表	
-// src/components/home/ShopCard.js 
+// src/components/home/ShopCard.js (店家卡)
 
 const ShopCard = ({ data }) => {
   if (!data || !data.img) return null;
@@ -10,6 +10,8 @@ const ShopCard = ({ data }) => {
       <div
         className="product__item__pic set-bg"
         style={{ backgroundImage: `url(${data.img})` }}
+        role="img"
+        aria-label={data.name}
       >
         <ul className="product__item__pic__hover">
           <li><a href="#"><i className="fa fa-heart"></i></a></li>

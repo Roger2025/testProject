@@ -1,5 +1,5 @@
 // ogani: shop-grid.html - Product Section　
-// src/components/home/PopularShopLogin.js
+// src/components/home/PopularShopLogin.js (已登入-熱門早餐店的自動瀏覽)
 import PopularShopLoginSlider from './PopularShopLoginSlider';
 
 const PopularShopLogin = () => {

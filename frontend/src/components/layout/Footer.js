@@ -1,3 +1,5 @@
+// src/commponents/layout/Footer.js (頁尾)
+
 import JpImg from '../../components/common/JumpImg';
 
 // React 前端測試使用

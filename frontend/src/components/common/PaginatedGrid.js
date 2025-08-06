@@ -1,4 +1,5 @@
-// src/components/common/PaginatedGrid.js
+// src/components/common/PaginatedGrid.js (頁碼導覽)
+// 有些 React 元件不適用 
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';

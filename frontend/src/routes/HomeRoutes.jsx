@@ -1,23 +1,24 @@
-// src/routes/HomeRoutes.js
+// src/routes/HomeRoutes.jsx (平台首頁 by 許昌源)
 import React from 'react';
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
-import Home from '../pages/Home'; // 平台首頁
-import HomePage from '../pages/HomePage'; // 已登入的平台首頁
+// import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 4 核心樣式
 
-import Shop from '../pages/Shop'; // 早餐店頁面
-import ShopLogin from '../pages/ShopLogin'; // 已登入的早餐店頁面
-import ShopLogout from '../pages/ShopLogout'; // 未登入的早餐店頁面
+import Home from '../pages/home/Home'; // 平台首頁
+import HomePage from '../pages/home/HomePage'; // 已登入的平台首頁
 
-import ShopCart from '../pages/ShopCart'; // 購物車
-import OrderPage from '../pages/OrderPage'; // 訂單表單
+import Shop from '../pages/shop/Shop'; // 早餐店頁面
+// import ShopLogin from '../pages/shop/ShopLogin'; // 已登入的早餐店頁面
+// import ShopLogout from '../pages/shop/ShopLogout'; // 未登入的早餐店頁面
 
-import Login from '../pages/Login';
-import UserRegister from '../pages/UserRegister';
+import ShopCart from '../pages/home/ShopCart'; // 購物車
+import OrderPage from '../pages/home/OrderPage'; // 訂單表單
 
-import Test from '../pages/Test'; 
-import LocationFetcher from '../pages/LocationFetcher';
+import Login from '../pages/home/Login';
+import UserRegister from '../pages/home/UserRegister';
+
+import Test from '../pages/Test'; // Test 
+import LocationFetcher from '../pages/LocationFetcher'; // 抓取目前定位的經緯度
 
 function HomeRoutes() {
   return (
@@ -26,23 +27,27 @@ function HomeRoutes() {
         path="/*" 
         element={ 
             <Routes>
-            {/* 未登入 */}
-            <Route path="/" element={ <Home /> } /> 
-            {/* 已登入 */}
-            <Route path="/homepage" element={ <HomePage /> } /> 
-            <Route path="/shop" element={ <Shop /> } /> 
-            <Route path="/shoplogin" element={ <ShopLogin /> } />
-            <Route path="/shoplogout" element={ <ShopLogout /> } />
-            {/* 登入 */}
-            <Route path="/login" element={ <Login /> } />
-            {/* 註冊 */}
-            <Route path="/register" element={ <UserRegister />} />
-            {/* 購物車 */}
-            <Route path="/shopcart" element={ <ShopCart /> } />
-            {/* 訂單表單 */}
-            <Route path="/orderpage" element={ <OrderPage /> } />         
-            <Route path="/test" element={ <Test /> } />
-            <Route path="/location" element={ <LocationFetcher /> } />
+              {/* 平台首頁 */}
+              <Route path="/" element={<Home />} />
+              <Route path="/homepage" element={<HomePage />} /> 
+
+              {/* 早餐店頁面 */}
+              <Route path="/shop/:merchantId" element={ <Shop /> } /> 
+              {/* 若要根據登入狀態切換，可用條件渲染或 context */}
+              {/* <Route path="/shop/:merchantId" element={ <ShopLogin /> } /> */}
+              {/* <Route path="/shop/:merchantId" element={ <ShopLogout /> } /> */}
+
+              {/* 登入 / 註冊 */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<UserRegister />} />
+
+              {/* 購物車 / 訂單 */}
+              <Route path="/shopcart" element={<ShopCart />} />
+              <Route path="/orderpage" element={<OrderPage />} />
+
+              {/* 工具 / 測試 */}
+              <Route path="/test" element={<Test />} />
+              <Route path="/location" element={<LocationFetcher />} />
             </Routes>
         }
       /> 

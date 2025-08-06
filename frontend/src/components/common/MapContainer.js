@@ -1,4 +1,5 @@
-import React from "react";
+// src/components/common/MapContainer.js (抓取目前定位的經緯度)
+
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 
 const mapStyles = {

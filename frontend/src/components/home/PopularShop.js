@@ -1,41 +1,44 @@
-// src/components/home/PopularShop.js
-import React, { useRef } from 'react';
-// import Slider from 'react-slick';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
-// import CarouselNav from '../common/CarouselNav';  
+// src/components/home/PopularShop.js (熱門早餐店的自動瀏覽)
+
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import PopularShopSlider from './PopularShopSlider';
 
-// 透過後端 Node.js /public/images/ 下載圖片
-// 必須先打開 Node.js 伺服器 localhost:3001/images/merchant1
 export const getImageURL = (modulePath) => {
   return `http://localhost:3001/images/${modulePath}`;
 };
 
-const popularshops = [
-  // 現在想要放在 node.js 設定的 backend/public/images/
-  { name: '早餐店1', img: getImageURL('merchant01.jpg'), url: '/shoplogout', category: ['Open','OnlinePay']  },
-  { name: '早餐店2', img: getImageURL('merchant02.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店3', img: getImageURL('merchant03.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店4', img: getImageURL('merchant04.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店5', img: getImageURL('merchant05.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店6', img: getImageURL('merchant06.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店7', img: getImageURL('merchant07.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店8', img: getImageURL('merchant08.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店9', img: getImageURL('merchant09.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  },
-  { name: '早餐店10', img: getImageURL('merchant10.jpg'), url: '/shoplogin', category: ['Open','OnlinePay']  }, 
-  // 原本圖片放在 react 設定的 frontend/src/assets/images/
-  // { name: '早餐店1', img: require('../../assets/images/merchant01.jpg'), url: '/shoplogout', category: ['Open','OnlinePay'] },
-  // { name: '早餐店2', img: require('../../assets/images/merchant02.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店3', img: require('../../assets/images/merchant03.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店4', img: require('../../assets/images/merchant04.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店5', img: require('../../assets/images/merchant05.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店6', img: require('../../assets/images/merchant06.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店7', img: require('../../assets/images/merchant07.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店8', img: require('../../assets/images/merchant08.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店9', img: require('../../assets/images/merchant09.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },
-  // { name: '早餐店10', img: require('../../assets/images/merchant10.jpg'), url: '/shoplogin', category: ['Open','OnlinePay'] },  
-];
+// 檢查並轉換字串型的陣列
+const parseCategoryField = (rawCategory) => {
+  try {
+    if (Array.isArray(rawCategory)) {
+      // 如果陣列第一個元素是字串且看起來像陣列
+      const first = rawCategory[0];
+      if (typeof first === 'string' && first.match(/\[\s*['"]/)) {
+        // 移除多餘逗號並處理引號 → 嘗試解析
+        const cleaned = first
+          .replace(/,\s*\]/, ']')   // 尾端逗號清除
+          .replace(/'/g, '"');      // 換成雙引號
+        const parsed = JSON.parse(cleaned);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+      return rawCategory; // 已是合法陣列
+    }
+
+    if (typeof rawCategory === 'string' && rawCategory.startsWith('[')) {
+      const cleaned = rawCategory
+        .replace(/,\s*\]/, ']')
+        .replace(/'/g, '"');
+      const parsed = JSON.parse(cleaned);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+
+    return []; // 無法解析
+  } catch (err) {
+    console.warn('分類解析失敗:', rawCategory);
+    return [];
+  }
+};
 
 const sliderSettings = {
   dots: false,
@@ -49,12 +52,50 @@ const sliderSettings = {
 };
 
 const PopularShop = () => {
-  const sliderRef = useRef(null);
+  const sliderRef = useRef(null); // TODO: 控制滑動方向
+  const [products, setProducts] = useState([]);
+
+  // 取得資料並更新 products
+  useEffect(() => {
+    axios.get('http://localhost:3001/api/shops/')
+      .then(res => {
+        const formatted = res.data.map(item => {
+          const parsedCategory = parseCategoryField(item.category);
+          console.log(`${item.storeName} 👉`, parsedCategory); // ✅ 確認這裡是否為 ['Open', 'OnlinePay']
+          
+          return {
+            name: item.storeName,
+            img: getImageURL(item.storeImag),
+            url: `/shop/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
+            category: parsedCategory,
+            // category: parseCategoryField(item.category), // 修改後 正確格式 category: ['Open', 'OnlinePay']
+            // category: item.category, // 錯誤格式 ategory: [ "['Open', 'OnlinePay']" ] 
+          };
+        });
+
+      // 🔍 篩選出包含 'Popular' 的店家
+      const popularOnly = formatted.filter(shop =>
+        Array.isArray(shop.category) && shop.category.includes('Popular')
+      );
+
+        setProducts(popularOnly);
+      })
+      .catch(err => {
+        console.error('載入店家資料失敗:', err);
+      });
+  }, []);
+
+  // 等 products 更新後執行 slickNext()
+  useEffect(() => {
+    if (sliderRef.current && products.length > 0) {
+      sliderRef.current.slickNext();
+    }
+  }, [products]);
 
   return (
     <section className="categories">
       <div className="container">
-          <PopularShopSlider shops={popularshops} sliderSettings={sliderSettings} />
+          <PopularShopSlider shops={products} sliderSettings={sliderSettings} />
       </div>
     </section>
   );
