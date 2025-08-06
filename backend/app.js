@@ -5,11 +5,11 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo'); 
 
-const { roleCheck } = require('./middlewares/roleCheck');
+const { roleCheck } = require('./server/middlewares/roleCheck');
 const adminRouter = require('./routes/admin_routes/admin');
-const loginRouter = require('./routes/admin_routes/login');
-const registerRouter = require('./routes/admin_routes/register');
-const verifyRouter = require('./routes/admin_routes/verify');
+const loginRouter = require('./routes/auth/login');
+const registerRouter = require('./routes/auth/register');
+const verifyRouter = require('./routes/auth/verify');
 //const setAdminVerifiedRouter = require('./routes/admin_routes/setAdminVerified');
 
 const app = express();
@@ -45,9 +45,14 @@ app.use((req, res, next) => {
 });
 
 // 掛載路由
+app.use('/api/auth', loginRouter);
+app.use('/api/auth', require('./routes/auth/me'));
+app.use('/api/auth', require('./routes/auth/logout'));
+app.use('/api/auth', registerRouter);
+app.use('/api/auth', verifyRouter);
+
 app.use('/api/admin', adminRouter);
-app.use('/api', loginRouter);
-app.use('/api', registerRouter);
+
 app.use('/api', verifyRouter);
 //app.use('/api/set-admin-verified', setAdminVerifiedRouter);
 

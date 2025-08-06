@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon server/server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon server/server.js",
     "prod": "node server/server.js"
   },

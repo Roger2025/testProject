@@ -1,15 +1,14 @@
-// routes/admin_routes/register.js
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const router = express.Router();
 const validator = require('validator');
-const Member = require('../../models/member'); 
-const Merchant = require('../../models/merchant'); 
+const Member = require('../../server/models/member'); 
+const Merchant = require('../../server/models/merchant'); 
 
 // 再次判斷註冊並寫入資料庫 會員表 and 商家表
-router.post('/register', async (req, res) => {
+async function handleRegister(req, res) {
+    console.log('🎯 Register API hit');
   const { account, password, email, phone, nickName, role, storeName, storeAddress } = req.body;
-
+  console.log('✅ 收到註冊資料：', req.body); 
   try {
     // 檢查帳號是否存在
     const existingUser = await Member.findOne({ account });
@@ -73,7 +72,7 @@ router.post('/register', async (req, res) => {
       created_at: taiwanTime,
       phone,
       nickName,
-});
+  });
 
     await newUser.save(); // 物件寫法要儲存 好處可以寫邏輯
     console.log('✅ 註冊成功:', account); 
@@ -83,6 +82,6 @@ router.post('/register', async (req, res) => {
     console.error('❌ 註冊失敗:', err.message, err.errors);
     return res.status(500).json({ status: 'fail', message: '❌ 註冊失敗，請稍後再試' });
   }
-});
+}
 
-module.exports = router;
+module.exports = { handleRegister };

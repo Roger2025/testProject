@@ -22,7 +22,7 @@ function VerifyEmailPage() {
     try {
       // ✅ 驗證碼驗證
       const res = await axios.post(
-        'http://localhost:3001/api/verify-email-code',
+        'http://localhost:3001/api/auth/verify-email-code',
         { email, code },
         { withCredentials: true }
       );
