@@ -71,7 +71,7 @@ const MerchantHeader = () => {
               <li className="nav-item">
                 <button 
                   className="nav-link btn btn-link" 
-                  onClick={() => handleNavigation('/merchant/orders')}
+                  onClick={() => handleNavigation('/merchant/order')}
                 >
                   訂單紀錄
                 </button>

@@ -1,23 +1,61 @@
 // src/utils/getMerchantId.js
+import axios from 'axios';
 import { devFlags } from '../constants/devFlags';
 
 /**
- * 取得要用的 merchantId（優先真實、有的話 fallback 開發用）。
- * @param {string|null|undefined} authMerchantId - 來自登入狀態的 merchantId
- * @returns {string|null} 最終生效的 merchantId，沒有則回 null
+ * 驗證是否為合法 ObjectId（MongoDB 預設 24 字元 hex）
+ */
+function isValidObjectId(id) {
+  return typeof id === 'string' && /^[a-f\d]{24}$/i.test(id);
+}
+
+/**
+ * 開發模式下使用 fallback merchantId
+ */
+function getFallbackMerchantId() {
+  console.warn('[開發模式] 使用 fallback merchantId');
+  return process.env.REACT_APP_DEFAULT_MERCHANT || '662f41ac1234567890abcde1';
+}
+
+/**
+ * 同步取得最終生效的 merchantId（適用於本地測試）
  */
 export function getEffectiveMerchantId(authMerchantId) {
-  const id = authMerchantId;
-  const isValidObjectId = /^[a-f\d]{24}$/i.test(id);
-
-  if (isValidObjectId){
-    return id
-  };
+  if (isValidObjectId(authMerchantId)) {
+    return authMerchantId;
+  }
 
   if (devFlags.bypassAuth) {
-    console.warn('[開發模式] 使用 fallback merchantId');
-    return process.env.REACT_APP_DEFAULT_MERCHANT || '662f41ac1234567890abcde1';
-  };
+    return getFallbackMerchantId();
+  }
 
   return null;
+}
+
+/**
+ * 非同步：從 API 擷取登入使用者資訊，回傳 merchantId 與 role
+ * @returns {Promise<{ merchantId: string | null, role: string | null }>}
+ */
+export async function fetchMerchantInfoFromSession() {
+  try {
+    const res = await axios.get('/api/auth/loin', {
+      withCredentials: true, // 確保 cookie 傳送
+    });
+
+    const user = res?.user || null;
+
+    if (user?.merchantId && user.role === 'merchant') {
+      const merchantIdStr = user.merchantId.toString?.() || String(user.merchantId);
+      return {
+        merchantId: isValidObjectId(merchantIdStr) ? merchantIdStr : null,
+        role: user.role,
+      };
+    }
+
+    console.warn('未取得 merchant 身份或 merchantId 無效');
+    return { merchantId: null, role: user?.role || null };
+  } catch (error) {
+    console.error('取得 session 使用者資訊失敗:', error);
+    return { merchantId: null, role: null };
+  }
 }
