@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+import { useMerchantId } from '../../../hooks/useMerchantId'; //整合測試及實際上線用
+// import { getEffectiveMerchantId } from '../../../utils/getMerchantId';  //開發階段接mock資料用
 import { getFullImageUrl } from '../../../utils/getImageUrl';
 import '../../../styles/style.css';
 import { 
@@ -26,9 +27,14 @@ const MenuList = () => {
   
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
-  const rawMerchantId = localStorage.getItem('merchantId');
-  const merchantId = getEffectiveMerchantId(rawMerchantId);
 
+  //開發階段接mock資料用
+  // const rawMerchantId = localStorage.getItem('merchantId');
+  // const merchantId = getEffectiveMerchantId(rawMerchantId);
+
+  //整合測試及實際上線用
+  const merchantId = useMerchantId();
+  
   useEffect(() => {
     if (!merchantId) return;
     const shouldRefetch = !lastFetch || (Date.now() - lastFetch > 60000);

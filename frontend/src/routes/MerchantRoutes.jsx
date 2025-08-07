@@ -8,6 +8,7 @@ import MenuPage from '../pages/merchant/MenuPage';
 import MenuEdit from '../features/merchant/menu/MenuEdit';
 import SetMenuEdit from '../features/merchant/setMenu/SetMenuEdit';
 import StoreStatusPage from '../pages/merchant/StoreStatusPage';
+import OrdersPage from '../pages/merchant/OrdersPage';
 import { useMerchantAuth } from '../hooks/useMerchantAuth';
 import ProtectedRoute from './ProtectedRoute';
 const FEATURE_ENABLE_SET_MENU = false; // 開發期間關閉，正式時設 true
@@ -62,8 +63,11 @@ const MerchantRoutes = () => {
                 <Route path="set-menu/edit/:id" element={<SetMenuEdit merchantId={merchant?._id} />} />
                 )}
 
+                {/* 店家訂單頁 */}
+                      <Route path="/order" element={<OrdersPage />} />
+
                 {/* 店家狀態頁 */}
-                      <Route path="/storestatus" element={<StoreStatusPage />} />
+                      <Route path="/storestatus" element={<StoreStatusPage merchantId={merchant?._id} />} />
 
                 {/* 預設跳轉到儀表板 */}
                 <Route path="/" element={<Navigate to="dashboard" replace />} />

@@ -1,5 +1,6 @@
 // services/merchantApi.js
 import axios from 'axios';
+import { getEffectiveMerchantId } from '../utils/getMerchantId';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -32,6 +33,9 @@ apiClient.interceptors.response.use(
   return Promise.reject(error);
 }
 );
+
+const rawMerchantId = localStorage.getItem('merchantId');
+const merchantId = getEffectiveMerchantId(rawMerchantId);
 
 export const merchantApi = {
 // 單品
@@ -82,8 +86,8 @@ getMerchantOrders: (merchantId, params = {}) => {
   const qs = new URLSearchParams(params).toString();
   return apiClient.get(`/api/merchant/${merchantId}/orders${qs ? '?' + qs : ''}`);
 },
-updateOrderStatus: (orderId, status) =>
-  apiClient.patch(`/api/merchant/orders/${orderId}/status`, { status }),
+// updateOrderStatus: (orderId, status) =>
+//   apiClient.patch(`/api/merchant/orders/${orderId}/status`, { status }),
 
 getMerchantStatus: (merchantId) => apiClient.get(`/api/merchant/${merchantId}/status`),
 updateMerchantStatus: (merchantId, statusData) =>
@@ -110,6 +114,45 @@ checkStatus: (merchantId) => apiClient.get(`/api/merchant/schedule/${merchantId}
 
 // 獲取一週營業概況
 getWeeklyOverview: (merchantId) => {apiClient.get(`/api/merchant/schedule/${merchantId}/overview`)},
+
+
+// 取得今日訂單
+getTodayOrders: () => {
+  // const merchantId = getMerchantId(); // 假設這是取得商家ID的工具函式
+  return apiClient.get(`/api/merchant/orders/today/${merchantId}`);
+},
+
+// 更新訂單狀態
+updateOrderStatus: (orderId, status) => {
+  return apiClient.patch(`/api/merchant/orders/${orderId}/status`, { 
+    status,
+    merchantId: merchantId
+  });
+},
+
+// 取得訂單統計
+getOrderStats: (date = null) => {
+  const params = date ? { date } : {};
+  return apiClient.get(`/api/merchant/orders/stats/${merchantId}`, { params });
+},
+
+// 取得單一訂單詳情
+getOrderById: (orderId) => {
+  return apiClient.get(`/api/merchant/orders/${orderId}`);
+},
+
+// 取得指定日期範圍的訂單
+getOrdersByDateRange: (startDate, endDate) => {
+  return apiClient.get(`/api/merchant/orders/range/${merchantId}`, {
+    params: { startDate, endDate }
+  });
+},
+
+// 取得指定狀態的訂單
+getOrdersByStatus: (status) => {
+  return apiClient.get(`/api/merchant/orders/status/${status}/${merchantId}`);
+},
+
 
 // 上傳
 uploadMerchantLogo: (merchantId, logoFile) => {

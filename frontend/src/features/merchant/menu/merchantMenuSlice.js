@@ -1,7 +1,7 @@
 // features/merchant/menu/merchantMenuSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { merchantApi } from '../../../services/merchantApi';
-import { getEffectiveMerchantId } from '../../../utils/getMerchantId';  // 開發環境中提供預設merchantId
+import { fetchMerchantInfoFromSession } from '../../../utils/getMerchantId';  // 開發環境中提供預設merchantId
 
 // 餐點類別選項
 export const MENU_CATEGORIES = [
@@ -37,8 +37,13 @@ export const fetchMenuItems = createAsyncThunk(
     try {
       let merchantId = merchantIdArg;
       if (!merchantId) {
-        const rawMerchantId = localStorage.getItem('merchantId');
-        merchantId = getEffectiveMerchantId(rawMerchantId);
+
+        // const rawMerchantId = localStorage.getItem('merchantId');
+        // merchantId = getEffectiveMerchantId(rawMerchantId);
+
+        //整合測試及實際上線用
+        const res = await fetchMerchantInfoFromSession();
+        merchantId = res?.merchantId;
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
@@ -58,8 +63,12 @@ export const createMenuItem = createAsyncThunk(
     try {
       let merchantId = merchantIdArg;
       if (!merchantId) {
-        const rawMerchantId = localStorage.getItem('merchantId');
-        merchantId = getEffectiveMerchantId(rawMerchantId);
+        // const rawMerchantId = localStorage.getItem('merchantId');
+        // merchantId = getEffectiveMerchantId(rawMerchantId);
+
+        //整合測試及實際上線用
+        const res = await fetchMerchantInfoFromSession();
+        merchantId = res?.merchantId;
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
@@ -97,8 +106,12 @@ export const updateMenuItem = createAsyncThunk(
     try {
       let merchantId = merchantIdArg;
       if (!merchantId) {
-        const rawMerchantId = localStorage.getItem('merchantId');
-        merchantId = getEffectiveMerchantId(rawMerchantId);
+        // const rawMerchantId = localStorage.getItem('merchantId');
+        // merchantId = getEffectiveMerchantId(rawMerchantId);
+
+        //整合測試及實際上線用
+        const res = await fetchMerchantInfoFromSession();
+        merchantId = res?.merchantId;
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
@@ -142,8 +155,12 @@ export const deleteMenuItem = createAsyncThunk(
     try {
       let merchantId = merchantIdArg;
       if (!merchantId) {
-        const rawMerchantId = localStorage.getItem('merchantId');
-        merchantId = getEffectiveMerchantId(rawMerchantId);
+        // const rawMerchantId = localStorage.getItem('merchantId');
+        // merchantId = getEffectiveMerchantId(rawMerchantId);
+
+        //整合測試及實際上線用
+        const res = await fetchMerchantInfoFromSession();
+        merchantId = res?.merchantId;
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 

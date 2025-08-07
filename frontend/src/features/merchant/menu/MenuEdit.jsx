@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+import { useMerchantId } from '../../../hooks/useMerchantId'; //整合測試及實際上線用
+// import { getEffectiveMerchantId } from '../../../utils/getMerchantId'; //開發階段接mock資料用
 import { getFullImageUrl } from '../../../utils/getImageUrl';
 import { 
   createMenuItem, 
@@ -22,8 +23,12 @@ const MenuEdit = () => {
   const isEdit = location.state?.isEdit || false;
   const itemId = location.state?.itemId;
   
-  const rawMerchantId = localStorage.getItem('merchantId');
-  const merchantId = getEffectiveMerchantId(rawMerchantId);
+  //開發階段接mock資料用
+  // const rawMerchantId = localStorage.getItem('merchantId');
+  // const merchantId = getEffectiveMerchantId(rawMerchantId);
+  
+  //整合測試及實際上線用
+  const merchantId = useMerchantId();
 
   // 表單狀態
   const [formData, setFormData] = useState({

@@ -9,7 +9,8 @@ import {
   clearError,
   resetSchedule
 } from './merchantScheduleSlice';
-import { getEffectiveMerchantId } from '../../../utils/getMerchantId';
+// import { useMerchantId } from '../../../hooks/useMerchantId'; //整合測試及實際上線用
+import { getEffectiveMerchantId } from '../../../utils/getMerchantId'; //開發階段接mock資料用
 
 const ScheduleEdit = () => {
   const dispatch = useDispatch();
@@ -31,16 +32,21 @@ const ScheduleEdit = () => {
     saturday: '星期六',
     sunday: '星期日'
   };
+  //開發階段接mock資料用
   const rawMerchantId = localStorage.getItem('merchantId');
   const merchantId = getEffectiveMerchantId(rawMerchantId);
+
+  //整合測試及實際上線用
+  // const merchantId = useMerchantId();
+
   const dayKeys = Object.keys(dayLabels);
 
   useEffect(() => {
-    const id = getEffectiveMerchantId();
+    const id = merchantId;
     if (id) {
       dispatch(fetchMerchantSchedule(id));
     }
-  }, [dispatch]);
+  }, [dispatch, merchantId]);
 
   // 處理單日營業狀態切換
   const handleDayToggle = (day) => {
