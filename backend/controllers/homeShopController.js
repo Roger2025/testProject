@@ -3,6 +3,7 @@
 
 const Shop = require('../models/home/Shop');
 
+// 取得所有店家資料
 exports.getAllShops = async (req, res) => {	
   try {
 	const shops = await Shop.find().limit(50);

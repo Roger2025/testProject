@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const homeShopRoutes = require('./routes/home/homeShop');
+const homeOrderRoutes = require('./routes/home/homeOrder');
 
 const cors = require('cors');
 
@@ -58,6 +59,7 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/shops', homeShopRoutes);
+app.use('/api/orders', homeOrderRoutes);
 
 // 測試路由
 const testRoutes = require('./routes/test');

@@ -1,8 +1,8 @@
 // ogani: shoping-cart.html 
 // src/pages/home/OrderPage.js (訂單表格)
 import HeaderShop from '../../components/layout/HeaderShop';
-import Hero from '../../components/layout/Hero';
-import WallpaperShop from '../../components/shop/WallpaperShop';
+// import Hero from '../../components/layout/Hero';
+// import WallpaperShop from '../../components/shop/WallpaperShop';
 import OrderTable from '../../components/cart/OrderTable'; 
 import Footer from '../../components/layout/Footer';
 // 訂單表格
@@ -10,8 +10,8 @@ const OrderPage = () => {
   return (
     <>
       <HeaderShop />
-      <Hero />
-      <WallpaperShop />
+      {/* <Hero /> */}
+      {/* <WallpaperShop /> */}
       <OrderTable />
       <Footer />
     </>
