@@ -1,0 +1,19 @@
+/models/   			   //Shcema整理
+  ├─ Todo_User.js	   //會員(消費者/店家/管理者)
+  ├─ Todo_merchant.js  //店家
+  ├─ Todo_consumer.js  //消費者
+  ├─ Todo_order.js     //訂單
+  ├─ Todo_Items.js	   //訂單明細
+  ├─ Todo_simple.js	   //訂單簡表
+  ├─ Counter.js		   //_id的Countion
+/utils/
+  ├─ getNextSeq.js     //手動新增_id拆分會員表及
+  ├─ insone.js.js      //Shcema匯集
+  ├─ 
+  ├─ 
+  
+moncreates.js          //寫入
+mondeletes.js          //刪除
+monquerys.js           //查詢
+monupdate.js           //修改
+modield.js			   //處理_id為unll  進行刪除
