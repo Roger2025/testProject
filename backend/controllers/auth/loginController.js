@@ -49,7 +49,7 @@ async function handleLogin(req, res) {
     });
   }
   console.log('✅ 登入成功!');
-  console.log('✅ dbUser 內容：', dbUser);
+//   console.log('✅ dbUser 內容：', dbUser);
 
   //  設定 session
   req.session.user = {
@@ -69,7 +69,7 @@ async function handleLogin(req, res) {
 
   //  如果是 admin 寄送驗證碼
   if (dbUser.role === 'admin') {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 100000確保6碼
     verificationCodes[dbUser.email] = {
       code,
       expiresAt: Date.now() + 5 * 60 * 1000 // 控制驗證碼有效時間 5分鐘
@@ -90,7 +90,12 @@ async function handleLogin(req, res) {
   //  統一回傳 session.user 給前端
   res.json({
     status: 'success',
-    user: req.session.user,
+    user: {
+    account: dbUser.account,
+    role: dbUser.role,
+    nickName: dbUser.nickName,
+    email: dbUser.email,
+  },
     message: '登入成功'
   });
 }

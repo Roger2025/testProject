@@ -73,8 +73,9 @@ async function handleRegister(req, res) {
       phone,
       nickName,
   });
-
+    newUser.member_id = newUser._id.toString();
     await newUser.save(); // 物件寫法要儲存 好處可以寫邏輯
+
     console.log('✅ 註冊成功:', account); 
     return res.json({ status: 'success', message: '✅ 註冊成功！請返回登入頁面' });
 

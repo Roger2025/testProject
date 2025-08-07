@@ -5,7 +5,7 @@ const memberSchema = new Schema({
 
   // 基本欄位
   account: { type: String, required: true, unique: true }, // 確保帳號必填且唯一
-  password: { type: String, required: true, unique: true },
+  password: { type: String, required: true},
   name: { type: String },
   email: { type: String, unique: true },
   phone: { type: String },
@@ -13,6 +13,7 @@ const memberSchema = new Schema({
   role: { type: String, default: 'user', enum: ['user', 'shop', 'admin'] }, // enum=限制值
   status: { type: String, default: 'active', enum: ['pending', 'active', 'disabled'] },
   nickName: { type: String }, // 消費者暱稱
+  member_id: { type: String }, //會員id
 
   // 商家相關欄位（
   storeName: { type: String },             

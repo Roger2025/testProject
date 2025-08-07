@@ -24,24 +24,25 @@ function LoginPage() {
       );
 
       const data = res.data;
-      setLoading(false);
 
       if (data.status === 'success') {
         const user = data.user; //  後端回傳的 user 最準
 
         // 顯示成功訊息
-        setMessage(`✅ 登入成功！歡迎 ${user.name}（角色：${user.role}），準備導頁中...`);
+        setMessage(`✅ 登入成功！歡迎 ${user.account}（角色：${user.role}），準備導頁中...`);
         console.log('登入成功，使用者資訊:', user);
 
-        // ✅ 用回傳 user 角色導頁（準確！）
-        if (user.role === 'admin') {
-          navigate('/verify', { state: { email: user.email } });
-        } else if (user.role === 'shop') {
-          navigate('/shop');
-        } else {
-          navigate('/user');
-        }
-
+        // 用回傳 user 角色導頁
+        setTimeout(() => {
+            setLoading(false); // ← 放在 setTimeout 裡！
+            if (user.role === 'admin') {
+              navigate('/verify', { state: { email: user.email } });
+            } else if (user.role === 'shop') {
+              navigate('/shop');
+            } else {
+              navigate('/user');
+            }
+          }, 1500);
 
       } else {
         setMessage(`❌ ${data.message || '登入失敗'}`);

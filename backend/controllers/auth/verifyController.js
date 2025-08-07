@@ -5,7 +5,8 @@ const { verificationCodes, transporter } = require('../shared/shared');
 const handleVerify = (req, res) => {
   const { email, code } = req.body;
   const record = verificationCodes[email];
-
+  console.log('收到驗證 email:', email);
+  console.log('目前所有驗證碼：', verificationCodes); 
   if (!record) {
     return res.json({
       status: 'fail',
