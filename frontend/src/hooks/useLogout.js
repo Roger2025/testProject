@@ -12,7 +12,7 @@ export default function useLogout() {
       await axios.post('http://localhost:3001/api/auth/logout', {}, { withCredentials: true }); // 參數(url,data,config)
 
       alert('✅ 登出成功');
-      navigate('/login');
+      navigate('/auth/login');
     } catch (err) {
       alert('❌ 登出失敗');
     }

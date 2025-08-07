@@ -69,7 +69,7 @@ function RegisterPage() {
       // 成功後1.5秒跳轉 等一下增加使用者體驗
       if (res.data.status === 'success') {
         setTimeout(() => {
-          navigate('/login');
+          navigate('/auth/login');
         }, 1500);
       }
     } catch (err) {

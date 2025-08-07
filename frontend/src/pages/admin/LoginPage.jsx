@@ -36,7 +36,7 @@ function LoginPage() {
         setTimeout(() => {
             setLoading(false); // ← 放在 setTimeout 裡！
             if (user.role === 'admin') {
-              navigate('/verify', { state: { email: user.email } });
+              navigate('/auth/verify', { state: { email: user.email } });
             } else if (user.role === 'shop') {
               navigate('/shop');
             } else {
@@ -94,7 +94,7 @@ function LoginPage() {
       <p>{message}</p>
 
       {/*  引導去註冊頁 */}
-      <p>還沒有帳號？<Link to="/register">點此註冊</Link></p>
+      <p>還沒有帳號？<Link to="/auth/register">點此註冊</Link></p>
     </div>
   );
 }
