@@ -1,3 +1,4 @@
+// 登出 清除session,cookie
 function handleLogout(req, res) {
   req.session.destroy(err => {
     if (err) {

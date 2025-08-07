@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// 登出
 export default function useLogout() {
   const navigate = useNavigate();
 

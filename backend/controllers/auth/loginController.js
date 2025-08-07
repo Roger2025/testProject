@@ -1,12 +1,12 @@
 const Member = require('../../server/models/member');
 const bcrypt = require('bcryptjs');
 const { verificationCodes, transporter } = require('../shared/shared');
-require('dotenv').config(); // 載入 .env 檔案 (管理者專屬資料)
+require('dotenv').config(); // 載入 .env 檔案 (用來寄信)
 
+// 登入
 async function handleLogin(req, res) { 
 
-  // 清空舊 session，避免殘留前一個帳號資料
-  req.session.user = null;
+  req.session.user = null; // 清空舊 session 避免殘留前一個帳號資料
 
   const { account, password  } = req.body;
 
@@ -14,7 +14,7 @@ async function handleLogin(req, res) {
    try {
     console.log('收到前端帳號:', account);
     console.log('正在登入中...');
-    dbUser = await Member.findOne({ account }); // 正確：查 MongoDB 的 account 欄位
+    dbUser = await Member.findOne({ account }); // 查 MongoDB 的 account 欄位
   } catch (err) {
     console.error(' 查詢帳號失敗:', err);
     return res.status(500).json({ status: 'error', message: '伺服器錯誤' });
@@ -34,7 +34,7 @@ async function handleLogin(req, res) {
     return res.json({ status: 'fail', message: '密碼錯誤' });
   }
 
-  // 如果帳號是被停權的，禁止登入
+  // 如果帳號是被停權的 禁止登入
   if (dbUser.status === 'disabled') {
     return res.status(403).json({ // 鏈式寫法
       status: 'forbidden',
@@ -42,6 +42,7 @@ async function handleLogin(req, res) {
     });
   }
 
+  // 判斷是否pending
   if (dbUser.status === 'pending') {
     return res.status(403).json({
       status: 'forbidden',
@@ -54,15 +55,15 @@ async function handleLogin(req, res) {
   //  設定 session
   req.session.user = {
     //sessionId: req.sessionID,
-    //merchantid: dbUser?.merchantid || 'unknown',
+    merchantid: dbUser?.merchantid || 'unknown', // 會員識別id
     account: dbUser.account,
     role: dbUser.role,
     name: dbUser.name,
     email: dbUser.email,
     status: dbUser.status,
     adminVerified: dbUser.role === 'admin' ? false : undefined,
-    nickName: dbUser?.nickName || 'unknown',
-    merchantId: dbUser?.merchantId || 'unknown',
+    nickName: dbUser?.nickName || 'unknown', // 匿名
+    merchantId: dbUser?.merchantId || 'unknown', // 商家識別Id
   };
 
   console.log('✅ 登入成功並寫入 session', req.session.user);
@@ -76,7 +77,7 @@ async function handleLogin(req, res) {
     };
     try {
       const info = await transporter.sendMail({
-        from: process.env.EMAIL_USER, // 實際發信人 跟 transporter 的 user 一致！
+        from: process.env.EMAIL_USER, // 實際發信人 跟 transporter 的 user 一致
         to: dbUser.email,             // 收件人 
         subject: '管理者登入驗證碼',
         text: `您的驗證碼是：${code}`

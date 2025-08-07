@@ -1,3 +1,4 @@
+// 拿身分
 function handleCheckMe(req, res) {
   console.log('檢查 session：', req.user);
   if (req.user) {
@@ -6,7 +7,7 @@ function handleCheckMe(req, res) {
     res.status(401).json({
        status: 'unauthorized',
        message: '未登入',
-       adminVerified: req.session.adminVerified || false }); //鏈式方法寫法
+       adminVerified: req.session.adminVerified || false }); 
   }
 }
 

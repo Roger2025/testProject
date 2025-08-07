@@ -1,3 +1,4 @@
+// 權限中介層
 function roleCheck(allowedRoles = []) {
   return (req, res, next) => {
     const user = req.user; // 這裡來自session中的使用者資訊（在主程式中已掛進 req.user）

@@ -1,3 +1,4 @@
+// 會員表 Schema和模型建立
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 

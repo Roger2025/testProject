@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../../styles/admin_styles/RegisterPage.css';
 import validator from 'validator';
 
+// 註冊頁面
 function RegisterPage() {
 
   // 狀態管理

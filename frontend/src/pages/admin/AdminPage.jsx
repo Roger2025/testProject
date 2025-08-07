@@ -3,6 +3,7 @@ import useLogout from '../../hooks/useLogout';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/admin_styles/AdminPage.css';
 
+// 管理者頁面
 function AdminPage() {
   const { user, authLoading  } = useAuth();
   const logout = useLogout();

@@ -1,4 +1,3 @@
-// controllers/auth/verifyController.js
 const { verificationCodes, transporter } = require('../shared/shared');
 
 // 驗證信箱用的控制器函式

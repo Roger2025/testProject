@@ -17,6 +17,9 @@ async function handleCreateProduct(req, res) {
   });
 }
 
+//----------------------------------------------------------------------------------------------------------審核區塊
+
+// 取得pending商家
 async function handleGetPendingUsers(req, res) {
   try {
     const pendingShops = await Member.find({ status: 'pending' });
@@ -26,6 +29,7 @@ async function handleGetPendingUsers(req, res) {
   }
 }
 
+// 審核通過功能
 async function handleApproveUser(req, res) {
   const targetAccount = req.params.account;
   try {
@@ -55,6 +59,9 @@ async function handleApproveUser(req, res) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------取得使用者區塊
+
+// 取得所有使用者資料 (商家,消費者,管理者)
 async function handleGetAllUsers(req, res) {
   try {
     const users = await Member.find();
@@ -64,6 +71,9 @@ async function handleGetAllUsers(req, res) {
   }
 }
 
+//----------------------------------------------------------------------------------------------------------停權+恢復帳號區塊
+
+// 停權功能
 async function handleDeleteUser(req, res) {
   const target = req.params.account;
   try {
@@ -93,6 +103,7 @@ async function handleDeleteUser(req, res) {
   }
 }
 
+// 恢復帳號功能
 async function handleRestoreUser(req, res) {
   const target = req.params.account;
   try {
@@ -120,6 +131,7 @@ async function handleRestoreUser(req, res) {
   }
 }
 
+// 函式匯出
 module.exports = {
   handleAdminOnlyData,
   handleCreateProduct,

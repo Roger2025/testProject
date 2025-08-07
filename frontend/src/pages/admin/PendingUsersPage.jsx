@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin_styles/PendingUsersPage.css'; 
 
+// pending頁面
 const PendingUsersPage = () => {
   const [pendingShops, setPendingShops] = useState([]);
 
+  // 取得商家pending用戶
   const fetchPendingShops = async () => {
     try {
       
@@ -17,6 +19,7 @@ const PendingUsersPage = () => {
     }
   };
 
+  // 審核商家
   const handleApprove = async (account) => {
     try {
       //  改為完整後端路徑 + withCredentials

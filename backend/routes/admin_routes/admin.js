@@ -9,7 +9,9 @@ const {
   handleGetAllUsers,
   handleDeleteUser,
   handleRestoreUser,
-} = require('../../controllers/admin/adminController'); // ✅ 引入控制器
+} = require('../../controllers/admin/adminController'); // 引入函式
+
+//------------------------------------------------------------------------------------------管理者功能API路由設定
 
 // 管理者專屬資料
 router.get('/admin-only-data', roleCheck(['admin']), handleAdminOnlyData);

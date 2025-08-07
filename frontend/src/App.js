@@ -1,11 +1,10 @@
-// App.jsx（與 routes 同層）
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthRoutes from './routes/AuthRoutes';
 import AdminRoutes from './routes/AdminRoutes';
-import useAuth from './hooks/useAuth';
+//import useAuth from './hooks/useAuth';
 
+// 主路由
 function App() {
-  const { user, authLoading } = useAuth();
 
   return (
     <BrowserRouter>

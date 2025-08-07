@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin_styles/AllUsersPage.css';
 
+// 所有使用者頁面
 function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
@@ -24,6 +25,7 @@ function AllUsersPage() {
     fetchUsers();
   }, []);
 
+  // 停權
   const handleDelete = async (account) => {
     if (!window.confirm(`確定要停權帳號 ${account} 嗎？`)) return;
     try {

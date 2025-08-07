@@ -3,6 +3,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true; // 所有 axios 請求都自動帶上 cookie
 
+// 取得user資訊 並先將狀態、取的user函式、user匯出
 export default function useAuth() {
   const [user, setUser] = useState(null);  
   const [checking, setChecking] = useState(true);

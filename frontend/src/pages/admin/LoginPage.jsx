@@ -4,10 +4,11 @@ import '../../styles/admin_styles/LoginPage.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; 
 
+// 登入頁面
 function LoginPage() {
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(''); // // 提示訊息
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ function LoginPage() {
 
         // 用回傳 user 角色導頁
         setTimeout(() => {
-            setLoading(false); // ← 放在 setTimeout 裡！
+            setLoading(false); // 控制按鈕
             if (user.role === 'admin') {
               navigate('/auth/verify', { state: { email: user.email } });
             } else if (user.role === 'shop') {
