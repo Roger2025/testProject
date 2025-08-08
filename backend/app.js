@@ -15,6 +15,7 @@ var usersRouter = require('./routes/users');
 var merchantMenuRouter = require('./routes/merchant/merchantMenu');
 var merchantSetMenuRouter = require('./routes/merchant/merchantSetMenu');
 var merchantScheduleRouter = require('./routes/merchant/merchantSchedule');
+var merchantOrderRoutes = require('./routes/merchant/merchantOrder');
 const cors = require('cors');
 
 var app = express();
@@ -42,7 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -52,6 +53,8 @@ app.use('/users', usersRouter);
 app.use('/api/merchant', merchantMenuRouter);
 app.use('/api/merchant', merchantSetMenuRouter);
 app.use('/api/merchant/schedule', merchantScheduleRouter);
+app.use('/api/merchant/orders', merchantOrderRoutes);
+
 // 測試路由
 const testRoutes = require('./routes/test');
 app.use('/api', testRoutes);

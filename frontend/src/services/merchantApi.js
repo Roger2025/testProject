@@ -1,6 +1,5 @@
 // services/merchantApi.js
 import axios from 'axios';
-import { getEffectiveMerchantId } from '../utils/getMerchantId';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -34,8 +33,6 @@ apiClient.interceptors.response.use(
 }
 );
 
-const rawMerchantId = localStorage.getItem('merchantId');
-const merchantId = getEffectiveMerchantId(rawMerchantId);
 
 export const merchantApi = {
 // 單品
@@ -117,21 +114,20 @@ getWeeklyOverview: (merchantId) => {apiClient.get(`/api/merchant/schedule/${merc
 
 
 // 取得今日訂單
-getTodayOrders: () => {
-  // const merchantId = getMerchantId(); // 假設這是取得商家ID的工具函式
+getTodayOrders: (merchantId) => {
   return apiClient.get(`/api/merchant/orders/today/${merchantId}`);
 },
 
 // 更新訂單狀態
-updateOrderStatus: (orderId, status) => {
+updateOrderStatus: (orderId, status, merchantId) => {
   return apiClient.patch(`/api/merchant/orders/${orderId}/status`, { 
     status,
-    merchantId: merchantId
+    merchantId
   });
 },
 
 // 取得訂單統計
-getOrderStats: (date = null) => {
+getOrderStats: (merchantId, date = null) => {
   const params = date ? { date } : {};
   return apiClient.get(`/api/merchant/orders/stats/${merchantId}`, { params });
 },
@@ -142,14 +138,14 @@ getOrderById: (orderId) => {
 },
 
 // 取得指定日期範圍的訂單
-getOrdersByDateRange: (startDate, endDate) => {
+getOrdersByDateRange: (merchantId, startDate, endDate) => {
   return apiClient.get(`/api/merchant/orders/range/${merchantId}`, {
     params: { startDate, endDate }
   });
 },
 
 // 取得指定狀態的訂單
-getOrdersByStatus: (status) => {
+getOrdersByStatus: (merchantId, status) => {
   return apiClient.get(`/api/merchant/orders/status/${status}/${merchantId}`);
 },
 

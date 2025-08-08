@@ -38,7 +38,7 @@ export function getEffectiveMerchantId(authMerchantId) {
  */
 export async function fetchMerchantInfoFromSession() {
   try {
-    const res = await axios.get('/api/auth/loin', {
+    const res = await axios.get('/api/auth/login', {
       withCredentials: true, // 確保 cookie 傳送
     });
 

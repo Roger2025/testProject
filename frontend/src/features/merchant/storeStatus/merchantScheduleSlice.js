@@ -7,7 +7,7 @@ export const fetchMerchantSchedule = createAsyncThunk(
   async (merchantId, { rejectWithValue }) => {
     try {
       const response = await merchantApi.getSchedule(merchantId);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || '獲取營業排程失敗'
@@ -22,7 +22,7 @@ export const updateMerchantSchedule = createAsyncThunk(
   async ({ merchantId, scheduleData }, { rejectWithValue }) => {
     try {
       const response = await merchantApi.updateSchedule(merchantId, scheduleData);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || '更新營業排程失敗'
