@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
+const merchantScheduleSchema = require('./merchantSchedule');
 const { Schema } = mongoose;
 
 const merchantSchema = new Schema({
@@ -35,9 +36,8 @@ const merchantSchema = new Schema({
     type:String
   },
   category:String,//店家狀態
-  Business:{//營業時間
-    type:JSON
-  }
+  Business: merchantScheduleSchema
+
 }, { collection: 'merchant' });
 
 module.exports = mongoose.model('Merchant', merchantSchema);

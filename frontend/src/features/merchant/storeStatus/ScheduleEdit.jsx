@@ -9,8 +9,8 @@ import {
   clearError,
   resetSchedule
 } from './merchantScheduleSlice';
-// import { useMerchantId } from '../../../hooks/useMerchantId'; //整合測試及實際上線用
-import { getEffectiveMerchantId } from '../../../utils/getMerchantId'; //開發階段接mock資料用
+import { useMerchantId } from '../../../hooks/useMerchantId'; //整合測試及實際上線用
+// import { getEffectiveMerchantId } from '../../../utils/getMerchantId'; //開發階段接mock資料用
 
 const ScheduleEdit = () => {
   const dispatch = useDispatch();
@@ -33,11 +33,11 @@ const ScheduleEdit = () => {
     sunday: '星期日'
   };
   //開發階段接mock資料用
-  const rawMerchantId = localStorage.getItem('merchantId');
-  const merchantId = getEffectiveMerchantId(rawMerchantId);
+  // const rawMerchantId = localStorage.getItem('merchantId');
+  // const merchantId = getEffectiveMerchantId(rawMerchantId);
 
   //整合測試及實際上線用
-  // const merchantId = useMerchantId();
+  const merchantId = useMerchantId();
 
   const dayKeys = Object.keys(dayLabels);
 

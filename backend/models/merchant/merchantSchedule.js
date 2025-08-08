@@ -32,7 +32,7 @@ const dayScheduleSchema = new mongoose.Schema({
 const merchantScheduleSchema = new mongoose.Schema({
   merchantId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: false,
     unique: true,
     ref: 'Merchant'
   },
@@ -76,7 +76,7 @@ const merchantScheduleSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
+}, { _id: false });
 
 // 更新時自動設定 lastModified
 merchantScheduleSchema.pre('save', function(next) {
@@ -140,4 +140,8 @@ merchantScheduleSchema.index({ 'schedule.friday.isOpen': 1 });
 merchantScheduleSchema.index({ 'schedule.saturday.isOpen': 1 });
 merchantScheduleSchema.index({ 'schedule.sunday.isOpen': 1 });
 
-module.exports = mongoose.model('MerchantSchedule', merchantScheduleSchema);
+//這樣會在mongoDB新建一個MerchantSchedule
+// module.exports = mongoose.model('MerchantSchedule', merchantScheduleSchema);
+
+//這樣只會輸出一個Schema,方便傳到現有的資料表
+module.exports = merchantScheduleSchema;
