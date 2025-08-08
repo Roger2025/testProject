@@ -7,7 +7,7 @@ function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('active'); 
+  const [filterStatus, setFilterStatus] = useState('all'); 
 
   // 更新畫面
   const fetchUsers = async () => {
@@ -93,7 +93,10 @@ function AllUsersPage() {
 
   return (
     <div className="all-users-page">
-      <h2>使用者總覽</h2>
+      <h2>使用者管理</h2>
+      <p className="subtitle">可審核、停權、恢復帳號</p>
+      <p className="subtitle">(狀態)一覽: Pending → 待審核， Disabled → 停權， active → 正常</p>
+      <p className="subtitle">(操作)一覽: 審核通過 → 商家帳好正常， 停權 → 讓帳號停權， 恢復帳號 → 讓帳號正常</p>
 
       <div className="controls">
         <input

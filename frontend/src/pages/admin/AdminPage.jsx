@@ -14,14 +14,14 @@ function AdminPage() {
   return (
     <div className="admin-container">
       <h1 className="admin-title">管理者後台平台</h1>
-      <p className="admin-subtitle">歡迎來到管理者系統，您可以在此管理商品與訂單。</p>
+      <p className="admin-subtitle">歡迎來到管理者系統，您可以在此做審核、停權、恢復的功能。</p>
 
       <div className="button-group">
         <button className="admin-button" onClick={() => navigate('/admin/pending-users')}>
           📋 查看待審核商家
         </button>
         <button className="admin-button" onClick={() => navigate('/admin/all-users')}>
-          📝查看所有使用者 有審核、停權/恢復功能
+          📝 使用者管理
         </button>
         <button onClick={logout}>登出</button>
       </div>

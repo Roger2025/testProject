@@ -55,7 +55,7 @@ async function handleLogin(req, res) {
   //  設定 session
   req.session.user = {
     //sessionId: req.sessionID,
-    merchantid: dbUser?.merchantid || 'unknown', // 會員識別id
+    member_id: dbUser?.member_id || 'unknown', // 會員識別id
     account: dbUser.account,
     role: dbUser.role,
     name: dbUser.name,
