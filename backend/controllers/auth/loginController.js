@@ -1,4 +1,4 @@
-const Member = require('../../server/models/member');
+const Member = require('../../models/Register_Schema/member');
 const bcrypt = require('bcryptjs');
 const { verificationCodes, transporter } = require('../shared/shared');
 require('dotenv').config(); // 載入 .env 檔案 (用來寄信)

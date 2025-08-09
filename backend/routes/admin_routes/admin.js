@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { roleCheck } = require('../../server/middlewares/roleCheck'); 
+const { roleCheck } = require('../../models/middlewares/roleCheck'); 
 const {
   handleAdminOnlyData,
   handleCreateProduct,

@@ -1,5 +1,5 @@
-const Member = require('../../server/models/member');
-const { roleCheck } = require('../../server/middlewares/roleCheck'); // 如果 controller 用不到可略去
+const Member = require('../../models/Register_Schema/member');
+const { roleCheck } = require('../../models/middlewares/roleCheck'); // 如果 controller 用不到可略去
 
 async function handleAdminOnlyData(req, res) {
   res.json({

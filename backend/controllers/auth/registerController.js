@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
-const Member = require('../../server/models/member'); 
-const Merchant = require('../../server/models/merchant'); 
+const Member = require('../../models/Register_Schema/member'); 
+const Merchant = require('../../models/Register_Schema/merchant'); 
 
 // 再次判斷註冊並寫入資料庫 會員表 and 商家表
 async function handleRegister(req, res) {

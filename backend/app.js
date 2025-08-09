@@ -5,7 +5,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo'); 
 
-const { roleCheck } = require('./server/middlewares/roleCheck');
+const { roleCheck } = require('./models/middlewares/roleCheck');
 const adminRouter = require('./routes/admin_routes/admin');
 const loginRouter = require('./routes/auth/login');
 const registerRouter = require('./routes/auth/register');
