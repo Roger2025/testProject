@@ -23,7 +23,9 @@ function AdminPage() {
         <button className="admin-button" onClick={() => navigate('/admin/all-users')}>
           📝 使用者管理
         </button>
-        <button onClick={logout}>登出</button>
+        <button className="admin-button" onClick={logout}>
+          登出
+        </button>
       </div>
     </div>
   );

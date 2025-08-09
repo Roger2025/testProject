@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import '../../styles/admin_styles/AllUsersPage.css';
 
@@ -7,7 +7,19 @@ function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all'); 
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [lastRefreshedAt, setLastRefreshedAt] = useState(null); // 新：顯示資料更新時間
+
+  // 取得時間欄位（自動兼容 created_at / createdAt）
+  const getCreatedAt = (u) => u?.created_at || u?.createdAt || null;
+
+  // 轉成可讀時間
+  const formatDateTime = (isoStr) => {
+    if (!isoStr) return '-';
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return '-';
+    return d.toLocaleString();
+  };
 
   // 更新畫面
   const fetchUsers = async () => {
@@ -15,7 +27,8 @@ function AllUsersPage() {
       const res = await axios.get('http://localhost:3001/api/admin/all-users', {
         withCredentials: true
       });
-      setUsers(res.data.users);
+      setUsers(res.data.users || []);
+      setLastRefreshedAt(new Date()); // 新：記錄更新時間
     } catch (err) {
       console.error('❌ 取得使用者失敗:', err);
     }
@@ -33,10 +46,10 @@ function AllUsersPage() {
         withCredentials: true
       });
       if (res.data.status === 'success') {
-        alert(res.data.message);   // 成功提示
-        fetchUsers();              // 更新畫面
+        alert(res.data.message);
+        fetchUsers();
       } else {
-        alert('⚠️ ' + res.data.message); // 顯示後端錯誤原因
+        alert('⚠️ ' + res.data.message);
       }
     } catch (err) {
       console.error('❌ 停權失敗:', err);
@@ -52,10 +65,10 @@ function AllUsersPage() {
         withCredentials: true
       });
       if (res.data.status === 'success') {
-        alert(res.data.message);   // 成功提示
-        fetchUsers();              // 重新整理資料
+        alert(res.data.message);
+        fetchUsers();
       } else {
-        alert('⚠️ ' + res.data.message); // 顯示後端錯誤原因
+        alert('⚠️ ' + res.data.message);
       }
     } catch (err) {
       console.error('❌ 恢復失敗:', err);
@@ -71,12 +84,11 @@ function AllUsersPage() {
         withCredentials: true
       });
       if (res.data.status === 'success') {
-        alert(res.data.message);    // 成功提示
-        fetchUsers();               // 更新畫面
+        alert(res.data.message);
+        fetchUsers();
       } else {
-        alert('⚠️ ' + res.data.message); // 顯示後端邏輯錯誤
+        alert('⚠️ ' + res.data.message);
       }
-
     } catch (err) {
       console.error('❌ 審核失敗:', err);
       alert('❌ 無法審核帳號');
@@ -84,19 +96,64 @@ function AllUsersPage() {
   };
 
   // role + status + search 多條件過濾
-  const filteredUsers = users.filter(u => {
-    const matchesSearch = (u.account || '').includes(search); // includes模糊比對
-    const matchesRole = filterRole === 'all' || u.role === filterRole; // filterRole下拉式選單的腳色
-    const matchesStatus = filterStatus === 'all' || u.status === filterStatus; // filterStatus下拉式選單狀態
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  const filteredUsers = useMemo(() => {
+    const list = users.filter(u => {
+      const matchesSearch = (u.account || '').includes(search);
+      const matchesRole = filterRole === 'all' || u.role === filterRole;
+      const matchesStatus = filterStatus === 'all' || u.status === filterStatus;
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+
+    // 新：當切到待審核時，以建立時間排序（新到舊）
+    if (filterStatus === 'pending') {
+      list.sort((a, b) => {
+        const da = new Date(getCreatedAt(a) || 0).getTime();
+        const db = new Date(getCreatedAt(b) || 0).getTime();
+        return db - da; // 新到舊；若要舊到新，改成: return da - db;
+      });
+    }
+    return list;
+  }, [users, search, filterRole, filterStatus]);
+
+  // 新：統計資訊（總數、狀態、角色）
+  const stats = useMemo(() => {
+    const total = users.length;
+    const byStatus = users.reduce((acc, u) => {
+      const s = u.status || 'active';
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    }, {});
+    const byRole = users.reduce((acc, u) => {
+      const r = u.role || 'user';
+      acc[r] = (acc[r] || 0) + 1;
+      return acc;
+    }, {});
+    return { total, byStatus, byRole };
+  }, [users]);
 
   return (
     <div className="all-users-page">
-      <h2>使用者管理</h2>
+      <div style={{display:'flex', alignItems:'baseline', justifyContent:'space-between'}}>
+        <h2>使用者管理</h2>
+        <small style={{opacity:0.7}}>
+          資料更新於：{lastRefreshedAt ? lastRefreshedAt.toLocaleString() : '-'}
+        </small>
+      </div>
+
+      {/* 新：統計區 */}
+      <div className="stats-bar" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px', margin:'8px 0 16px'}}>
+        <div className="stat-card"><b>總數(商家、消費、管理者)</b><div>{stats.total}</div></div>
+        <div className="stat-card"><b>Active</b><div>{stats.byStatus.active || 0}</div></div>
+        <div className="stat-card"><b>Pending</b><div>{stats.byStatus.pending || 0}</div></div>
+        <div className="stat-card"><b>Disabled</b><div>{stats.byStatus.disabled || 0}</div></div>
+        <div className="stat-card"><b>Admin</b><div>{stats.byRole.admin || 0}</div></div>
+        <div className="stat-card"><b>Shop</b><div>{stats.byRole.shop || 0}</div></div>
+        <div className="stat-card"><b>User</b><div>{stats.byRole.user || 0}</div></div>
+      </div>
+
       <p className="subtitle">可審核、停權、恢復帳號</p>
       <p className="subtitle">(狀態)一覽: Pending → 待審核， Disabled → 停權， active → 正常</p>
-      <p className="subtitle">(操作)一覽: 審核通過 → 商家帳好正常， 停權 → 讓帳號停權， 恢復帳號 → 讓帳號正常</p>
+      <p className="subtitle">(操作)一覽: 審核通過 → 商家可登入上架， 停權 → 帳號鎖住， 恢復帳號 → 帳號正常</p>
 
       <div className="controls">
         <input
@@ -123,6 +180,7 @@ function AllUsersPage() {
           <option value="pending">待審核</option>
           <option value="disabled">已停權</option>
         </select>
+        <button onClick={fetchUsers}>重新整理</button>
       </div>
 
       <table className="users-table">
@@ -134,19 +192,21 @@ function AllUsersPage() {
             <th>店名</th>
             <th>地址</th>
             <th>狀態</th>
+            <th>建立時間</th> {/* 新增欄 */}
             <th>操作</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map(u => (
-            <tr key={u.account} className={u.status === 'disabled' ? 'disabled-row' : 'enabled-row'}> {/* 控制停權恢復樣式*/}
-              <td>{u.account}</td>  { /*帳號作為唯一識別值 讓React在重新渲染時可以有效比對DOM提高效能 */}
+            <tr key={u.account} className={u.status === 'disabled' ? 'disabled-row' : 'enabled-row'}>
+              <td>{u.account}</td>
               <td>{u.email}</td>
               <td>{u.role}</td>
               <td>{u.storeName || '-'}</td>
               <td>{u.storeAddress || '-'}</td>
               <td className={`status-text ${u.status || 'active'}`}>{u.status || 'active'}</td>
-              <td> 
+              <td>{formatDateTime(getCreatedAt(u))}</td> {/* 顯示時間 */}
+              <td>
                 {u.status === 'pending' ? (
                   <button className="btn-approve" onClick={() => handleApprove(u.account)}>審核通過</button>
                 ) : u.role !== 'admin' ? (
@@ -163,6 +223,8 @@ function AllUsersPage() {
           ))}
         </tbody>
       </table>
+
+     
     </div>
   );
 }

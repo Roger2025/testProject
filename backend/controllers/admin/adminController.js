@@ -22,8 +22,21 @@ async function handleCreateProduct(req, res) {
 // 取得pending商家
 async function handleGetPendingUsers(req, res) {
   try {
-    const pendingShops = await Member.find({ status: 'pending' });
-    res.json({ status: 'success', pendingShops: pendingShops });
+    const pendingShops = await Member.find(
+      { status: 'pending' },
+      {
+        account: 1,
+        email: 1,
+        role: 1,
+        status: 1,
+        created_at: 1,
+        storeName: 1,
+        storeAddress: 1,
+        _id: 0,              // 不傳_id
+      }
+    ).lean(); // 回普通 JS 物件 省記憶體 查詢更快
+
+    res.json({ status: 'success', pendingShops });
   } catch (err) {
     res.status(500).json({ status: 'error', message: '伺服器錯誤' });
   }
@@ -51,7 +64,7 @@ async function handleApproveUser(req, res) {
     res.json({
       status: 'success',
       message: `✅ 帳號 ${targetAccount} 已審核通過並設為 shop`,
-      user
+      //user 
     });
   } catch (err) {
     console.error('❌ 審核失敗錯誤：', err);
@@ -64,7 +77,19 @@ async function handleApproveUser(req, res) {
 // 取得所有使用者資料 (商家,消費者,管理者)
 async function handleGetAllUsers(req, res) {
   try {
-    const users = await Member.find();
+    const users = await Member.find(
+      {},
+      {
+        account: 1,
+        email: 1,
+        role: 1,
+        status: 1,
+        created_at: 1,
+        storeName: 1,
+        storeAddress: 1,
+        _id: 0,              // 不傳_id
+      }
+    ).lean();
     res.json({ status: 'success', users });
   } catch (err) {
     res.status(500).json({ status: 'error', message: '伺服器錯誤' });

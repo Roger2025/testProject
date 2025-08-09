@@ -1,41 +1,155 @@
-/* 📁 pages/PendingUsersPage.css */
+/* ===== 頁面基礎 ===== */
 .pending-users-page {
   padding: 20px;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 12px;
+/* ===== 頁首 ===== */
+.header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 90%;               /* 將近滿版 */
+  margin: 0 auto 10px;
+}
+.header-row small {
+  opacity: .7;
 }
 
-.no-users {
-  color: gray;
-  font-style: italic;
+/* ===== 儀表板 ===== */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  width: 90%;
+  margin: 8px auto 16px;
 }
-
-.pending-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.pending-table th,
-.pending-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
+.stat-card {
+  background: #f7f7f9;
+  border: 1px solid #e9e9ef;
+  border-radius: 12px;
+  padding: 14px;
   text-align: center;
+  transition: box-shadow .2s ease, transform .06s ease;
+}
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(16, 24, 40, .08);
+  transform: translateY(-1px);
+}
+.stat-card b {
+  display: block;
+  font-size: 16px;
+  color: #111;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.stat-card div {
+  font-size: 26px;
+  font-weight: 800;
+  color: orange;
 }
 
+/* ===== 搜尋與篩選列 ===== */
+.subtitle,
+.controls {
+  width: 90%;
+  margin: 0 auto 12px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.controls input,
+.controls select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+.controls input:focus,
+.controls select:focus {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, .15);
+}
+.controls button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #2196f3;
+  background: #2196f3;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.controls button:hover {
+  background: #1976d2;
+}
+
+/* ===== 表格 ===== */
+.pending-table {
+  width: 90%;               /* 將近滿版 */
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, .06);
+  margin: 4px auto 24px;
+}
+
+.pending-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f3f6fb;
+  color: #3b4256;
+  font-weight: 700;
+  letter-spacing: .3px;
+  border-bottom: 1px solid #e6e8ef;
+  padding: 10px;
+  text-align: left;
+}
+
+.pending-table td {
+  border-bottom: 1px solid #e6e8ef;
+  padding: 10px;
+  text-align: left;
+  background: #fff;
+  transition: background-color .15s ease;
+}
+.pending-table tbody tr:hover td {
+  background: #f7fbff;
+}
+
+/* 狀態 */
+.status-text.pending,
 .pending-role {
   color: orange;
-  font-weight: 600;
+  font-weight: bold;
 }
 
+/* 建立時間欄位緊湊 */
+.pending-table th:nth-child(5),
+.pending-table td:nth-child(5) {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+/* 按鈕 */
 .btn-approve {
-  background-color: #2196f3; /* 藍色 */
-  color: white;
   border: none;
-  padding: 4px 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
+  font-weight: 700;
+  background: #2196f3;
+  color: #fff;
+  transition: transform .06s ease, filter .15s ease, background-color .15s ease;
+}
+.btn-approve:hover {
+  background: #1976d2;
+  filter: brightness(1.03);
+}
+.btn-approve:active {
+  transform: scale(.98);
 }

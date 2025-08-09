@@ -1,3 +1,4 @@
+/* ===== 頁面基礎 ===== */
 .all-users-page {
   padding: 20px;
 }
@@ -6,11 +7,70 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* 搜尋與篩選列 */
+/* ===== 上方統計卡片區（儀表板） ===== */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.stat-card {
+  background: #f7f7f9;
+  border: 1px solid #e9e9ef;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  transition: box-shadow .2s ease, transform .06s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(16,24,40,.08);
+  transform: translateY(-1px);
+}
+
+/* 標題文字更深 & 更大 */
+.stat-card b {
+  display: block;
+  font-size: 16px;    /* 深化+放大 */
+  color: #111;
+  font-weight: 700;
+  margin-bottom: 8px;
+  opacity: 1;
+}
+
+/* 數字加大 & 加粗 */
+.stat-card div {
+  font-size: 26px;    /* 放大數字 */
+  font-weight: 800;
+}
+
+/* 依順序著色（總數/Active/Pending/Disabled/Admin/Shop/User） */
+.stats-bar .stat-card:nth-child(1) div { color: #111; }       /* 總數 */
+.stats-bar .stat-card:nth-child(2) div { color: green; }      /* Active */
+.stats-bar .stat-card:nth-child(3) div { color: orange; }     /* Pending */
+.stats-bar .stat-card:nth-child(4) div { color: red; }        /* Disabled */
+.stats-bar .stat-card:nth-child(5) div { color: #6b21a8; }    /* Admin */
+.stats-bar .stat-card:nth-child(6) div { color: #2563eb; }    /* Shop */
+.stats-bar .stat-card:nth-child(7) div { color: #444; }       /* User */
+
+/* Pending 數字輕微呼吸動畫（節制不擾人） */
+@keyframes pulseSoft {
+  0%, 100% { transform: scale(1); filter: saturate(100%); }
+  50%      { transform: scale(1.05); filter: saturate(115%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stats-bar .stat-card:nth-child(3) div {  /* Pending 卡片的數字 */
+    animation: pulseSoft 2.6s ease-in-out infinite;
+  }
+}
+
+/* ===== 搜尋與篩選列 ===== */
 .controls {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .controls input,
@@ -18,12 +78,20 @@ h2 {
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  outline: none;
 }
 
-/* 表格樣式 */
+.controls input:focus,
+.controls select:focus {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33,150,243,.15);
+}
+
+/* ===== 表格樣式 ===== */
 .users-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;   /* 為了 sticky + hover 視覺更好 */
+  border-spacing: 0;
 }
 
 .users-table th,
@@ -36,67 +104,76 @@ h2 {
 .users-table th {
   background-color: #f4f4f4;
   font-weight: bold;
+  position: sticky;   /* 讓標題列黏住上方 */
+  top: 0;
+  z-index: 1;
 }
 
-/* 行背景依據狀態變色 */
+/* 列 hover 提升可讀性 */
+.users-table tbody tr:hover td {
+  background: #f7fbff;
+}
+
+/* 行背景依據狀態變色（沿用你的語意） */
 .disabled-row {
   background-color: #fdf1f1;
 }
-
 .enabled-row {
   background-color: #ffffff;
 }
 
-/* 狀態文字顏色 */
+/* 狀態 badge（沿用原本 class，但讓視覺更穩） */
 .status-text.active {
   color: green;
   font-weight: bold;
 }
-
 .status-text.pending {
   color: orange;
   font-weight: bold;
 }
-
 .status-text.disabled {
   color: red;
   font-weight: bold;
 }
 
-/* 按鈕樣式 */
+/* 建立時間欄位略小（目前在第 7 欄；若欄位順序變動請調整 nth-child） */
+.users-table td:nth-child(7),
+.users-table th:nth-child(7) {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 按鈕樣式 ===== */
 .btn-disable,
 .btn-restore,
 .btn-approve {
   border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
+  transition: transform .06s ease, filter .15s ease, background-color .15s ease;
 }
 
 .btn-disable {
   background-color: #f44336;
   color: white;
 }
-
 .btn-restore {
   background-color: #4caf50;
   color: white;
 }
-
 .btn-approve {
   background-color: #2196f3;
   color: white;
 }
 
-.btn-disable:hover {
-  background-color: #d32f2f;
-}
+.btn-disable:hover { background-color: #d32f2f; filter: brightness(1.03); }
+.btn-restore:hover { background-color: #388e3c; filter: brightness(1.03); }
+.btn-approve:hover { background-color: #1976d2; filter: brightness(1.03); }
 
-.btn-restore:hover {
-  background-color: #388e3c;
-}
-
-.btn-approve:hover {
-  background-color: #1976d2;
+.btn-disable:active,
+.btn-restore:active,
+.btn-approve:active {
+  transform: scale(.98);
 }
