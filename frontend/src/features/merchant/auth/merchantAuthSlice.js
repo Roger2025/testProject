@@ -1,40 +1,35 @@
-// features/merchantAuth/merchantAuthSlice.js
+// src/features/merchant/auth/merchantAuthSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  merchant: null,
+  user: null,            // { merchantId, role, ... }
   isAuthenticated: false,
   loading: false,
   error: null,
 };
 
-const merchantAuthSlice = createSlice({
+const slice = createSlice({
   name: 'merchantAuth',
   initialState,
   reducers: {
-    login: (state, action) => {
-      state.isAuthenticated = false;
-      state.merchantId = null;
-      state.merchantInfo = null;
-      state.token = null;
-      state.loading = false;
+    setUser: (state, action) => {
+      state.user = action.payload;             // 需含 merchantId
+      state.isAuthenticated = !!action.payload;
       state.error = null;
     },
     logout: (state) => {
-      state.merchant = null;
+      state.user = null;
       state.isAuthenticated = false;
     },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
-    clearError: (state) => {
-      state.error = null;
-    },
+    setLoading: (state, action) => { state.loading = action.payload; },
+    setError:   (state, action) => { state.error   = action.payload; },
+    clearError: (state) => { state.error = null; },
   },
 });
 
-export const { login, logout, setLoading, setError, clearError } = merchantAuthSlice.actions;
-export default merchantAuthSlice.reducer;
+export const { setUser, logout, setLoading, setError, clearError } = slice.actions;
+export default slice.reducer;
+
+
+// export const { setUser, logout, setLoading, setError, clearError } = merchantAuthSlice.actions;
+// export default merchantAuthSlice.reducer;

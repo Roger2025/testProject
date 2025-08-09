@@ -1,20 +1,36 @@
 // src/routes/ProtectedRoute.jsx
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { devFlags } from '../constants/devFlags';
+import { setUser } from '../features/merchant/auth/merchantAuthSlice';
 
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+const ProtectedRoute = ({ children, fallback = '/merchant/login' }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((s) => s.merchantAuth.user);
+  const isAuthenticated = useSelector((s) => s.merchantAuth.isAuthenticated);
+  const warnedRef = useRef(false);
+  const injectedRef = useRef(false);
 
-  // 若開啟 devFlags.bypassAuth，強制允許通過
-  if (devFlags.bypassAuth) {
-    console.warn('[ProtectedRoute] 開發模式啟用：已繞過驗證');
-    return children;
-  }
+  // 開發模式：若無身分 → 注入假使用者（只做一次）
+  useEffect(() => {
+    if (devFlags.bypassAuth && !injectedRef.current && !user) {
+      dispatch(setUser(devFlags.mockUser));
+      injectedRef.current = true;
+    }
+  }, [dispatch, user]);
 
-  // 否則根據驗證狀態決定導向
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  // 只警告一次
+  useEffect(() => {
+    if (devFlags.bypassAuth && !warnedRef.current) {
+      console.warn('[ProtectedRoute] 開發模式啟用：已繞過驗證');
+      warnedRef.current = true;
+    }
+  }, []);
+
+  if (devFlags.bypassAuth) return children;
+
+  return isAuthenticated ? children : <Navigate to={fallback} replace />;
 };
 
 export default ProtectedRoute;

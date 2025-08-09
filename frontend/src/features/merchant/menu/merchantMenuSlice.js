@@ -1,7 +1,10 @@
-// features/merchant/menu/merchantMenuSlice.js
+// src/features/merchant/menu/merchantMenuSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { merchantApi } from '../../../services/merchantApi';
+<<<<<<< HEAD
 import { fetchMerchantInfoFromSession } from '../../../utils/getMerchantId';  // 開發環境中提供預設merchantId
+=======
+>>>>>>> alan
 
 // 餐點類別選項
 export const MENU_CATEGORIES = [
@@ -11,7 +14,7 @@ export const MENU_CATEGORIES = [
   { value: 'noodles', label: '麵食類', code: '04' },
   { value: 'single', label: '單品類', code: '05' },
   { value: 'drink', label: '飲料類', code: '06' },
-  { value: 'set-meal', label: '套餐類', code: '07' }
+  { value: 'set-meal', label: '套餐類', code: '07' },
 ];
 
 // 飲料選項配置
@@ -19,22 +22,25 @@ export const DRINK_OPTIONS = {
   size: [
     { value: 'small', label: '小杯', price: 15 },
     { value: 'medium', label: '中杯', price: 20 },
-    { value: 'large', label: '大杯', price: 30 }
+    { value: 'large', label: '大杯', price: 30 },
   ],
   temperature: [
     { value: 'hot', label: '熱' },
     { value: 'warm', label: '溫' },
     { value: 'normal', label: '常溫' },
     { value: 'cool', label: '涼' },
-    { value: 'ice', label: '冰' }
-  ]
+    { value: 'ice', label: '冰' },
+  ],
 };
 
-// Fetch menu items (需要傳 merchantId)
+/**
+ * 取得商家菜單（merchantId 由 merchantApi 於攔截器自動附加）
+ */
 export const fetchMenuItems = createAsyncThunk(
   'merchantMenu/fetchMenuItems',
-  async (merchantIdArg, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
+<<<<<<< HEAD
       let merchantId = merchantIdArg;
       if (!merchantId) {
 
@@ -49,6 +55,9 @@ export const fetchMenuItems = createAsyncThunk(
 
       const response = await merchantApi.getMenuItems(merchantId);
       // 後端格式 { success, data: [...] }
+=======
+      const response = await merchantApi.getMenuItems();
+>>>>>>> alan
       return response.data?.data || [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '獲取菜單失敗');
@@ -56,11 +65,14 @@ export const fetchMenuItems = createAsyncThunk(
   }
 );
 
-// Create menu item
+/**
+ * 新增餐點（FormData 自行組裝；merchantId 不用自己帶）
+ */
 export const createMenuItem = createAsyncThunk(
   'merchantMenu/createMenuItem',
-  async ({ merchantId: merchantIdArg, menuData, imageFile }, { rejectWithValue }) => {
+  async ({ menuData, imageFile }, { rejectWithValue }) => {
     try {
+<<<<<<< HEAD
       let merchantId = merchantIdArg;
       if (!merchantId) {
         // const rawMerchantId = localStorage.getItem('merchantId');
@@ -72,8 +84,10 @@ export const createMenuItem = createAsyncThunk(
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
+=======
+>>>>>>> alan
       const formData = new FormData();
-      Object.keys(menuData).forEach(key => {
+      Object.keys(menuData || {}).forEach((key) => {
         const val = menuData[key];
         if (val !== null && val !== undefined) {
           if (typeof val === 'object') {
@@ -83,15 +97,9 @@ export const createMenuItem = createAsyncThunk(
           }
         }
       });
+      if (imageFile) formData.append('image', imageFile);
 
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
-
-      // 保留 merchantId 作為備援（路由通常帶）
-      formData.append('merchantId', merchantId);
-
-      const response = await merchantApi.createMenuItem(merchantId, formData);
+      const response = await merchantApi.createMenuItem(formData);
       return response.data?.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '新增餐點失敗');
@@ -99,11 +107,14 @@ export const createMenuItem = createAsyncThunk(
   }
 );
 
-// Update menu item
+/**
+ * 更新餐點
+ */
 export const updateMenuItem = createAsyncThunk(
   'merchantMenu/updateMenuItem',
-  async ({ merchantId: merchantIdArg, itemId, menuData, imageFile }, { rejectWithValue }) => {
+  async ({ itemId, menuData, imageFile }, { rejectWithValue }) => {
     try {
+<<<<<<< HEAD
       let merchantId = merchantIdArg;
       if (!merchantId) {
         // const rawMerchantId = localStorage.getItem('merchantId');
@@ -115,9 +126,10 @@ export const updateMenuItem = createAsyncThunk(
       }
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
+=======
+>>>>>>> alan
       const formData = new FormData();
-
-      Object.keys(menuData).forEach(key => {
+      Object.keys(menuData || {}).forEach((key) => {
         const val = menuData[key];
         if (val !== null && val !== undefined) {
           if (typeof val === 'object') {
@@ -127,19 +139,12 @@ export const updateMenuItem = createAsyncThunk(
           }
         }
       });
+      if (imageFile) formData.append('image', imageFile);
 
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
+      // 開發期可保留檢查
+      // for (const pair of formData.entries()) console.log('updateMenuItem formData:', pair[0], pair[1]);
 
-      formData.append('merchantId', merchantId);
-
-      // DEBUG log 可以保留開發期
-      for (const pair of formData.entries()) {
-        console.log('updateMenuItem formData:', pair[0], pair[1]);
-      }
-
-      const response = await merchantApi.updateMenuItem(merchantId, itemId, formData);
+      const response = await merchantApi.updateMenuItem(itemId, formData);
       return response.data?.data;
     } catch (error) {
       const msg = error.response?.data?.message || error.message || '更新餐點失敗';
@@ -148,11 +153,14 @@ export const updateMenuItem = createAsyncThunk(
   }
 );
 
-// Delete menu item
+/**
+ * 刪除餐點
+ */
 export const deleteMenuItem = createAsyncThunk(
   'merchantMenu/deleteMenuItem',
-  async ({ merchantId: merchantIdArg, itemId }, { rejectWithValue }) => {
+  async ({ itemId }, { rejectWithValue }) => {
     try {
+<<<<<<< HEAD
       let merchantId = merchantIdArg;
       if (!merchantId) {
         // const rawMerchantId = localStorage.getItem('merchantId');
@@ -165,6 +173,9 @@ export const deleteMenuItem = createAsyncThunk(
       if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
 
       await merchantApi.deleteMenuItem(merchantId, itemId);
+=======
+      await merchantApi.deleteMenuItem(itemId);
+>>>>>>> alan
       return itemId;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '刪除餐點失敗');
@@ -177,12 +188,12 @@ const initialState = {
   currentItem: null,
   loading: false,
   error: null,
-  lastFetch: null, // 用於判斷是否需要重新獲取數據
+  lastFetch: null, // 可用於快取控制
   operationStatus: {
     creating: false,
     updating: false,
-    deleting: false
-  }
+    deleting: false,
+  },
 };
 
 const merchantMenuSlice = createSlice({
@@ -200,11 +211,11 @@ const merchantMenuSlice = createSlice({
     },
     updateItemLocally: (state, action) => {
       const { id, updates } = action.payload;
-      const index = state.items.findIndex(item => item._id === id);
+      const index = state.items.findIndex((item) => item._id === id);
       if (index !== -1) {
         state.items[index] = { ...state.items[index], ...updates };
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -246,7 +257,7 @@ const merchantMenuSlice = createSlice({
       })
       .addCase(updateMenuItem.fulfilled, (state, action) => {
         state.operationStatus.updating = false;
-        const idx = state.items.findIndex(item => item._id === action.payload?._id);
+        const idx = state.items.findIndex((item) => item._id === action.payload?._id);
         if (idx !== -1 && action.payload) {
           state.items[idx] = action.payload;
         }
@@ -264,21 +275,17 @@ const merchantMenuSlice = createSlice({
       })
       .addCase(deleteMenuItem.fulfilled, (state, action) => {
         state.operationStatus.deleting = false;
-        state.items = state.items.filter(item => item._id !== action.payload);
+        state.items = state.items.filter((item) => item._id !== action.payload);
         state.error = null;
       })
       .addCase(deleteMenuItem.rejected, (state, action) => {
         state.operationStatus.deleting = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
-export const { 
-  clearError, 
-  setCurrentItem, 
-  clearCurrentItem, 
-  updateItemLocally 
-} = merchantMenuSlice.actions;
+export const { clearError, setCurrentItem, clearCurrentItem, updateItemLocally } =
+  merchantMenuSlice.actions;
 
 export default merchantMenuSlice.reducer;

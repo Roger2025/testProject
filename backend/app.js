@@ -15,6 +15,7 @@ var usersRouter = require('./routes/users');
 var merchantMenuRouter = require('./routes/merchant/merchantMenu');
 var merchantSetMenuRouter = require('./routes/merchant/merchantSetMenu');
 var merchantScheduleRouter = require('./routes/merchant/merchantSchedule');
+var merchantOrderRoutes = require('./routes/merchant/merchantOrder');
 const cors = require('cors');
 
 var app = express();
@@ -23,6 +24,8 @@ var app = express();
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB 連線成功');
+    // 顯示連線資訊
+    console.log('[DB]', mongoose.connection.host, mongoose.connection.port, mongoose.connection.name);
   })
   .catch((error) => {
     console.error('MongoDB 連線失敗:', error);
@@ -42,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -52,9 +55,15 @@ app.use('/users', usersRouter);
 app.use('/api/merchant', merchantMenuRouter);
 app.use('/api/merchant', merchantSetMenuRouter);
 app.use('/api/merchant/schedule', merchantScheduleRouter);
+app.use('/api/merchant/orders', merchantOrderRoutes);
+
 // 測試路由
 const testRoutes = require('./routes/test');
 app.use('/api', testRoutes);
+
+// Debug 路由
+app.use('/api/debug', require('./routes/debug'));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

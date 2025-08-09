@@ -8,6 +8,9 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 引入 Bootstrap 樣式
 import './styles/style.css'; // 引入ogani套版樣式(尚未全部引入)
 import { BrowserRouter } from 'react-router-dom';
+import { bindGetState } from './services/merchantApi';
+
+bindGetState(() => store.getState()); // 綁定 getState 函數到 merchantApi
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

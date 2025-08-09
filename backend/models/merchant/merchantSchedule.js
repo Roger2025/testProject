@@ -31,8 +31,13 @@ const dayScheduleSchema = new mongoose.Schema({
 // 營業排程 Schema
 const merchantScheduleSchema = new mongoose.Schema({
   merchantId: {
+<<<<<<< HEAD
     type: mongoose.Schema.Types.ObjectId,
     required: false,
+=======
+    type: String,
+    required: false, // 強制驗證一定要有值
+>>>>>>> alan
     unique: true,
     ref: 'Merchant'
   },
@@ -140,8 +145,15 @@ merchantScheduleSchema.index({ 'schedule.friday.isOpen': 1 });
 merchantScheduleSchema.index({ 'schedule.saturday.isOpen': 1 });
 merchantScheduleSchema.index({ 'schedule.sunday.isOpen': 1 });
 
+<<<<<<< HEAD
 //這樣會在mongoDB新建一個MerchantSchedule
 // module.exports = mongoose.model('MerchantSchedule', merchantScheduleSchema);
 
 //這樣只會輸出一個Schema,方便傳到現有的資料表
+=======
+//這樣會在DB建立一個MerchantSchedule資料表
+// module.exports = mongoose.model('MerchantSchedule', merchantScheduleSchema);
+
+//只exportschema給Todo_merchant新增欄位資料用
+>>>>>>> alan
 module.exports = merchantScheduleSchema;
