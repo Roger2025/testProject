@@ -9,7 +9,7 @@ const connectDB = async () => {
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
-    
+
     // 監聽連線事件
     mongoose.connection.on('error', (err) => {
       console.error('MongoDB connection error:', err);

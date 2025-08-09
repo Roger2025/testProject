@@ -1,6 +1,6 @@
 //src/hooks/useMerchantAuth.js
 import { useSelector, useDispatch } from 'react-redux';
-import { login as loginAction, logout as logoutAction, setError, setLoading } from '../features/merchant/auth/merchantAuthSlice';
+import { setUser as loginAction, logout as logoutAction, setError, setLoading } from '../features/merchant/auth/merchantAuthSlice';
 
 
 export const useMerchantAuth = () => {

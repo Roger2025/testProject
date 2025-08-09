@@ -24,6 +24,8 @@ var app = express();
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB 連線成功');
+    // 顯示連線資訊
+    console.log('[DB]', mongoose.connection.host, mongoose.connection.port, mongoose.connection.name);
   })
   .catch((error) => {
     console.error('MongoDB 連線失敗:', error);
@@ -58,6 +60,10 @@ app.use('/api/merchant/orders', merchantOrderRoutes);
 // 測試路由
 const testRoutes = require('./routes/test');
 app.use('/api', testRoutes);
+
+// Debug 路由
+app.use('/api/debug', require('./routes/debug'));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
