@@ -2,9 +2,6 @@
 // Design by Wayne
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import JumpImage from "../../components/common/JumpImg";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -12,7 +9,6 @@ export default function Login() {
     password: "",
   });
   const [msg, setMsg] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,15 +25,8 @@ export default function Login() {
         body: JSON.stringify(form),
       });
       if (res.ok) {
-        const user = await res.json(); // 假設回傳 user 資料
         setMsg("✅ 登入成功！");
         // 你可以在這裡導向首頁或其他頁面
-        // ✅ 根據角色導向
-        if (user.role === "merchant") {
-          navigate(`/shop/${user.merchantId}`);
-        } else {
-          navigate("/homepage");
-        }
       } else {
         const err = await res.text();
         setMsg("❌ 登入失敗：" + err);
@@ -77,7 +66,6 @@ export default function Login() {
             textAlign: "center",
           }}
         >
-          <Link to="/"><JumpImage /></Link>
           使用者登入
         </h2>
         <form onSubmit={handleSubmit} autoComplete="off">
@@ -96,11 +84,8 @@ export default function Login() {
             onChange={handleChange}
             required
           />
-          <Link to='/homepage'>
           <button
             type="submit"
-            name="action"
-            value={"login"}
             style={{
               marginTop: 16,
               width: "100%",
@@ -117,13 +102,10 @@ export default function Login() {
               transition: "transform 0.08s",
             }}
             onMouseDown={(e) =>
-              (e.currentTarget.style.transform = "scale(0.8)")
+              (e.currentTarget.style.transform = "scale(0.97)")
             }
             onMouseUp={(e) =>
               (e.currentTarget.style.transform = "scale(1)")
-            }
-            onMouseOver={(e)=>
-              (e.currentTarget.style.transform = "scale(1.1)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.transform = "scale(1)")
@@ -131,44 +113,6 @@ export default function Login() {
           >
             登入
           </button>
-          </Link>
-          <Link to="/Register">
-          <button
-            type="submit"
-            name="action"
-            value={"register"}
-            style={{
-              marginTop: 16,
-              width: "100%",
-              padding: "12px 0",
-              background: "linear-gradient(90deg,#f6d365 0%,#ff9256 100%)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 8,
-              fontSize: 18,
-              fontWeight: 700,
-              letterSpacing: 1,
-              cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(255,146,86,0.16)",
-              transition: "transform 0.08s",
-              value:"reg",
-            }}
-            onMouseDown={(e) =>
-              (e.currentTarget.style.transform = "scale(0.8)")
-            }
-            onMouseUp={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
-            onMouseOver={(e)=>
-              (e.currentTarget.style.transform = "scale(1.1)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
-          >
-            註冊
-            </button>
-          </Link>
         </form>
         {msg && (
           <div

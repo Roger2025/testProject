@@ -11,16 +11,10 @@ const OrderFilterBar = ({
   setFilterDate,
   filterStatus,
   setFilterStatus,
-  filterStore,
-  setFilterStore,
-  filterMember,
-  setFilterMember,  
   statusLabels,
   sortOrders
 }) => {
   const uniqueDates = [...new Set(orders.map(o => new Date(o.order_date).toLocaleDateString()))];
-  const uniqueStores = [...new Set(orders.map(o => o.storename))];
-  const uniqueMembers = [...new Set(orders.map(o => o.member_name))];
 
   return (
     <div className="order-selector" style={{ marginBottom: '20px' }}>
@@ -37,24 +31,6 @@ const OrderFilterBar = ({
         <option value="">全部</option>
         {Object.entries(statusLabels).map(([key, label]) => (
           <option key={key} value={key}>{label}</option>
-        ))}
-      </select>
-
-      {/* 店家 */}
-      <label style={{ marginLeft: '20px' }}>店家：</label>
-      <select onChange={(e) => setFilterStore(e.target.value)} value={filterStore}>
-        <option value="">全部</option>
-        {uniqueStores.map(store => (
-          <option key={store} value={store}>{store}</option>
-        ))}
-      </select>
-
-      {/* 消費者 */}
-      <label style={{ marginLeft: '20px' }}>消費者：</label>
-      <select onChange={(e) => setFilterMember(e.target.value)} value={filterMember}>
-        <option value="">全部</option>
-        {uniqueMembers.map(member => (
-          <option key={member} value={member}>{member}</option>
         ))}
       </select>
 
@@ -78,8 +54,6 @@ const OrderFilterBar = ({
         onClick={() => {
           setFilterDate('');
           setFilterStatus('');
-          setFilterStore('');
-          setFilterMember('');          
           const sorted = sortOrders(orders);
           setSelectedOrder(sorted[0] || null);
         }}

@@ -25,7 +25,7 @@ const Header = () => {
                 <li className="active"><Link to="/">首頁</Link></li>
                 <li><Link to={`/shop/${currentMerchantId}`}>選定店家</Link></li>
                 {/* <li><Link to="/shopcart">購物車</Link></li> */}
-                <li><Link to="/orderpage">訂單專區</Link></li>  
+                <li><Link to="/order">訂單專區</Link></li>  
                 <li><Link to="/login">登入/登出</Link></li> 
                 {/* <li><Link to="/test">Test</Link></li> */}
                 {/* <li><Link to="#">TestPages</Link>

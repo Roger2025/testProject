@@ -14,11 +14,11 @@ const PopularShopLogin = () => {
                 <h4>會員中心</h4>
                 <ul>
                   <li><a href="/register">會員資訊</a></li>
-                  <li><a href="/orderpage">訂餐專區</a></li>
-                  <li><a href="/test">優惠專區</a></li>
-                  <li><a href="/test">評價與收藏</a></li>
-                  <li><a href="/test">客戶服務</a></li>
-                  <li><a href="/test">聯絡我們</a></li>
+                  <li><a href="/order">訂餐專區</a></li>
+                  {/* <li><a href="/test">優惠專區</a></li> */}
+                  {/* <li><a href="/test">評價與收藏</a></li> */}
+                  {/* <li><a href="/test">客戶服務</a></li> */}
+                  {/* <li><a href="/test">聯絡我們</a></li> */}
                   <li><a href="/login">登入/登出</a></li>                
                 </ul>
               </div>

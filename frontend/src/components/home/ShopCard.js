@@ -1,15 +1,19 @@
 // ogani: shop-grid.html - Product Section（第2-4～第2-15部分）單一商品卡片/動態渲染商品列表	
 // src/components/home/ShopCard.js (店家卡)
 
+const defaultImageURL = 'http://localhost:3001/images/ByteEat.png'; // 平台的 logo 路徑
+
 const ShopCard = ({ data }) => {
   if (!data || !data.img) return null;
+
+  const imageURL = data.img || defaultImageURL;
 
   return (
     <div className="product__item">
       <a href={data.url} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div
         className="product__item__pic set-bg"
-        style={{ backgroundImage: `url(${data.img})` }}
+        style={{ backgroundImage: `url(${imageURL})` }}
         role="img"
         aria-label={data.name}
       >

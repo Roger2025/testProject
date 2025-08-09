@@ -2,19 +2,19 @@
 const express = require('express');
 const router = express.Router();
 
-// 測試用 API
+// 測試用 API /api/test
 router.get('/test', (req, res) => {
   res.json({ message: '前後端 API 連線成功！' });
 });
 
-// GET /api/:merchantId
-router.get('/shop/:merchantId', (req, res) => {
+// GET /api/test/shop/:merchantId
+router.get('/test/shop/:merchantId', (req, res) => {
   const merchantId = req.params.merchantId;
   console.log('✅ 後端收到 merchantId:', merchantId);
 
   // 模擬資料回傳 // 不過，該早餐點的 MongoDB 資料庫為 merchantmenus 
   res.json({
-    message: `成功接收 merchantId: ${merchantId}`,
+    message: `模擬資料回傳 成功接收 merchantId: ${merchantId}`,
     merchantId,
     products: [
       { name: '火腿蛋吐司', price: 45 },
@@ -23,10 +23,10 @@ router.get('/shop/:merchantId', (req, res) => {
   });
 });
 
-// GET /api/:order_id
-router.get('/order/:order_id', (req, res) => {
+// GET /api/test/order/:order_id
+router.get('/test/order/:order_id', (req, res) => {
   const order_id = req.params.order_id;
-  console.log('✅ 後端收到 order_id:', order_id);
+  console.log('模擬資料回傳 後端收到 order_id:', order_id);
 
   // 模擬資料回傳  
   res.json({

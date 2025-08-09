@@ -8,7 +8,7 @@ import OrderActions from './OrderActions';
 import { useOrderActions } from '../../hooks/useOrderActions'; 
 
 const pickupLabels = {
-  Takeout: '自取',
+  Takeout: '外帶',
   eatin: '內用'
 };
 
@@ -19,6 +19,7 @@ const pickupClasses = {
 
 const statusLabels = {
   Uncompleted: '未完成',
+  Accepted:  '已接單',
   Completed: '已完成',
   Closed: '已結單',
   Cancelled: '已取消'
@@ -26,6 +27,7 @@ const statusLabels = {
 
 const statusClasses = {
   Uncompleted: 'uncompleted',
+  Accepted:  'accepted',
   Completed: 'completed',
   Closed: 'closed',
   Cancelled: 'cancelled'
@@ -43,13 +45,17 @@ export default function OrderTable() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [filterDate, setFilterDate] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [filterStore, setFilterStore,] = useState('');
+  const [filterMember, setFilterMember,] = useState('');  
 
   const navigate = useNavigate();
 
   const filteredOrders = orders.filter(order => {
     const matchDate = filterDate ? new Date(order.order_date).toLocaleDateString() === filterDate : true;
     const matchStatus = filterStatus ? order.order_status === filterStatus : true;
-    return matchDate && matchStatus;
+    const matchStore = filterStore ? order.storename === filterStore || order.merchantId === filterStore : true;
+    const matchMember = filterMember ? order.member_name === filterMember || order.member_id === filterMember : true;    
+    return matchDate && matchStatus && matchStore && matchMember;
   });  
 
   const sortOrders = (orders = []) => {
@@ -77,7 +83,7 @@ export default function OrderTable() {
   };
 
   const loadOrders = () => {
-    axios.get('http://localhost:3001/api/orders')
+    axios.get('http://localhost:3001/api/home/order')
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [res.data];
         const sorted = sortOrders(data);
@@ -85,6 +91,8 @@ export default function OrderTable() {
         setSelectedOrder(sorted[0] || null);
         setFilterDate('');
         setFilterStatus('');
+        setFilterStore('');
+        setFilterMember('');
       })
       .catch(err => {
         console.error('載入訂單失敗', err);
@@ -107,7 +115,7 @@ export default function OrderTable() {
     } else {
       setSelectedOrder(null);
     }
-  }, [filterDate, filterStatus]); // ← 這裡是關鍵
+  }, [filterDate, filterStatus, filterStore, filterMember]); // ← 這裡是關鍵 加入新條件
 
   if (!orders.length) {
     return <div>載入中...</div>;
@@ -126,6 +134,10 @@ export default function OrderTable() {
             setFilterDate={setFilterDate}
             filterStatus={filterStatus}
             setFilterStatus={setFilterStatus}
+            filterStore={filterStore}
+            setFilterStore={setFilterStore}
+            filterMember={filterMember}
+            setFilterMember={setFilterMember}  
             statusLabels={statusLabels}
             sortOrders={sortOrders}
           />
@@ -157,6 +169,10 @@ export default function OrderTable() {
           setFilterDate={setFilterDate}
           filterStatus={filterStatus}
           setFilterStatus={setFilterStatus}
+          filterStore={filterStore}
+          setFilterStore={setFilterStore}
+          filterMember={filterMember}
+          setFilterMember={setFilterMember}            
           statusLabels={statusLabels}
           sortOrders={sortOrders}
         />

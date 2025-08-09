@@ -2,11 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import ShopCard from './ShopCard';
 import Pagination from '../common/Pagination';
 
-const categories = ['所有店家', '活動中', '點數回饋', '線上支付', '可外送', '營業中'];
+// const categories = ['所有店家', '活動中', '點數回饋', '線上支付', '可外送', '營業中'];
+const categories = ['所有店家', '營業中'];
 const toClass = {
+  '所有店家': 'All',
   '活動中': 'Activity',
   '點數回饋': 'Rewards',
   '線上支付': 'OnlinePay',
@@ -20,6 +23,7 @@ const toClass = {
 const PER_PAGE = 8; // 修改成一頁 4 行 x 2 列 = 8 個店家
 
 const getImageURL = (path) => `http://localhost:3001/images/${path}`;
+const defaultImageURL = 'http://localhost:3001/images/ByteEat.png'; // 平台的 logo 路徑
 
 // 檢查並轉換字串型的陣列
 const parseCategoryField = (rawCategory) => {
@@ -57,6 +61,7 @@ const ShopList = () => {
   const [products, setProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState('所有店家');
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   // 🔄 取得資料
   useEffect(() => {
@@ -68,8 +73,8 @@ const ShopList = () => {
           
           return {
             name: item.storeName,
-            img: getImageURL(item.storeImag),
-            url: `/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
+            img: item.storeImag ? getImageURL(item.storeImag) : defaultImageURL,
+            url: `/shop/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
             category: parsedCategory,
             // category: parseCategoryField(item.category), // 修改後 正確格式 category: ['Open', 'OnlinePay']
             // category: item.category, // 錯誤格式 ategory: [ "['Open', 'OnlinePay']" ] 
@@ -89,6 +94,10 @@ const ShopList = () => {
     : products.filter(p => p.category.includes(toClass[activeCategory]));
 
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+  const handleClick = (merchantId) => {
+    navigate(`/store/${merchantId}`);
+  };
 
   return (
     <section className="featured spad">
@@ -116,7 +125,7 @@ const ShopList = () => {
         {/* 商品清單 */}
         <div className="row featured__filter">
           {paginated.map((item, index) => (
-            <div className="col-lg-3 col-md-4 col-sm-6" key={index}>
+            <div className="col-lg-3 col-md-4 col-sm-6" key={item.merchantId} onClick={() => handleClick(item.merchantId)}>
               <ShopCard data={item} />
             </div>
           ))}

@@ -35,28 +35,66 @@ const orderSchema = new mongoose.Schema({
     enum: ['Takeout', 'eatin'],                          // 取餐方式 Takeout (自取), Dine-In (內用)
     default: 'eatin'
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema, 'order');
 
 // 訂餐內容: JSON 
 // [
 //   {
-//     "name": "紅茶",
+//     "id": 1,
+//     "name": "豬肉漢堡",
+//     "price": 50,
+//     "quantity": 1,
+//     "note": "不要生菜",
+//     "img": "merchant1/burgers/burgers11.jpg"
+//   },
+//   {
+//     "id": 2,
+//     "name": "豬肉蛋餅",
 //     "price": 45,
 //     "quantity": 1,
-//     "note": "5555"
+//     "note": "不要生菜",
+//     "img": "merchant1/omelettes/omelettes07.jpg"
 //   },
 //   {
-//     "name": "奶茶",
-//     "price": 55,
-//     "quantity": 1,
-//     "note": "3333"
-//   },
-//   {
-//     "name": "豆漿",
+//     "id": 3,
+//     "name": "黑胡椒鐵板麵",
 //     "price": 50,
-//     "quantity": 3,
-//     "note": ""
+//     "quantity": 1,
+//     "note": "不要辣",
+//     "img": "merchant1/pasta/pasta02.jpg"
+//   },
+//   {
+//     "id": 4,
+//     "name": "鮪魚漢堡",
+//     "price": 50,
+//     "quantity": 1,
+//     "note": "醬多點",
+//     "img": "merchant1/burgers/burgers06.jpg"
+//   },
+//   {
+//     "id": 5,
+//     "name": "豬排漢堡",
+//     "price": 50,
+//     "quantity": 1,
+//     "note": "",
+//     "img": "merchant1/burgers/burgers11.jpg"
+//   },
+//   {
+//     "id": 7,
+//     "name": "豆漿",
+//     "price": 20,
+//     "quantity": 1,
+//     "note": "少冰、少糖",
+//     "img": "merchant1/drinks/drinks04.jpg"
+//   },
+//   {
+//     "id": 8,
+//     "name": "薯餅",
+//     "price": 20,
+//     "quantity": 1,
+//     "note": "",
+//     "img": "merchant1/single/single02.jpg"
 //   }
 // ]

@@ -1,94 +1,80 @@
 // src/commponents/home/ShopList.js  (店家清單)
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import { useShopData } from '../../hooks/useShopData';
 import { useNavigate } from 'react-router-dom';
+import { parseCategoryField } from '../../utils/CategoryParser';
+import { isStoreOpen } from '../../utils/timeUtils';
 import ShopCard from './ShopCard';
 import Pagination from '../common/Pagination';
 
-const categories = ['所有店家', '活動中', '點數回饋', '線上支付', '可外送', '營業中'];
+
+const categories = ['所有店家', '營業中', '熱門店家'];
 const toClass = {
-  '活動中': 'Activity',
-  '點數回饋': 'Rewards',
-  '線上支付': 'OnlinePay',
-  '可外送': 'Delivery',
+  '所有店家': 'All',
   '營業中': 'Open',
-  '可預約': 'Booking',
-  '休息中': 'Rest',
-  '停業中': 'Closed',
+  '熱門店家': 'Popular',
 };
 
-const PER_PAGE = 8; // 修改成一頁 4 行 x 2 列 = 8 個店家
+const PER_PAGE = 8; 
 
 const getImageURL = (path) => `http://localhost:3001/images/${path}`;
+const defaultImageURL = 'http://localhost:3001/images/ByteEat.png';
 
-// 檢查並轉換字串型的陣列
-const parseCategoryField = (rawCategory) => {
-  try {
-    if (Array.isArray(rawCategory)) {
-      // 如果陣列第一個元素是字串且看起來像陣列
-      const first = rawCategory[0];
-      if (typeof first === 'string' && first.match(/\[\s*['"]/)) {
-        // 移除多餘逗號並處理引號 → 嘗試解析
-        const cleaned = first
-          .replace(/,\s*\]/, ']')   // 尾端逗號清除
-          .replace(/'/g, '"');      // 換成雙引號
-        const parsed = JSON.parse(cleaned);
-        return Array.isArray(parsed) ? parsed : [];
-      }
-      return rawCategory; // 已是合法陣列
-    }
-
-    if (typeof rawCategory === 'string' && rawCategory.startsWith('[')) {
-      const cleaned = rawCategory
-        .replace(/,\s*\]/, ']')
-        .replace(/'/g, '"');
-      const parsed = JSON.parse(cleaned);
-      return Array.isArray(parsed) ? parsed : [];
-    }
-
-    return []; // 無法解析
-  } catch (err) {
-    console.warn('分類解析失敗:', rawCategory);
-    return [];
-  }
-};
-
-const ShopList = () => {
-  const [products, setProducts] = useState([]);
+const ShopList = ({ products: externalProducts }) => {
+  // const [fetchedProducts, setFetchedProducts] = useState([]);
+  const { shops, loading, error, empty } = useShopData();
+  const [processedShops, setProcessedShops] = useState([]);
   const [activeCategory, setActiveCategory] = useState('所有店家');
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
-  // 🔄 取得資料
   useEffect(() => {
-    axios.get('http://localhost:3001/api/shops/')
-      .then(res => {
-        const formatted = res.data.map(item => {
+    // axios.get('http://localhost:3001/api/home/shop/')
+    //   .then(res => {
+        // const formatted = res.data.map(item => {
+        const formatted = shops.map(item => {  
           const parsedCategory = parseCategoryField(item.category);
-          console.log(`${item.storeName} 👉`, parsedCategory); // ✅ 確認這裡是否為 ['Open', 'OnlinePay']
-          
+          const business = Array.isArray(item.Business)
+            ? item.Business.length > 0 ? item.Business[0] : null
+            : item.Business || null;
+
+          const schedule = business?.schedule ?? []; 
+          const timezone = business?.timezone ?? 'Asia/Taipei'; 
+          const status = isStoreOpen(schedule, timezone);
+          const isOpenNow = status?.isOpen ?? false;
+
+          const finalCategory = parsedCategory.includes('Open') || !isOpenNow
+            ? parsedCategory
+            : [...parsedCategory, 'Open'];
+
           return {
             name: item.storeName,
-            img: getImageURL(item.storeImag),
-            url: `/shop/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
-            category: parsedCategory,
-            // category: parseCategoryField(item.category), // 修改後 正確格式 category: ['Open', 'OnlinePay']
-            // category: item.category, // 錯誤格式 ategory: [ "['Open', 'OnlinePay']" ] 
+            img: item.storeImag ? getImageURL(item.storeImag) : defaultImageURL,
+            url: `/shop/${item.merchantId}`, 
+            merchantId: item.merchantId,
+            category: finalCategory,
+            isOpenNow, 
           };
         });
-        
-        setProducts(formatted);
-      })
-      .catch(err => {
-        console.error('載入店家資料失敗:', err);
-      });
-  }, []);
+        // setFetchedProducts(formatted);
+        setProcessedShops(formatted);
+      }, [shops]);  
+      // })
+      // .catch(err => {
+      //   console.error('載入店家資料失敗:', err);
+      // });
+  // }, []);
 
-  // 🧠 過濾分類
+  // const sourceProducts = externalProducts?.length > 0 ? externalProducts : fetchedProducts;
+
   const filtered = activeCategory === '所有店家'
-    ? products
-    : products.filter(p => p.category.includes(toClass[activeCategory]));
+    ? processedShops.filter(p => Array.isArray(p.category) && p.category.length > 0)
+    : processedShops.filter(p =>
+        Array.isArray(p.category) &&
+        p.category.includes(toClass[activeCategory])
+      );
 
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
@@ -96,10 +82,14 @@ const ShopList = () => {
     navigate(`/store/${merchantId}`);
   };
 
+  if (loading) return <div>載入中...</div>;
+  if (error) return <div>發生錯誤：{error.message}</div>;
+  if (empty) return <div>目前沒有店家資料</div>;
+    
   return (
     <section className="featured spad">
       <div className="container">
-        <div className="section-title"><h2>推薦店家</h2></div>
+        <div className="section-title"><h2>店家清單</h2></div>
 
         {/* 分類篩選 */}
         <div className="featured__controls">

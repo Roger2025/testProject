@@ -9,10 +9,24 @@ import React from 'react';
 // import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import HomeRoutes from './routes/HomeRoutes';
 // import StorePage from './pages/StorePage'; // 測試 merchantId 回傳到後端 Node.js
 
 function App() {
+  const navigate = useNavigate();
+  const isLoggedIn = Boolean(localStorage.getItem('token')); // 或從 context 判斷
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/homepage');
+    } else {
+      navigate('/');
+    }
+  }, [isLoggedIn]);
+
   return (
     <div className='App'>
 

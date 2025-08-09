@@ -2,9 +2,18 @@
 
 import React, { useState } from 'react';
 
-const Hero = () => {
+const Hero = ({ onSearch }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const keyword = searchTerm.trim().toLowerCase();
+    if (keyword) {
+      onSearch(keyword); // 將搜尋關鍵字傳給父層
+    }
+  };
+
   return (
     // src/styles/css/style.css
     // .hero {position: relative;} 會影響區塊；
@@ -25,11 +34,11 @@ const Hero = () => {
               </div>
                <ul style={{ display: showMenu ? 'block' : 'none' }}> {/* 根據狀態顯示或隱藏 Menu */}
                 <li><a href="/register">會員資訊</a></li>
-                <li><a href="/orderpage">訂餐專區</a></li>
-                <li><a href="/test">優惠專區</a></li>
-                <li><a href="/test">評價與收藏</a></li>
-                <li><a href="/test">客戶服務</a></li>
-                <li><a href="/test">聯絡我們</a></li>
+                <li><a href="/order">訂餐專區</a></li>
+                {/* <li><a href="/test">優惠專區</a></li> */}
+                {/* <li><a href="/test">評價與收藏</a></li> */}
+                {/* <li><a href="/test">客戶服務</a></li> */}
+                {/* <li><a href="/test">聯絡我們</a></li> */}
                 <li><a href="/login">登入/登出</a></li>                
               </ul>
             </div>
@@ -40,12 +49,17 @@ const Hero = () => {
             <div className="hero__search">
               {/* 左邊:搜尋列 */}
               <div className="hero__search__form">
-                <form action="#">
+                <form onSubmit={handleSearch}>
                   <div className="hero__search__categories">
                     所有店家
                     <span className="arrow_carrot-down"></span>
                   </div>
-                  <input type="text" placeholder="你需要什麼？" />
+                  <input
+                    type="text"
+                    placeholder="你需要什麼？"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                   <button type="submit" className="site-btn">搜尋</button>
                 </form>
               </div>

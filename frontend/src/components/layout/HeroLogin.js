@@ -2,8 +2,17 @@
 
 import React, { useState } from 'react';
 
-const HeroLogin = () => {
+const HeroLogin = ({ onSearch }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+ 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const keyword = searchTerm.trim().toLowerCase();
+    if (keyword) {
+      onSearch(keyword); // 將搜尋關鍵字傳給父層
+    }
+  };
  
   return (
     // src/styles/css/style.css
@@ -41,12 +50,17 @@ const HeroLogin = () => {
             <div className="hero__search">
               {/* 左邊:搜尋列 */}
               <div className="hero__search__form">
-                <form action="#">
+                <form onSubmit={handleSearch}>
                   <div className="hero__search__categories">
                     所有店家
                     <span className="arrow_carrot-down"></span>
                   </div>
-                  <input type="text" placeholder="你需要什麼？" />
+                  <input
+                    type="text"
+                    placeholder="你需要什麼？"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                   <button type="submit" className="site-btn">搜尋</button>
                 </form>
               </div>

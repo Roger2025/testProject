@@ -58,8 +58,8 @@ app.use(cors({
 // 路由設定
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/api/shops', homeShopRoutes);
-app.use('/api/orders', homeOrderRoutes);
+app.use('/api/home/shop', homeShopRoutes);
+app.use('/api/home/order', homeOrderRoutes);
 
 // 測試路由
 const testRoutes = require('./routes/test');
