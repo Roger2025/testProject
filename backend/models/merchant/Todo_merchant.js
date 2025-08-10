@@ -1,10 +1,11 @@
+/* --------------------[ 保留原檔內容（不執行）]--------------------
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 const merchantScheduleSchema = require('./merchantSchedule');
 const { Schema } = mongoose;
 
 const merchantSchema = new Schema({
-  member_ID: {//會員關聯ID
+  member_id: {//會員關聯ID
     type: String, // 來自 members._id
     required: true
   },
@@ -41,3 +42,7 @@ const merchantSchema = new Schema({
 }, { collection: 'merchant' });
 
 module.exports = mongoose.model('Merchant', merchantSchema);
+------------------------------------------------------------------ */
+
+// 舊路徑統一轉用新的 Merchant 定義（真正的 schema 在 ../Register_Schema/merchant）
+module.exports = require('../Register_Schema/merchant');

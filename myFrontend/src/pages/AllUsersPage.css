@@ -1,0 +1,72 @@
+.all-users-container {
+  padding: 20px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.all-users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.all-users-table th,
+.all-users-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.all-users-table th {
+  background-color: #f4f4f4;
+  text-align: left;
+}
+
+.all-users-role {
+  font-weight: bold;
+  color: #666;
+}
+
+.all-users-store-info {
+  font-style: italic;
+  color: #888;
+}
+
+/* ✅ 新增：根據使用者狀態標記整列背景色 */
+.disabled-row {
+  background-color: #fdf1f1; /* 紅色淡淡底 */
+}
+
+.enabled-row {
+  background-color: #ffffff; /* 正常白底 */
+}
+
+/* ✅ 新增：狀態文字顏色 */
+.status-text.active {
+  color: green;
+}
+
+.status-text.disabled {
+  color: red;
+}
+
+/* ✅ 新增：按鈕樣式 */
+.btn-disable {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-restore {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}

@@ -1,11 +1,23 @@
 // controllers/merchantScheduleController.js
+const mongoose = require('mongoose');
+// 根據你的原本路徑
 const Merchant = require('../models/merchant/Todo_merchant');
+
+// 內用：同時支援 merchantId 是「字串」或「ObjectId」的查法（相容舊資料）
+function buildMerchantQuery(rawId) {
+  const idStr = String(rawId || '');
+  const conds = [{ merchantId: idStr }];
+  if (/^[a-f\d]{24}$/i.test(idStr)) {
+    conds.push({ merchantId: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conds };
+}
 
 // 取得商家的營業排程（回傳完整 Business，或若你要只回 schedule 就改一行）
 const getMerchantSchedule = async (req, res) => {
   const { merchantId } = req.params;
   try {
-    const merchant = await Merchant.findOne({ merchantId }).lean();
+    const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
     // 如果前端 slice 期望的是 { schedule, timezone, ... }，建議回傳整個 Business
@@ -27,30 +39,27 @@ const updateMerchantSchedule = async (req, res) => {
 
   try {
     // 1) 讀取當前資料（寫前快照）
-    const before = await Merchant.findOne({ merchantId });
+    const before = await Merchant.findOne(buildMerchantQuery(merchantId));
     if (!before) return res.status(404).json({ message: '找不到商家' });
 
     console.log('[update] req.body =', { schedule, timezone });
     console.log('[update] before.Business =', before.Business);
 
-    // 2) 直接以 $set 更新（避免覆蓋掉 Business 其他欄位）
-    const update = {
-      'Business.schedule': schedule,
-      'Business.timezone': timezone,
-      'Business.lastModified': new Date(),
+    // 2) 確保 Business 存在再更新（避免 undefined.schedule）
+    before.Business = {
+      ...(before.Business || {}),
+      schedule,
+      timezone,
+      lastModified: new Date(),
     };
 
-    const result = await Merchant.updateOne({ merchantId }, { $set: update });
-    console.log('[update] matched =', result.matchedCount, 'modified =', result.modifiedCount);
-
-    // 3) 立即再查一次，取得最新狀態（寫後快照）
-    const after = await Merchant.findOne({ merchantId });
-    console.log('[update] after.Business =', after.Business);
+    await before.save();
+    console.log('[update] after.Business =', before.Business);
 
     return res.status(200).json({
       success: true,
       message: '營業排程更新成功',
-      data: after.Business,
+      data: before.Business,
     });
   } catch (err) {
     console.error('更新商家營業排程失敗:', err);
@@ -62,7 +71,7 @@ const updateMerchantSchedule = async (req, res) => {
 const checkMerchantStatus = async (req, res) => {
   const { merchantId } = req.params;
   try {
-    const merchant = await Merchant.findOne({ merchantId }).lean();
+    const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
     const schedule = merchant.Business?.schedule || {};
@@ -70,10 +79,10 @@ const checkMerchantStatus = async (req, res) => {
     const todaySchedule = schedule[today];
 
     const isOpen = todaySchedule?.isOpen || false;
-    res.status(200).json({ success: true, isOpen });
+    return res.status(200).json({ success: true, isOpen });
   } catch (err) {
     console.error('檢查商家營業狀態失敗:', err);
-    res.status(500).json({ message: '檢查商家營業狀態失敗' });
+    return res.status(500).json({ message: '檢查商家營業狀態失敗' });
   }
 };
 
@@ -81,7 +90,7 @@ const checkMerchantStatus = async (req, res) => {
 const getWeeklyScheduleOverview = async (req, res) => {
   const { merchantId } = req.params;
   try {
-    const merchant = await Merchant.findOne({ merchantId }).lean();
+    const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
     const schedule = merchant.Business?.schedule || {};
@@ -92,10 +101,10 @@ const getWeeklyScheduleOverview = async (req, res) => {
       closeTime: info?.closeTime || null,
     }));
 
-    res.status(200).json({ success: true, data: overview });
+    return res.status(200).json({ success: true, data: overview });
   } catch (err) {
     console.error('取得商家一週營業概況失敗:', err);
-    res.status(500).json({ message: '取得商家一週營業概況失敗' });
+    return res.status(500).json({ message: '取得商家一週營業概況失敗' });
   }
 };
 
