@@ -21,7 +21,7 @@ const cors = require('cors');
 var app = express();
 
 // MongoDB 連線設定
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB 連線成功');
     // 顯示連線資訊
