@@ -8,10 +8,6 @@ const todoShcema = new mongoose.Schema({
     merchantId:{//店家ID
         type:String,
         required:true,
-<<<<<<< HEAD
-        unique: true
-=======
->>>>>>> alan
     },
     member_name:{//關聯消費者name(members會員表)
         type:String,
@@ -44,11 +40,7 @@ const todoShcema = new mongoose.Schema({
     pickupMethod:{//取餐方式(內用(預設)/自取)
         type:String,
         default:'eatin',
-<<<<<<< HEAD
-        enum:['eatin','piclup']
-=======
         enum:['eatin','pickup']
->>>>>>> alan
     }
 
 },{collection:'order'});

@@ -1,10 +1,6 @@
 // src/features/merchant/menu/merchantMenuSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { merchantApi } from '../../../services/merchantApi';
-<<<<<<< HEAD
-import { fetchMerchantInfoFromSession } from '../../../utils/getMerchantId';  // 開發環境中提供預設merchantId
-=======
->>>>>>> alan
 
 // 餐點類別選項
 export const MENU_CATEGORIES = [
@@ -40,24 +36,7 @@ export const fetchMenuItems = createAsyncThunk(
   'merchantMenu/fetchMenuItems',
   async (_, { rejectWithValue }) => {
     try {
-<<<<<<< HEAD
-      let merchantId = merchantIdArg;
-      if (!merchantId) {
-
-        // const rawMerchantId = localStorage.getItem('merchantId');
-        // merchantId = getEffectiveMerchantId(rawMerchantId);
-
-        //整合測試及實際上線用
-        const res = await fetchMerchantInfoFromSession();
-        merchantId = res?.merchantId;
-      }
-      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
-
-      const response = await merchantApi.getMenuItems(merchantId);
-      // 後端格式 { success, data: [...] }
-=======
       const response = await merchantApi.getMenuItems();
->>>>>>> alan
       return response.data?.data || [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '獲取菜單失敗');
@@ -72,20 +51,6 @@ export const createMenuItem = createAsyncThunk(
   'merchantMenu/createMenuItem',
   async ({ menuData, imageFile }, { rejectWithValue }) => {
     try {
-<<<<<<< HEAD
-      let merchantId = merchantIdArg;
-      if (!merchantId) {
-        // const rawMerchantId = localStorage.getItem('merchantId');
-        // merchantId = getEffectiveMerchantId(rawMerchantId);
-
-        //整合測試及實際上線用
-        const res = await fetchMerchantInfoFromSession();
-        merchantId = res?.merchantId;
-      }
-      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
-
-=======
->>>>>>> alan
       const formData = new FormData();
       Object.keys(menuData || {}).forEach((key) => {
         const val = menuData[key];
@@ -114,20 +79,6 @@ export const updateMenuItem = createAsyncThunk(
   'merchantMenu/updateMenuItem',
   async ({ itemId, menuData, imageFile }, { rejectWithValue }) => {
     try {
-<<<<<<< HEAD
-      let merchantId = merchantIdArg;
-      if (!merchantId) {
-        // const rawMerchantId = localStorage.getItem('merchantId');
-        // merchantId = getEffectiveMerchantId(rawMerchantId);
-
-        //整合測試及實際上線用
-        const res = await fetchMerchantInfoFromSession();
-        merchantId = res?.merchantId;
-      }
-      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
-
-=======
->>>>>>> alan
       const formData = new FormData();
       Object.keys(menuData || {}).forEach((key) => {
         const val = menuData[key];
@@ -160,22 +111,7 @@ export const deleteMenuItem = createAsyncThunk(
   'merchantMenu/deleteMenuItem',
   async ({ itemId }, { rejectWithValue }) => {
     try {
-<<<<<<< HEAD
-      let merchantId = merchantIdArg;
-      if (!merchantId) {
-        // const rawMerchantId = localStorage.getItem('merchantId');
-        // merchantId = getEffectiveMerchantId(rawMerchantId);
-
-        //整合測試及實際上線用
-        const res = await fetchMerchantInfoFromSession();
-        merchantId = res?.merchantId;
-      }
-      if (!merchantId) return rejectWithValue('缺少店家身份，請先登入');
-
-      await merchantApi.deleteMenuItem(merchantId, itemId);
-=======
       await merchantApi.deleteMenuItem(itemId);
->>>>>>> alan
       return itemId;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || '刪除餐點失敗');
