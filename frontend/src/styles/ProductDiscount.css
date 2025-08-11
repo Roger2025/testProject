@@ -1,0 +1,37 @@
+/* --------------------------------------- 
+🎨 Ogani theme 風格箭頭（加入 CSS）
+建立 ProductDiscount.css 檔案並加入以下： 
+--------------------------------------- */
+
+.swiper-button-prev,
+.swiper-button-next {
+  background-color: #f5f5f5;
+  color: #7fad39; /* Ogani 綠色主調 */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: #7fad39;
+  color: #f5f5f5;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-button:hover {
+  opacity: 0.8;
+}

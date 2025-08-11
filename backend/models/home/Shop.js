@@ -84,7 +84,11 @@ const shopSchema = new mongoose.Schema({
   storeImag: String,	// 早餐店 Logo 存放路徑 = 'merchant1/merchant01.jpg'
   merchantId: String,	// 早餐店ID = 'store4'	  
   // url: String,			// url = merchantId, 例如 url: '/store4'
-  category: [String],	// 早餐店狀態，例如 ['Open', 'OnlinePay'] Open 營業中, OnlinePay 可線上支付 
+  // category: [String],	// 早餐店狀態，例如 ['Open', 'OnlinePay'] Open 營業中, OnlinePay 可線上支付 
+  category: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   storeAddress: String,	// 早餐店地址 = '台北市士林區社中街344號'
   Business: [storeSchema], // 店家提供營業時間 JSON 檔
 });

@@ -9,15 +9,10 @@ import './styles/style.css';
 // import ApiTest from './components/ApiTest'; //前後端專案連線測試用,可先註解
 import MerchantRoutes from './routes/MerchantRoutes';
 // import logo from './logo.svg';
-import './App.css';
+import './styles/App.css';
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'font-awesome/css/font-awesome.min.css';
-
-// src/App.js
-import React from 'react';
-// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +36,9 @@ function App() {
     <div className="App">
       {/* <h1>測試畫面是否有 render</h1> */}
       <Routes>
+        {/* 平台頁面由 HomeRoutes 處理 */}
+        <Route path="/*" element={<HomeRoutes />} />
+
         {/* 商家端所有路由 */}
         <Route path="/merchant/*" element={<MerchantRoutes />} />
         
@@ -58,16 +56,6 @@ function App() {
         <h1>我的前端應用</h1>
         <ApiTest />
       </div>  */}
-    <div className='App'>
-
-        <Routes>
-          {/* 其他頁面由 HomeRoutes 處理 */}
-          <Route path="/*" element={<HomeRoutes />} />
-
-          {/* 最後兜底：未知路徑導回首頁 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-
     </div>
   );
 }

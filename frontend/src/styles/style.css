@@ -136,8 +136,12 @@ ol {
 
 .set-bg {
 	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: top center;
+	background-size: contain; /* ogani cover */
+	background-position: center center; /* ogani top center */
+	width: 100%;
+	height: auto;
+	background-color: #f5f5f5; /* 可選，避免留白太突兀 */
+	border-radius: 8px; /* 可選，讓圖片更美觀 */
 }
 
 .spad {
@@ -569,12 +573,12 @@ ol {
 }
 
 .hero.hero-normal .hero__categories {
-	position: relative;
+	position: relative; /* 微調位置、不影響其他元素 */
 }
 
 .hero.hero-normal .hero__categories ul {
-	display: none;
-	position: absolute;
+	display: none; /* 預設隱藏。 */ 
+	position: absolute; /* 精準定位、浮動元素、彈出視窗等 */
 	left: 0;
 	top: 46px;
 	width: 100%;
@@ -758,7 +762,7 @@ ol {
 -----------------------*/
 
 .categories__item {
-	height: 270px;
+	height: 270px; /* ogani 270px */
 	position: relative;
 }
 
@@ -785,7 +789,7 @@ ol {
 .categories__slider .col-lg-3 {
 	max-width: 100%;
 }
-
+/* ogani 的 左右按鈕元件 有關 */
 .categories__slider.owl-carousel .owl-nav button {
 	font-size: 18px;
 	color: #1c1c1c;
@@ -795,7 +799,7 @@ ol {
 	text-align: center;
 	border: 1px solid #ebebeb;
 	position: absolute;
-	left: -35px;
+	left: -35px; /* 是左邊的按鈕位置。 */
 	top: 50%;
 	-webkit-transform: translateY(-35px);
 	background: #ffffff;
@@ -803,7 +807,50 @@ ol {
 
 .categories__slider.owl-carousel .owl-nav button.owl-next {
 	left: auto;
-	right: -35px;
+	right: -35px; /* 是右邊的按鈕位置。 */
+}
+
+/*---------------------
+CategoriesSection.js // 單個滑動元件
+CarouselNav.js // 左右按鈕元件 
+---------------------*/
+.slider-row {
+  display: flex;
+  align-items: center;
+  min-height: 220px; /* 高度略高於圖片 */
+  width: 100%;
+  /* max-width: 100%; */
+  position: relative; /* 父層要有定位 */
+}
+
+/* .slider-row > div { */
+.slider-container {	
+  flex: 1;
+  min-width: 0; /* 防止 flex 子元素溢出 */
+}
+
+.owl-prev,.owl-next {
+	font-size: 18px;
+	color: #1c1c1c;
+	height: 70px;
+	width: 30px;
+	line-height: 70px;
+	text-align: center;
+	border: 1px solid #ebebeb;
+	background: #ffffff;
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+}
+
+.owl-prev {
+  	left: 0; /* 是左邊的按鈕位置。 */
+}
+
+.owl-next {
+	right: 0; /* 是右邊的按鈕位置。 */
 }
 
 /*---------------------
@@ -992,12 +1039,12 @@ ol {
 
 .latest-product__item__pic {
 	float: left;
-	margin-right: 26px;
+	margin-right: 26px; 
 }
 
 .latest-product__item__pic img {
-	height: 110px;
-	width: 110px;
+	height: 110px; 
+	width: 110px; 
 }
 
 .latest-product__item__text {
@@ -1047,6 +1094,12 @@ ol {
 .breadcrumb__text h2 {
 	font-size: 46px;
 	color: #ffffff;
+	font-weight: 700;
+}
+/* homepage */
+.breakfast__text h2 {
+	font-size: 46px;
+	color: #1e7109;
 	font-weight: 700;
 }
 
@@ -1281,7 +1334,7 @@ ol {
 }
 
 .product__discount__item__pic {
-	height: 270px;
+	height: 200px;  /* 270px */
 	position: relative;
 	overflow: hidden;
 }
@@ -1535,7 +1588,7 @@ ol {
 }
 
 .product__item__pic {
-	height: 270px;
+	height: 200px; /* 270px */
 	position: relative;
 	overflow: hidden;
 }
@@ -1877,7 +1930,7 @@ ol {
 -----------------------*/
 
 .shoping-cart {
-	padding-top: 80px;
+	padding-top: 1px; /* ogani 80px*/
 	padding-bottom: 80px;
 }
 
@@ -1912,18 +1965,28 @@ ol {
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__item {
-	width: 630px;
-	text-align: left;
+	width: 300px; /* ogani 630px */
+	text-align: left; /* ogani left */
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__item img {
 	display: inline-block;
 	margin-right: 25px;
+	/* 讓預設圖片有灰色背景或淡淡的 logo 樣式 */
+	border-radius: 8px;
+    background-color: #f5f5f5;
+    object-fit: cover;
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__item h5 {
 	color: #1c1c1c;
 	display: inline-block;
+}
+/* For OrderTable.js */
+.shoping__cart__table table tbody tr td.shoping__cart__note {
+	width: 300px; 
+	text-align: left;
+	color: red;
 }
 
 .shoping__cart__table table tbody tr td.shoping__cart__price {
@@ -2063,6 +2126,52 @@ ol {
 	display: block;
 	text-align: center;
 }
+
+/*---------------------
+  Order Status
+  src/components/cart/OrderTable.js
+-----------------------*/
+.order-info {
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.order-info .order-title {
+  font-size: 30px;
+  color: #8e0a0a;
+  font-weight: 700;
+}
+.order-status {
+  margin-top: 1px;
+  text-align: left;
+}
+.order-status h5{
+  font-size: 25px;
+  color: #1c1c1c;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+/* 訂單狀態 取餐方式 的樣式 */
+.order-status .badge {
+  padding: 12px 24px 11px;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: blod;
+  color: black;
+  height: 40px;
+  letter-spacing: 4px;
+  display: inline-block;
+  text-align: center;
+}
+/* 取餐方式 */
+.takeout { background-color: #ff9900; }
+.eatin { background-color: #33cc66; }
+/* 訂單狀態 */
+.uncompleted { background-color: #ff9900; }
+.accepted { background-color: #ff0000; }
+.completed { background-color: #3399ff; }
+.closed { background-color: #33cc66; }
+.cancelled { background-color: #ffc0cb; }
 
 /*---------------------
   Checkout
@@ -2622,12 +2731,20 @@ ol {
 .footer__about {
 	margin-bottom: 30px;
 }
+/* Update 2025/08/01 for FooterAbout.js */
+.footer__about ul {
+  padding-left: 0; /* 若你不希望有縮排 */
+  margin-left: 0;
+  text-align: left; /* 明確指示靠左對齊 */
+}
 
 .footer__about ul li {
 	font-size: 16px;
 	color: #1c1c1c;
 	line-height: 36px;
 	list-style: none;
+	text-align: left; /* 再加一層保險讓每個 li 靠左 for FooterAbout.js */
+	/* white-space: nowrap; /* CSS 強制不斷行（套用在整個 li）for FooterAbout.js */
 }
 
 .footer__about__logo {
@@ -2668,6 +2785,7 @@ ol {
 	font-size: 14px;
 	color: #1c1c1c;
 	margin-bottom: 30px;
+	text-align: left; /* 明確指示靠左對齊 for FooterNewsletter.js */
 }
 
 .footer__widget form {
@@ -2741,6 +2859,13 @@ ol {
 
 .footer__copyright__payment {
 	float: right;
+}
+
+/* For FooterLinks.js */
+.footer__map { 
+  width: 100%;
+  height: auto;
+  padding-top: 10px;
 }
 
 /*---------------------
@@ -3438,7 +3563,7 @@ ol {
 	}
 	.primary-btn.cart-btn.cart-btn-right {
 		float: none;
-		margin-top: 10px;
+		margin-top: 10; 
 	}
 	.shoping__checkout .primary-btn {
 		display: block;

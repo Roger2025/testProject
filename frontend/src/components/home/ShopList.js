@@ -1,7 +1,7 @@
 // src/commponents/home/ShopList.js  (店家清單)
 
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import { useShopData } from '../../hooks/useShopData';
 import { useNavigate } from 'react-router-dom';
 import { parseCategoryField } from '../../utils/CategoryParser';
@@ -9,15 +9,22 @@ import { isStoreOpen } from '../../utils/timeUtils';
 import ShopCard from './ShopCard';
 import Pagination from '../common/Pagination';
 
-
+// const categories = ['所有店家', '活動中', '點數回饋', '線上支付', '可外送', '營業中', '熱門店家'];
 const categories = ['所有店家', '營業中', '熱門店家'];
 const toClass = {
   '所有店家': 'All',
   '營業中': 'Open',
   '熱門店家': 'Popular',
+  // '活動中': 'Activity',
+  // '點數回饋': 'Rewards',
+  // '線上支付': 'OnlinePay',
+  // '可外送': 'Delivery',
+  // '可預約': 'Booking',
+  // '休息中': 'Rest',
+  // '停業中': 'Closed',  
 };
 
-const PER_PAGE = 8; 
+const PER_PAGE = 8; // 修改成一頁 4 行 x 2 列 = 8 個店家
 
 const getImageURL = (path) => `http://localhost:3001/images/${path}`;
 const defaultImageURL = 'http://localhost:3001/images/ByteEat.png';
@@ -33,7 +40,7 @@ const ShopList = ({ products: externalProducts }) => {
   useEffect(() => {
     // axios.get('http://localhost:3001/api/home/shop/')
     //   .then(res => {
-        // const formatted = res.data.map(item => {
+    //     const formatted = res.data.map(item => {
         const formatted = shops.map(item => {  
           const parsedCategory = parseCategoryField(item.category);
           const business = Array.isArray(item.Business)
@@ -61,10 +68,10 @@ const ShopList = ({ products: externalProducts }) => {
         // setFetchedProducts(formatted);
         setProcessedShops(formatted);
       }, [shops]);  
-      // })
-      // .catch(err => {
-      //   console.error('載入店家資料失敗:', err);
-      // });
+  //     })
+  //     .catch(err => {
+  //       console.error('載入店家資料失敗:', err);
+  //     });
   // }, []);
 
   // const sourceProducts = externalProducts?.length > 0 ? externalProducts : fetchedProducts;
@@ -79,7 +86,7 @@ const ShopList = ({ products: externalProducts }) => {
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const handleClick = (merchantId) => {
-    navigate(`/store/${merchantId}`);
+    navigate(`/shop/${merchantId}`);
   };
 
   if (loading) return <div>載入中...</div>;

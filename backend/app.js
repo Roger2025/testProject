@@ -77,13 +77,15 @@ app.use('/api/merchant', merchantSetMenuRouter);
 app.use('/api/merchant/schedule', merchantScheduleRouter);
 app.use('/api/merchant/orders', merchantOrderRoutes);
 
+const homeSubscribeRoutes = require('./routes/home/subscribe');
+app.use('/api/home/sub', homeSubscribeRoutes);
+
 // 測試路由
 const testRoutes = require('./routes/test');
 app.use('/api', testRoutes);
 
 // Debug 路由
 app.use('/api/debug', require('./routes/debug'));
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

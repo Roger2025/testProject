@@ -1,18 +1,32 @@
 // src/utils/timeUtils.js
 import { DateTime } from 'luxon';
 
-const weekdayMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+// const day = weekdayMap[now.weekday % 7]; // Luxon: 1 = Monday, 7 = Sunday
+const weekdayMap = [ 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+// const day = weekdayMap[now.weekday -1 ]; // Luxon: 1 = Monday → index 0
+// const weekdayMap = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 export function isStoreOpen(schedule, timezone = 'Asia/Taipei') {
   const now = DateTime.now().setZone(timezone);
 
-  // const day = now.weekdayLong.toLowerCase(); 
+  // const daytest = now.weekdayLong.toLowerCase(); 
   // weekdayLong => en: 'friday' , zh: '星期六' 會抓到中文
-    
-  // const day = weekdayMap[now.weekday % 7]; // Luxon: 1 = Monday, 7 = Sunday
-  const day = weekdayMap[now.weekday]; // Luxon: 1 = Monday → index 0
-  // saturday => now.weekday = 6
+  // console.log('weekdayLong test', daytest);
+  // console.log('now.weekday', now.weekday);
   
+  const day = weekdayMap[now.weekday % 7]; // Luxon: 1 = Monday, 7 = Sunday
+  // sunday => now.weekday = 7 => weekdayMap[0]
+  // monday => now.weekday = 1 => weekdayMap[1]
+  // saturday => now.weekday = 6 => weekdayMap[6]
+
+  // const day = weekdayMap[now.weekday -1 ]; // Luxon: 1 = Monday → index 0
+  // monday => now.weekday = 1 => weekdayMap[0]
+  // saturday => now.weekday = 6 => weekdayMap[5] 
+  // sunday => now.weekday = 7 => weekdayMap[6] 
+
+  // console.log('day', day);
+
   const todaySchedule = schedule?.[day];
 
   // console.log(`[isStoreOpen] 現在是 ${day} ->`, now.toFormat('HH:mm'));
