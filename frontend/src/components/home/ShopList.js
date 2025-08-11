@@ -106,7 +106,7 @@ const ShopList = ({ products: externalProducts }) => {
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const handleClick = (merchantId) => {
-    navigate(`/shop/${merchantId}`);
+    navigate(`/user/shop/${merchantId}`);
   };
 
   if (loading) return <div>載入中...</div>;

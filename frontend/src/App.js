@@ -18,25 +18,24 @@ import './styles/App.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'font-awesome/css/font-awesome.min.css';
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
 
 import HomeRoutes from './routes/HomeRoutes';
 // import StorePage from './pages/StorePage'; // 測試 merchantId 回傳到後端 Node.js
 
 // 主路由
 function App() {
-  const navigate = useNavigate();
-  const isLoggedIn = Boolean(localStorage.getItem('token')); // 或從 context 判斷
+  // const navigate = useNavigate();
+  // const isLoggedIn = Boolean(localStorage.getItem('token')); // 或從 context 判斷
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/homepage');
-    } else {
-      navigate('/');
-    }
-  }, [isLoggedIn]);
-
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigate('/homepage');
+  //   } else {
+  //     navigate('/');
+  //   }
+  // }, [isLoggedIn]);
 
   return (
       <div className="App">
@@ -55,20 +54,20 @@ function App() {
           <Route path="/merchant/*" element={<MerchantRoutes />} />
 
           {/* 暫時寫在這邊的商家與使用者首頁（之後可模組化） */}
-          <Route path="/user" element={<div>👤 使用者首頁</div>} />
+          {/* <Route path="/user" element={<div>👤 使用者首頁</div>} /> */}
+          {/* 平台頁面由 HomeRoutes 處理 */}
+          <Route path="/user/*" element={<HomeRoutes />} />
+
           <Route path="/shop" element={<div>🏪 商家首頁</div>} />
 
           {/* 預設路由重導向到商家登入 */}
-          {/* <Route path="/" element={<Navigate to="/merchant/login" replace />} /> */}
+          <Route path="/" element={<Navigate to="/merchant/login" replace />} />
 
           {/* 根路徑導向登入（保留原本萬用導向 login 的行為） */}
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
           {/* 未來其他路由可以在這裡添加 */}
           {/* 例如：一般使用者路由、管理員路由等 */}
-
-          {/* 平台頁面由 HomeRoutes 處理 */}
-          <Route path="/*" element={<HomeRoutes />} />
 
           {/* 404 處理 */}
           <Route path="*" element={<Navigate to="/auth/login" replace />} />

@@ -16,7 +16,7 @@ import ShopLogout from '../pages/shop/ShopLogout'; // 未登入的早餐店頁�
 
 import ShopCart from '../pages/home/ShopCart'; // 購物車
 import OrderPage from '../pages/home/OrderPage'; // 訂單表單
-import OrderPageId from '../pages/home/OrderPageId'; // 訂單表單
+// import OrderPageId from '../pages/home/OrderPageId'; // 訂單表單
 
 // import Test from '../pages/Test'; // Test 
 // import LocationFetcher from '../pages/LocationFetcher'; // 抓取目前定位的經緯度
@@ -30,7 +30,7 @@ function HomeRoutes() {
             <Routes>
               {/* 平台首頁 */}
               <Route path="/" element={<Home />} />
-              <Route path="/homepage" element={<HomePage />} /> 
+              <Route path="/home" element={<HomePage />} /> 
 
               {/* 登入 / 註冊 */}
               <Route path="/login" element={<Login />} />
@@ -44,7 +44,7 @@ function HomeRoutes() {
               {/* 購物車 / 訂單 */}
               <Route path="/shopcart" element={<ShopCart />} />
               <Route path="/order" element={<OrderPage />} />
-              <Route path="/order/:order_id" element={<OrderPageId />} />
+              {/* <Route path="/order/:order_id" element={<OrderPageId />} /> */}
 
               {/* 工具 / 測試 */}
               {/* <Route path="/test" element={<Test />} />

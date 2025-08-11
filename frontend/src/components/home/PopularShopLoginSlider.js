@@ -61,7 +61,7 @@ const PopularShopLoginSlider = () => {
           return {
             name: item.storeName,
             img: item.storeImag ? getImageURL(item.storeImag) : defaultImageURL,
-            url: `/shop/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
+            url: `/user/shop/${item.merchantId}`,  // 如果原本 URL 是 `/store4` 這樣拼比較直覺
             merchantId: item.merchantId,
             category: finalWithAll,
             // category: parseCategoryField(item.category), // 修改後 正確格式 category: ['All', 'Open', 'Popular']

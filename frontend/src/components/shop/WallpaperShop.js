@@ -25,7 +25,7 @@ const WallpaperShop = () => {
             <div className="breadcrumb__text">
               <h2>Byte Eat 當前店家</h2>
               <div className="breadcrumb__option">
-                <Link to="/">首頁</Link>
+                <Link to="/user/home">首頁</Link>
                 <span>Btye Eat</span>
               </div>
             </div>

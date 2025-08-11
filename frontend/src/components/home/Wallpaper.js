@@ -24,7 +24,7 @@ const Wallpaper = () => {
             <div className="breakfast__text">
               <h2>Byte Eat 早餐店平台</h2>
               <div className="breadcrumb__option">
-                <Link to="/">首頁</Link>
+                <Link to="/user">首頁</Link>
                 <span>Btye Eat</span>
               </div>
             </div>
