@@ -2,6 +2,7 @@
 // src/components/shop/Product.js (優惠餐點的自動瀏覽)
 
 import ProductDiscount from './ProductDiscount';
+import { Link } from 'react-router-dom';
 
 const Product = () => {
   return (
@@ -14,13 +15,13 @@ const Product = () => {
               <div className="sidebar__item">
                 <h4>會員中心</h4>
                 <ul>
-                  <li><a href="/register">會員資訊</a></li>
-                  <li><a href="/order">訂餐專區</a></li>
+                  <li><Link to="/register">會員資訊</Link></li>
+                  <li><Link to="/order">訂餐專區</Link></li>
                   {/* <li><a href="/test">優惠專區</a></li> */}
                   {/* <li><a href="/test">評價與收藏</a></li> */}
                   {/* <li><a href="/test">客戶服務</a></li> */}
                   {/* <li><a href="/test">聯絡我們</a></li> */}
-                  <li><a href="/login">登入/登出</a></li>                
+                  <li><Link to="/login">登入/登出</Link></li>                
                 </ul>
               </div>
             </div>

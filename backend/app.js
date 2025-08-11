@@ -27,34 +27,13 @@ const registerRouter = require('./routes/auth/register');
 const verifyRouter = require('./routes/auth/verify');
 // const setAdminVerifiedRouter = require('./routes/admin_routes/setAdminVerified');
 
-const app = express();
-
-// 路由變數定義
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// 首頁路由
 const homeShopRoutes = require('./routes/home/homeShop');
 const homeOrderRoutes = require('./routes/home/homeOrder');
 
-var merchantMenuRouter = require('./routes/merchant/merchantMenu');
-var merchantSetMenuRouter = require('./routes/merchant/merchantSetMenu');
-var merchantScheduleRouter = require('./routes/merchant/merchantSchedule');
-var merchantOrderRoutes = require('./routes/merchant/merchantOrder');
-const cors = require('cors');
+const app = express();
 
-var app = express();
-
-// MongoDB 連線設定 // Refer to Wayne
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log(' 成功連接到 App MongoDB');
-  console.log(`MongoDB Connected: ${mongoose.connection.host}`);
-})
-.catch((err) => {
-  console.error(' 連接失敗:', err.message);
-});
+const PORT = process.env.PORT || 3001;
 
 // MongoDB 連線設定
 mongoose.connect(process.env.MONGODB_URI)
@@ -62,6 +41,9 @@ mongoose.connect(process.env.MONGODB_URI)
     console.log('MongoDB 連線成功');
     // 顯示連線資訊
     console.log('[DB]', mongoose.connection.host, mongoose.connection.port, mongoose.connection.name);
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+    });
   })
   .catch((error) => {
     console.error('MongoDB 連線失敗:', error);
@@ -80,7 +62,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // CORS 設定
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -93,7 +75,7 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl: process.env.MONGODB_URI,
     collectionName: 'sessions',
     ttl: 60 * 60
   }),
@@ -118,6 +100,10 @@ app.use('/api/merchant', merchantSetMenuRouter);
 app.use('/api/merchant/schedule', merchantScheduleRouter);
 app.use('/api/merchant/orders', merchantOrderRoutes);
 
+// 首頁路由
+app.use('/api/home/shop', homeShopRoutes);
+app.use('/api/home/order', homeOrderRoutes);
+// 首頁路由 Footer email subscribe test
 const homeSubscribeRoutes = require('./routes/home/subscribe');
 app.use('/api/home/sub', homeSubscribeRoutes);
 

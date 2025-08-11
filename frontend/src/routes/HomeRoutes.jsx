@@ -18,8 +18,8 @@ import ShopCart from '../pages/home/ShopCart'; // 購物車
 import OrderPage from '../pages/home/OrderPage'; // 訂單表單
 import OrderPageId from '../pages/home/OrderPageId'; // 訂單表單
 
-import Test from '../pages/Test'; // Test 
-import LocationFetcher from '../pages/LocationFetcher'; // 抓取目前定位的經緯度
+// import Test from '../pages/Test'; // Test 
+// import LocationFetcher from '../pages/LocationFetcher'; // 抓取目前定位的經緯度
 
 function HomeRoutes() {
   return (
@@ -47,8 +47,8 @@ function HomeRoutes() {
               <Route path="/order/:order_id" element={<OrderPageId />} />
 
               {/* 工具 / 測試 */}
-              <Route path="/test" element={<Test />} />
-              <Route path="/location" element={<LocationFetcher />} />
+              {/* <Route path="/test" element={<Test />} />
+              <Route path="/location" element={<LocationFetcher />} /> */}
             </Routes>
         }
       /> 

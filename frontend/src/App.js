@@ -39,30 +39,6 @@ function App() {
 
 
   return (
-    <div className="App">
-      {/* <h1>測試畫面是否有 render</h1> */}
-      <Routes>
-        {/* 平台頁面由 HomeRoutes 處理 */}
-        <Route path="/*" element={<HomeRoutes />} />
-
-        {/* 商家端所有路由 */}
-        <Route path="/merchant/*" element={<MerchantRoutes />} />
-        
-        {/* 預設路由重導向到商家登入 */}
-        {/* <Route path="/" element={<Navigate to="/merchant/login" replace />} /> */}
-        
-        {/* 未來其他路由可以在這裡添加 */}
-        {/* 例如：一般使用者路由、管理員路由等 */}
-        
-        {/* 404 處理 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      {/* 前後端專案連線測試用,可先註解
-      <div>
-        <h1>我的前端應用</h1>
-        <ApiTest />
-      </div>  */}
-    </div>
       <div className="App">
         {/* 導入 AuthRoutes 模組（登入、註冊、驗證） */}
         {/* 導入 AdminRoutes 模組（後台頁面與權限驗證） */}
@@ -90,6 +66,9 @@ function App() {
 
           {/* 未來其他路由可以在這裡添加 */}
           {/* 例如：一般使用者路由、管理員路由等 */}
+
+          {/* 平台頁面由 HomeRoutes 處理 */}
+          <Route path="/*" element={<HomeRoutes />} />
 
           {/* 404 處理 */}
           <Route path="*" element={<Navigate to="/auth/login" replace />} />

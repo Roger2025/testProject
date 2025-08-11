@@ -1,10 +1,10 @@
 // src/commponents/home/ShopList.js  (店家清單)
 
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import { useShopData } from '../../hooks/useShopData';
 import { useNavigate } from 'react-router-dom';
-// import { parseCategoryField } from '../../utils/CategoryParser';
+import { parseCategoryField } from '../../utils/CategoryParser';
 import { isStoreOpen } from '../../utils/timeUtils';
 import ShopCard from './ShopCard';
 import Pagination from '../common/Pagination';
@@ -38,24 +38,13 @@ const ShopList = ({ products: externalProducts }) => {
   const [activeCategory, setActiveCategory] = useState('所有店家');
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const flagAll = true; // true: 所有 category 都列為 'all'; false: category = null or undefined 不列為 'all'.
-
-  function parseCategoryJSON(categoryObj) {
-  if (!categoryObj || typeof categoryObj !== 'object') return [];
-  return Object.entries(categoryObj)
-    .filter(([_, value]) => value === true)
-    .map(([key]) => key);
-  }
 
   useEffect(() => {
     // axios.get('http://localhost:3001/api/home/shop/')
     //   .then(res => {
     //     const formatted = res.data.map(item => {
         const formatted = shops.map(item => {  
-          // const parsedCategory = parseCategoryField(item.category);
-          const rawCategory = item.category ?? {};
-          const parsedCategory = parseCategoryJSON(rawCategory); // 將 JSON 轉成 [String]
-
+          const parsedCategory = parseCategoryField(item.category);
           const business = Array.isArray(item.Business)
             ? item.Business.length > 0 ? item.Business[0] : null
             : item.Business || null;
@@ -65,23 +54,16 @@ const ShopList = ({ products: externalProducts }) => {
           const status = isStoreOpen(schedule, timezone);
           const isOpenNow = status?.isOpen ?? false;
 
-          // 加入 'open' 標籤（如果營業中且尚未包含）
           const finalCategory = parsedCategory.includes('open') || !isOpenNow
             ? parsedCategory
             : [...parsedCategory, 'open'];
 
-          // flagAll 控制是否將 category 為 null 的店家歸類為 'all'
-          const shouldIncludeAll = flagAll && (item.category == null || Object.keys(item.category).length === 0);
-          const finalWithAll = shouldIncludeAll
-            ? [...finalCategory, 'all']
-            : finalCategory;
-  
           return {
             name: item.storeName,
             img: item.storeImag ? getImageURL(item.storeImag) : defaultImageURL,
             url: `/shop/${item.merchantId}`, 
             merchantId: item.merchantId,
-            category: finalWithAll,
+            category: finalCategory,
             isOpenNow, 
           };
         });
@@ -116,7 +98,7 @@ const ShopList = ({ products: externalProducts }) => {
   return (
     <section className="featured spad">
       <div className="container">
-        <div className="section-title product__discount__title"><h2>店家清單</h2></div>
+        <div className="section-title"><h2>店家清單</h2></div>
 
         {/* 分類篩選 */}
         <div className="featured__controls">

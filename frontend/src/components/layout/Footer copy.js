@@ -58,29 +58,10 @@ const Footer = () => {
             <div className="footer__widget">
               <h6>歡迎來到 Byte Eat 的平台</h6>
               <p>透過電子郵件獲取有關 Byte Eat 最新商店和特別優惠的最新消息</p>
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const email = e.target.elements[0].value;
-
-                    try {
-                      const res = await fetch("http://localhost:3001/api/home/sub", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email }),
-                      });
-
-                      const result = await res.json();
-                      alert(result.message || "訂閱失敗");
-                      console.log("Email submitted:", email);
-                    } catch (err) {
-                      alert("訂閱失敗，請稍後再試");
-                    }
-                  }}
-                >
-                  <input type="email" placeholder="輸入您的信箱" required />
-                  <button type="submit" className="site-btn">訂閱</button>
-                </form>
+              <form action="#">
+                <input type="text" placeholder="輸入您的信箱" />
+                <button type="submit" className="site-btn">訂閱</button>
+              </form>
               <div className="footer__widget__social">
                 <a href="https://www.facebook.com/"><i className={`fa fa-facebook`}></i></a>
                 <a href="https://www.instagram.com/"><i className={`fa fa-instagram`}></i></a>

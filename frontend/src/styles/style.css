@@ -119,7 +119,7 @@ ol {
 .section-title h2 {
 	color: #1c1c1c;
 	font-weight: 700;
-	position: relative;
+	position: relative; 
 }
 
 .section-title h2:after {
@@ -128,10 +128,10 @@ ol {
 	bottom: -15px;
 	right: 0;
 	height: 4px;
-	width: 80px;
+	width: 80px;   
 	background: #7fad39;
 	content: "";
-	margin: 0 auto;
+	margin: 0; 
 }
 
 .set-bg {
@@ -1316,12 +1316,14 @@ CarouselNav.js // 左右按鈕元件
 }
 
 .product__discount__title {
-	text-align: left;
+	text-align: left; 
 	margin-bottom: 65px;
 }
 
 .product__discount__title h2 {
 	display: inline-block;
+	text-align: center; /* 字置中*/
+	width: 100%; /* 強制撐滿容器 */	
 }
 
 .product__discount__title h2:after {
