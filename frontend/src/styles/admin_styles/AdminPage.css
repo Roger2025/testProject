@@ -1,0 +1,82 @@
+/* 讓容器接近滿版，置中顯示 */
+.admin-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 50px;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  background-color: #f9f9f9;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 1.2rem; /* 整體放大字體 */
+}
+
+/* 標題放大 */
+.admin-title {
+  font-size: 40px;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+
+/* 副標題放大 */
+.admin-subtitle {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+/* 按鈕區域間距加大 */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 按鈕放大 */
+.admin-button {
+  padding: 20px 40px;
+  font-size: 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-button:hover {
+  background-color: #45a049;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* 頁面外層（可加背景色或漸層） */
+.admin-page {
+  padding: 30px;
+}
+
+.admin-actions {
+  margin-top: 30px;
+}
+
+.admin-actions button {
+  padding: 20px 40px;
+  font-size: 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-actions button:hover {
+  background-color: #45a049;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
