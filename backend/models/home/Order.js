@@ -37,7 +37,9 @@ const orderSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Order', orderSchema, 'order');
+// 統一改成這一行（第三個參數 'order' 有需要時才保留）
+module.exports = mongoose.models.Order || mongoose.model('Order', orderSchema, 'order');
+
 
 // 訂餐內容: JSON 
 // [

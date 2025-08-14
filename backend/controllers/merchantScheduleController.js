@@ -1,65 +1,140 @@
 // controllers/merchantScheduleController.js
 const mongoose = require('mongoose');
-// 根據你的原本路徑
+// 依你的專案路徑
 const Merchant = require('../models/merchant/Todo_merchant');
 
-// 內用：同時支援 merchantId 是「字串」或「ObjectId」的查法（相容舊資料）
+/** --------------------------
+ * Helpers: 週預設 & 正規化
+ * ------------------------- */
+// 以前端為準：使用 monday ~ sunday
+const EMPTY_DAY = { isOpen: false, openTime: '', closeTime: '' };
+const WEEK_KEYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const EMPTY_WEEK = WEEK_KEYS.reduce((acc, k) => ({ ...acc, [k]: { ...EMPTY_DAY } }), {});
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+// 允許接收縮寫（mon/tue/...）或完整（monday/...），一律轉成完整鍵
+const ALIASES = {
+  mon: 'monday', tue: 'tuesday', wed: 'wednesday',
+  thu: 'thursday', fri: 'friday', sat: 'saturday', sun: 'sunday',
+};
+
+const normalizeWeek = (src = {}) => {
+  // 先把縮寫鍵轉為完整鍵
+  const expanded = Object.entries(src).reduce((acc, [k, v]) => {
+    const key = (k || '').toString().toLowerCase();
+    const full = WEEK_KEYS.includes(key) ? key : (ALIASES[key] || key);
+    acc[full] = v || {};
+    return acc;
+  }, {});
+  // 填滿 7 天並補齊欄位
+  const out = {};
+  WEEK_KEYS.forEach((k) => {
+    const day = expanded[k] || {};
+    out[k] = {
+      isOpen: !!day.isOpen,
+      openTime: typeof day.openTime === 'string' ? day.openTime : '',
+      closeTime: typeof day.closeTime === 'string' ? day.closeTime : '',
+    };
+  });
+  return out;
+};
+
+function validateWeekForOpenDays(week) {
+  const bad = [];
+  for (const [day, d] of Object.entries(week)) {
+    if (!d?.isOpen) continue;
+    const open = (d.openTime || '').trim();
+    const close = (d.closeTime || '').trim();
+    if (!TIME_RE.test(open) || !TIME_RE.test(close)) {
+      bad.push(`${day}: 時間需為 HH:MM`);
+      continue;
+    }
+    const toMin = (t) => {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+    if (toMin(open) >= toMin(close)) {
+      bad.push(`${day}: 結束時間需晚於開始時間`);
+    }
+  }
+  return bad;
+}
+
+/** --------------------------
+ * Helpers: 查詢條件（相容舊資料）
+ * ------------------------- */
 function buildMerchantQuery(rawId) {
   const idStr = String(rawId || '');
   const conds = [{ merchantId: idStr }];
-  if (/^[a-f\d]{24}$/i.test(idStr)) {
-    conds.push({ merchantId: new mongoose.Types.ObjectId(idStr) });
-  }
+  if (/^[a-f\d]{24}$/i.test(idStr)) conds.push({ merchantId: new mongoose.Types.ObjectId(idStr) });
   return { $or: conds };
 }
 
-// 取得商家的營業排程（回傳完整 Business，或若你要只回 schedule 就改一行）
+/** --------------------------
+ * 取得商家營業排程
+ * GET /api/merchant/schedule/:merchantId
+ * 回傳形狀：{ success, data: { schedule, timezone, lastModified } }
+ * ------------------------- */
 const getMerchantSchedule = async (req, res) => {
   const { merchantId } = req.params;
   try {
     const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
-    // 如果前端 slice 期望的是 { schedule, timezone, ... }，建議回傳整個 Business
-    const business = merchant.Business || {};
-    return res.status(200).json({ success: true, data: business });
+    const biz = merchant.Business || {};
+    const schedule = normalizeWeek(biz.schedule || {});
+    const timezone = biz.timezone || 'Asia/Taipei';
+    const lastModified = biz.lastModified ?? null;
 
-    // 若你只想回 schedule，則改成：
-    // return res.status(200).json({ success: true, data: business.schedule || {} });
+    return res.status(200).json({
+      success: true,
+      data: { schedule, timezone, lastModified },
+    });
   } catch (err) {
     console.error('取得商家營業排程失敗:', err);
-    res.status(500).json({ message: '取得商家營業排程失敗' });
+    return res.status(500).json({ message: '取得商家營業排程失敗' });
   }
 };
 
-// 更新商家的營業排程（穩定版）
+/** --------------------------
+ * 更新商家營業排程
+ * PUT /api/merchant/schedule/:merchantId
+ * Body: { schedule, timezone? }
+ * 回傳形狀：{ success, message, data: { schedule, timezone, lastModified } }
+ * ------------------------- */
 const updateMerchantSchedule = async (req, res) => {
   const { merchantId } = req.params;
-  const { schedule, timezone = 'Asia/Taipei' } = req.body;
+  const { schedule: rawSchedule = {}, timezone } = req.body || {};
 
   try {
-    // 1) 讀取當前資料（寫前快照）
-    const before = await Merchant.findOne(buildMerchantQuery(merchantId));
-    if (!before) return res.status(404).json({ message: '找不到商家' });
+    const doc = await Merchant.findOne(buildMerchantQuery(merchantId));
+    if (!doc) return res.status(404).json({ message: '找不到商家' });
 
-    console.log('[update] req.body =', { schedule, timezone });
-    console.log('[update] before.Business =', before.Business);
+    const normalized = normalizeWeek(rawSchedule);
+    const problems = validateWeekForOpenDays(normalized);
+    if (problems.length) {
+      return res.status(400).json({ message: `資料驗證失敗：${problems.join('；')}` });
+    }
 
-    // 2) 確保 Business 存在再更新（避免 undefined.schedule）
-    before.Business = {
-      ...(before.Business || {}),
-      schedule,
-      timezone,
+    const prevBiz = doc.Business || {};
+    const nextBiz = {
+      ...prevBiz,
+      schedule: normalized,
+      timezone: timezone || prevBiz.timezone || 'Asia/Taipei',
       lastModified: new Date(),
     };
 
-    await before.save();
-    console.log('[update] after.Business =', before.Business);
+    doc.Business = nextBiz;
+    await doc.save();
 
     return res.status(200).json({
       success: true,
       message: '營業排程更新成功',
-      data: before.Business,
+      data: {
+        schedule: nextBiz.schedule,
+        timezone: nextBiz.timezone,
+        lastModified: nextBiz.lastModified,
+      },
     });
   } catch (err) {
     console.error('更新商家營業排程失敗:', err);
@@ -67,18 +142,23 @@ const updateMerchantSchedule = async (req, res) => {
   }
 };
 
-// 檢查商家當天是否營業
+/** --------------------------
+ * 檢查商家當天是否營業
+ * GET /api/merchant/schedule/:merchantId/status
+ * 回傳形狀：{ success, isOpen }
+ * ------------------------- */
 const checkMerchantStatus = async (req, res) => {
   const { merchantId } = req.params;
   try {
     const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
-    const schedule = merchant.Business?.schedule || {};
+    const schedule = normalizeWeek(merchant.Business?.schedule || {});
+    // en-US weekday: 'monday'...'sunday'
     const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
     const todaySchedule = schedule[today];
 
-    const isOpen = todaySchedule?.isOpen || false;
+    const isOpen = !!todaySchedule?.isOpen;
     return res.status(200).json({ success: true, isOpen });
   } catch (err) {
     console.error('檢查商家營業狀態失敗:', err);
@@ -86,19 +166,23 @@ const checkMerchantStatus = async (req, res) => {
   }
 };
 
-// 一週營業概況
+/** --------------------------
+ * 取得一週營業概況
+ * GET /api/merchant/schedule/:merchantId/overview
+ * 回傳形狀：{ success, data: Array<{ day,isOpen,openTime,closeTime }> }
+ * ------------------------- */
 const getWeeklyScheduleOverview = async (req, res) => {
   const { merchantId } = req.params;
   try {
     const merchant = await Merchant.findOne(buildMerchantQuery(merchantId)).lean();
     if (!merchant) return res.status(404).json({ message: '找不到商家' });
 
-    const schedule = merchant.Business?.schedule || {};
-    const overview = Object.entries(schedule).map(([day, info]) => ({
+    const schedule = normalizeWeek(merchant.Business?.schedule || {});
+    const overview = WEEK_KEYS.map((day) => ({
       day,
-      isOpen: !!info?.isOpen,
-      openTime: info?.openTime || null,
-      closeTime: info?.closeTime || null,
+      isOpen: !!schedule[day].isOpen,
+      openTime: schedule[day].openTime || null,
+      closeTime: schedule[day].closeTime || null,
     }));
 
     return res.status(200).json({ success: true, data: overview });

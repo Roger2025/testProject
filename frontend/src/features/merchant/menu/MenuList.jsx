@@ -39,7 +39,7 @@ const MenuList = () => {
     if (!merchantId) return;
     const shouldRefetch = !lastFetch || (Date.now() - lastFetch > 60000);
     if (shouldRefetch && !loading) {
-      dispatch(fetchMenuItems(merchantId));
+      dispatch(fetchMenuItems());
     }
   }, [dispatch, merchantId, lastFetch, loading]);
 

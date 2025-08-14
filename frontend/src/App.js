@@ -1,4 +1,15 @@
-import {  Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
+// import Login from './pages/admin/LoginPage'
+import MemberCenter from "./pages/user/MemberCenter"
+import MenuPage from './pages/user/MenuPage';
+import OrderSummaryPage from './pages/user/OrderListPage';
+import StorePage from './pages/storePage';
+import {Routes, Route, Navigate} from 'react-router-dom'
+import HistoryOrdersPage from './pages/user/historyOrdersPage';
+
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'font-awesome/css/font-awesome.min.css'; 先註解會衝突250812
+// import Header from './pages/Home';
 import AuthRoutes from './routes/AuthRoutes';
 import AdminRoutes from './routes/AdminRoutes';
 //import useAuth from './hooks/useAuth';
@@ -12,36 +23,15 @@ import React from 'react';
 import './styles/style.css';
 // import ApiTest from './components/ApiTest'; //前後端專案連線測試用,可先註解
 import MerchantRoutes from './routes/MerchantRoutes';
-// import logo from './logo.svg';
-import './styles/App.css';
-
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'font-awesome/css/font-awesome.min.css';
-
-// import { useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-import HomeRoutes from './routes/HomeRoutes';
-// import StorePage from './pages/StorePage'; // 測試 merchantId 回傳到後端 Node.js
-
-// 主路由
-function App() {
-  // const navigate = useNavigate();
-  // const isLoggedIn = Boolean(localStorage.getItem('token')); // 或從 context 判斷
-
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigate('/homepage');
-  //   } else {
-  //     navigate('/');
-  //   }
-  // }, [isLoggedIn]);
-
+import HomeRoutes from './routes/HomeRoutes'; // Victor 首頁 0813
+import './styles/App.css';  // Victor 首頁需要 CSS 0813
+export default function App() {
   return (
       <div className="App">
         {/* 導入 AuthRoutes 模組（登入、註冊、驗證） */}
         {/* 導入 AdminRoutes 模組（後台頁面與權限驗證） */}
         {/* 暫時寫在這邊的商家與使用者首頁（之後可模組化） */}
+        
         {/* 萬用導向 login */}
         <Routes>
           {/* 導入 AuthRoutes 模組（登入、註冊、驗證） */}
@@ -53,15 +43,20 @@ function App() {
           {/* 商家端所有路由 */}
           <Route path="/merchant/*" element={<MerchantRoutes />} />
 
-          {/* 暫時寫在這邊的商家與使用者首頁（之後可模組化） */}
-          {/* <Route path="/user" element={<div>👤 使用者首頁</div>} /> */}
-          {/* 平台頁面由 HomeRoutes 處理 */}
+          {/* 使用者首頁 Victor 首頁 0813 */}
           <Route path="/user/*" element={<HomeRoutes />} />
-
-          <Route path="/shop" element={<div>🏪 商家首頁</div>} />
+		  
+          {/* 🏪 早餐店頁面 0813  */}
+          <Route path="/user/shop/*" element={<MemberCenter />}>
+            <Route index element={<StorePage />} />
+            {/* <Route path="shop" element={<StorePage />} /> */}
+            <Route path=":merchantId" element={<MenuPage />} />
+            <Route path="order-list" element={<OrderSummaryPage />} />
+            <Route path="history-orders" element={<HistoryOrdersPage />} />
+          </Route>
 
           {/* 預設路由重導向到商家登入 */}
-          <Route path="/" element={<Navigate to="/merchant/login" replace />} />
+          {/* <Route path="/" element={<Navigate to="/merchant/login" replace />} /> */}
 
           {/* 根路徑導向登入（保留原本萬用導向 login 的行為） */}
           <Route path="/" element={<Navigate to="/auth/login" replace />} />
@@ -71,15 +66,15 @@ function App() {
 
           {/* 404 處理 */}
           <Route path="*" element={<Navigate to="/auth/login" replace />} />
-        </Routes>
+      
 
         {/* 前後端專案連線測試用,可先註解
         <div>
           <h1>我的前端應用</h1>
           <ApiTest />
         </div>  */}
-      </div>
+                      
+          </Routes>
+          </div>
   );
 }
-
-export default App;

@@ -21,6 +21,7 @@ const handleVerify = (req, res) => {
     });
   }
 
+  //if ("1"!== code) {
   if (record.code !== code) {
     return res.json({
       status: 'fail',

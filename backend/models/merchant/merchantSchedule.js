@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 // 單日排程 Schema
 const dayScheduleSchema = new mongoose.Schema({
@@ -10,8 +11,10 @@ const dayScheduleSchema = new mongoose.Schema({
     type: String,
     default: '06:00',
     validate: {
-      validator: function(v) {
-        return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
+      validator: function (v) {
+        // this 指向當天的 subdocument
+        if (!this.isOpen) return v === '' || v == null;   // 休息日允許空值
+        return TIME_RE.test(v);                           // 營業日需 HH:MM
       },
       message: '時間格式必須為 HH:MM'
     }
@@ -20,8 +23,9 @@ const dayScheduleSchema = new mongoose.Schema({
     type: String,
     default: '14:00',
     validate: {
-      validator: function(v) {
-        return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
+      validator: function (v) {
+        if (!this.isOpen) return v === '' || v == null;   // 休息日允許空值
+        return TIME_RE.test(v);                           // 營業日需 HH:MM
       },
       message: '時間格式必須為 HH:MM'
     }

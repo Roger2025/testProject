@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   fetchTodayOrders,
+  fetchTodayStats,
   updateOrderStatus,
   selectOrders,
   selectOrdersLoading,
@@ -35,11 +36,12 @@ const OrderList = () => {
   };
 
   useEffect(() => {
-    if (!merchantId) return;
-
-    dispatch(fetchTodayOrders(merchantId));
+    if (!merchantId) return;                 // 等到有 id 再開始輪詢
+    dispatch(fetchTodayOrders());
+    dispatch(fetchTodayStats());
     const interval = setInterval(() => {
-      dispatch(fetchTodayOrders(merchantId));
+      dispatch(fetchTodayOrders());
+      dispatch(fetchTodayStats());
     }, 30000);
 
     return () => clearInterval(interval);
@@ -47,7 +49,7 @@ const OrderList = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await dispatch(updateOrderStatus({ orderId, status: newStatus, merchantId })).unwrap();
+      await dispatch(updateOrderStatus({ orderId, status: newStatus })).unwrap();
       toast.success(`訂單已更新為：${STATUS_LABELS[newStatus]}`);
     } catch (err) {
       toast.error('訂單狀態更新失敗');

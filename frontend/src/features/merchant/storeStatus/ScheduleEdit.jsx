@@ -13,6 +13,7 @@ import {
 const ScheduleEdit = () => {
   const dispatch = useDispatch();
   const { schedule, loading, error, saving } = useSelector((state) => state.merchantSchedule);
+  const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
   const [bulkSettings, setBulkSettings] = useState({
     selectedDays: [],
@@ -84,14 +85,51 @@ const ScheduleEdit = () => {
     }));
   };
 
+  function validateAndSanitize(scheduleObj) {
+    const problems = [];
+    const sanitized = {};
+
+    Object.entries(scheduleObj).forEach(([day, d]) => {
+      const isOpen = !!d?.isOpen;
+      const openTime = (d?.openTime ?? '').trim();
+      const closeTime = (d?.closeTime ?? '').trim();
+
+      if (!isOpen) {
+        sanitized[day] = { isOpen: false, openTime: '', closeTime: '' };
+        return;
+      }
+
+      // 必須是 HH:MM
+      if (!TIME_RE.test(openTime) || !TIME_RE.test(closeTime)) {
+        problems.push(`${day} 時間需為 HH:MM`);
+      } else {
+        // open < close
+        const toMin = (t) => {
+          const [h, m] = t.split(':').map(Number);
+          return h * 60 + m;
+        };
+        if (toMin(openTime) >= toMin(closeTime)) {
+          problems.push(`${day} 結束時間需晚於開始時間`);
+        }
+      }
+
+      sanitized[day] = { isOpen: true, openTime, closeTime };
+    });
+
+    return { ok: problems.length === 0, problems, sanitized };
+  }
+
   const handleSaveSchedule = async () => {
+    const { ok, problems, sanitized } = validateAndSanitize(schedule);
+    if (!ok) {
+      alert(`請修正以下問題：\n- ${problems.join('\n- ')}`);
+      return;
+    }
     try {
-      await dispatch(
-        updateMerchantSchedule({
-          schedule,                 // 直接送週排程
-          timezone: 'Asia/Taipei',  // 可做成可選輸入
-        })
-      ).unwrap();
+      await dispatch(updateMerchantSchedule({
+        schedule: sanitized,
+        timezone: 'Asia/Taipei',
+      })).unwrap();
       alert('營業排程已更新');
     } catch (e) {
       console.error('更新失敗:', e);
@@ -217,7 +255,8 @@ const ScheduleEdit = () => {
                       className="form-check-input"
                       type="checkbox"
                       id={`switch-${day}`}
-                      checked={schedule[day].isOpen}
+                      checked={!!schedule[day]?.isOpen}
+                      value={schedule[day]?.openTime || ''}
                       onChange={() => handleDayToggle(day)}
                     />
                     <label className="form-check-label" htmlFor={`switch-${day}`}>
@@ -242,7 +281,8 @@ const ScheduleEdit = () => {
                       <input
                         type="time"
                         className="form-control"
-                        value={schedule[day].closeTime}
+                        // value={schedule[day].closeTime}
+                        value={schedule[day]?.closeTime || ''}
                         onChange={(e) => handleTimeChange(day, 'closeTime', e.target.value)}
                       />
                     </div>

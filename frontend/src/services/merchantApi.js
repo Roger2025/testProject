@@ -1,6 +1,6 @@
 // src/services/merchantApi.js
 import axios from 'axios';
-import { devFlags } from '../constants/devFlags';
+// import { devFlags } from '../constants/devFlags';
 
 // 環境變數：API 基礎 URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
@@ -14,19 +14,31 @@ const apiClient = axios.create({
 // ---- 狀態 getter 綁定（避免直接 import store 造成循環依賴）----
 let getState;
 export function bindGetState(fn) { getState = fn; }
+// 方便在瀏覽器控制台測試：window.__mid()
+if (typeof window !== 'undefined') {
+  window.__mid = () => getState?.()?.merchantAuth?.user?.merchantId;
+}
 
 function getMerchantIdOrThrow() {
   const state = getState?.();
   const mid =
     state?.merchantAuth?.user?.merchantId ??
-    state?.merchantAuth?.merchant?.merchantId;
+    state?.auth?.user?.merchantId ??        // ⬅️ 加這個保險（同事若寫在 auth.user）
+    // state?.merchantAuth?.merchant?.merchantId;
+    null;
+    // console.log('[MID check]1', !!getState, getState?.()?.merchantAuth?.user?.merchantId);
 
-  if (mid) return mid;
+  // if (mid) return mid;
+  if (mid) return String(mid);
+
+  // console.log('[MID check]2', !!getState, getState?.()?.merchantAuth?.user?.merchantId);
 
   // 開發模式回退
-  if (devFlags.bypassAuth && devFlags.mockUser?.merchantId) {
-    return devFlags.mockUser.merchantId;
-  }
+  // if (devFlags.bypassAuth && devFlags.mockUser?.merchantId) {
+  //   console.log('[MID check]3', !!getState, getState?.()?.merchantAuth?.user?.merchantId);
+  //   return devFlags.mockUser.merchantId;
+  // }
+
   // 生產或未設定 → 丟錯
   throw new Error('缺少商家身分(merchantId), 請先登入');
 }
@@ -36,9 +48,9 @@ apiClient.interceptors.request.use((config) => config, (e) => Promise.reject(e))
 apiClient.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      window.location.href = '/merchant/login';
-    }
+    // if (err.response?.status === 401) {
+    //   window.location.href = '/auth/login';
+    // }
     return Promise.reject(err);
   }
 );
@@ -164,20 +176,16 @@ export const merchantApi = {
   },
 
   // 取得營業排程
-  getSchedule: (merchantId) =>
-    apiClient.get(`/api/merchant/schedule/${merchantId}`),
+  getSchedule: () => apiClient.get(`/api/merchant/schedule/${getMerchantIdOrThrow()}`),
 
   // 更新營業排程（body = { schedule, timezone }）
-  updateSchedule: (merchantId, payload) =>
-    apiClient.put(`/api/merchant/schedule/${merchantId}`, payload),
+  updateSchedule: (payload) => apiClient.put(`/api/merchant/schedule/${getMerchantIdOrThrow()}`, payload),
 
   // 檢查當前營業狀態
-  checkStatus: (merchantId) =>
-    apiClient.get(`/api/merchant/schedule/${merchantId}/status`),
+  checkStatus: () => apiClient.get(`/api/merchant/schedule/${getMerchantIdOrThrow()}/status`),
 
   // 一週營業概況
-  getWeeklyOverview: (merchantId) =>
-    apiClient.get(`/api/merchant/schedule/${merchantId}/overview`),
+  getWeeklyOverview: () => apiClient.get(`/api/merchant/schedule/${getMerchantIdOrThrow()}/overview`),
 
   // 上傳
   uploadMerchantLogo: (logoFile) => {

@@ -2,10 +2,13 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const HeroLogin = ({ onSearch }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { merchantId } = useParams();
+  const currentMerchantId = merchantId || 'store5'; // 預設為 store5
  
   const handleSearch = (e) => {
     e.preventDefault();
@@ -35,13 +38,14 @@ const HeroLogin = ({ onSearch }) => {
               </div>
                {/*<ul style={{ display: showMenu ? 'block' : 'none' }}> {/* 根據狀態顯示或隱藏 Menu */}
                <ul style={{ display: 'none'}}> 
-                <li><Link to="/user/register">會員資訊</Link></li>
-                <li><Link to="/user/order">訂餐專區</Link></li>
+                {/* <li><Link to="/auth/register">會員資訊</Link></li> */}
+                <li><Link to={`/user/shop/${currentMerchantId}`}>訂餐專區</Link></li>
+                <li><Link to={'/user/shop/history-orders'}>歷史訂單</Link></li>
                 {/* <li><a href="/test">優惠專區</a></li> */}
                 {/* <li><a href="/test">評價與收藏</a></li> */}
                 {/* <li><a href="/test">客戶服務</a></li> */}
                 {/* <li><a href="/test">聯絡我們</a></li> */}
-                <li><Link to="/user/login">登入/登出</Link></li>  
+                {/* <li><Link to="/auth/login">登入/登出</Link></li>   */}
               </ul>
             </div>
           </div>

@@ -1,0 +1,109 @@
+/* src/styles/usercss/historyOrdersPage.css */
+/* —— 可愛風色票 —— */
+:root {
+  --bg: #fff7fd;
+  --card: #ffffff;
+  --ink: #3e3a46;
+  --muted: #7f768a;
+  --primary: #ff6aa2;       /* 糖果粉 */
+  --primary-weak: #ffd3e6;
+  --accent: #8ea7ff;        /* 棉花藍 */
+  --accent-weak: #e2e8ff;
+  --chip: #ffeaa7;          /* 奶油黃 */
+  --chip-ink: #876d00;
+  --shadow: 0 6px 20px rgba(255, 106, 162, 0.18);
+  --radius-xl: 18px;
+  --radius-lg: 14px;
+  --radius-md: 12px;
+}
+
+* { box-sizing: border-box; }
+.history-cute {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 16px 40px;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 400px at 90% -20%, var(--accent-weak), transparent 70%),
+    radial-gradient(1000px 400px at -10% -10%, var(--primary-weak), transparent 60%),
+    var(--bg);
+  border-radius: var(--radius-xl);
+}
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 18px; margin-bottom: 10px;
+}
+.page-title { font-size: 24px; margin: 0; }
+.toolbar { display: flex; gap: 8px; }
+
+.btn {
+  padding: 8px 14px; border-radius: 999px; font-weight: 700; border: none; cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.btn.primary { background: var(--primary); color: #fff; }
+.btn.ghost { background: #fff; color: var(--ink); border: 2px solid var(--accent); }
+
+.info, .error, .empty, .skeleton {
+  margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-lg); font-size: 14px;
+  background: #fff; box-shadow: var(--shadow);
+}
+.error { border-left: 6px solid #ff3d71; }
+.skeleton { color: var(--muted); }
+
+.date-group { margin: 14px 0; }
+.group-header {
+  width: 100%; text-align: left; background: #fff; border: none; cursor: pointer;
+  padding: 14px 16px; border-radius: var(--radius-xl); display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow);
+}
+.group-header:hover { transform: translateY(-1px); transition: transform .15s ease; }
+.chev {
+  width: 10px; height: 10px; border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink);
+  transform: rotate(-45deg);
+}
+.chev.down { transform: rotate(45deg); }
+.chev.right { transform: rotate(-45deg); }
+
+.date-label { font-weight: 800; }
+.chip {
+  margin-left: auto; background: var(--chip); color: var(--chip-ink);
+  padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800;
+}
+.chip.sum { margin-left: 6px; background: var(--accent); color: #fff; }
+
+.group-body { padding: 10px; }
+
+.order-card {
+  background: var(--card); border-radius: var(--radius-xl); padding: 12px 12px 10px;
+  margin: 10px 0; box-shadow: var(--shadow); border: 2px dashed var(--primary-weak);
+}
+
+.order-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+}
+.order-header .left { display: flex; align-items: center; gap: 8px; }
+.order-header .right { color: var(--muted); font-size: 13px; }
+.badge {
+  background: var(--primary); color: #fff; border-radius: 10px; padding: 2px 8px; font-size: 12px;
+}
+.store { font-weight: 800; }
+
+.order-items { list-style: none; margin: 0; padding: 6px 0 0; }
+.order-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 6px; border-radius: var(--radius-md);
+}
+.order-item + .order-item { background: linear-gradient(transparent, transparent) padding-box, repeating-linear-gradient(90deg, #eee, #eee 4px, transparent 4px, transparent 8px) border-box; border-bottom: 0; }
+.item-left { display: flex; align-items: center; gap: 8px; }
+.item-right { font-weight: 800; }
+.dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; display: inline-block; }
+.note { color: var(--muted); font-style: normal; }
+
+.order-footer {
+  display: flex; justify-content: flex-end; padding-top: 8px; margin-top: 6px;
+}
+.total {
+  background: var(--primary); color: #fff;
+  padding: 6px 12px; border-radius: 999px; font-weight: 900; letter-spacing: .5px;
+}

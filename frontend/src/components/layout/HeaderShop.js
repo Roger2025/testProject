@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const HeaderShop = () => {
   const { merchantId } = useParams();
-  const currentMerchantId = merchantId || 'store1'; // 預設為 store1
+  const currentMerchantId = merchantId || 'store5'; // 預設為 store5
 
   return (
     <header className="header">
@@ -22,11 +22,12 @@ const HeaderShop = () => {
           <div className="col-lg-6">
             <nav className="header__menu">
               <ul>
-                <li className="active"><Link to="/user">平台首頁</Link></li>
-                <li><Link to={`/user/shop/${currentMerchantId}`}>當前店家</Link></li>
-                <li><Link to="/user/shopcart">購物車</Link></li>          
-                <li><Link to="/user/order">訂單專區</Link></li>
-                <li><Link to="/user/login">登入/登出</Link></li>      
+                <li className="active"><Link to="/user">首頁</Link></li>
+                <li><Link to={`/user/shop/${currentMerchantId}`}>店家</Link></li>
+                {/* <li><Link to="/user/shopcart">購物車</Link></li> */}
+                {/* <li><Link to="/user/shop/:merchantId">訂單專區</Link></li> */}
+                <li><Link to="/auth/login">登入/註冊</Link></li>    
+                <li><Link to='/'>登出</Link></li>  
                 {/* <li><Link to="/test">Test</Link></li> */}
                 {/* <li><Link to="#">TestPages</Link>
                   <ul className="header__menu__dropdown">

@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css/navigation';
-import '../../styles/css/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
+import '../../styles/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
 // import { parseCategoryField } from '../../utils/CategoryParser';
 import { isStoreOpen } from '../../utils/timeUtils';
 import { Link } from 'react-router-dom';

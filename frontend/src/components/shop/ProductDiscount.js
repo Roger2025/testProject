@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css/navigation';
-import '../../styles/css/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
+import '../../styles/ProductDiscount.css'; // 放自訂樣式 可放 Ogani 原樣式
 
 // 使用 imageMap.js 來獲取圖片路徑
 // import { imageMap } from '../../utils/discount/imageMap'; // 使用 discount 資料夾的映射

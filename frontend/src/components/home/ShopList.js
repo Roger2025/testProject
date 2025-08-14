@@ -79,7 +79,7 @@ const ShopList = ({ products: externalProducts }) => {
           return {
             name: item.storeName,
             img: item.storeImag ? getImageURL(item.storeImag) : defaultImageURL,
-            url: `/shop/${item.merchantId}`, 
+            url: `/user/shop/${item.merchantId}`, 
             merchantId: item.merchantId,
             category: finalWithAll,
             isOpenNow, 

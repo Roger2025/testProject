@@ -1,40 +1,30 @@
-//src/hooks/useMerchantAuth.js
+// src/hooks/useMerchantAuth.js
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser as loginAction, logout as logoutAction, setError, setLoading } from '../features/merchant/auth/merchantAuthSlice';
-
+import { logout as logoutAction } from '../features/merchant/auth/merchantAuthSlice';
 
 export const useMerchantAuth = () => {
+  // 狀態形狀與 slice 對齊：user 放所有登入資訊
+  const user = useSelector((s) => s.merchantAuth.user);
+  const isAuthenticated = !!user;
+  const loading = useSelector((s) => s.merchantAuth.loading);
+  const error = useSelector((s) => s.merchantAuth.error);
+
   const dispatch = useDispatch();
-  const { merchant, isAuthenticated, loading, error } = useSelector((state) => state.merchantAuth);
-
-  const login = async ({ email, password }) => {
-    try {
-      dispatch(setError("")); //清空錯誤訊息
-      dispatch(setLoading(false));
-      dispatch({ type: 'merchantAuth/loading' }); // 可加這段或用 extraReducers 控制
-      // 模擬驗證或發 request
-      if (email === 'test@merchant.com' && password === '123456') {
-        dispatch(loginAction({ email })); // 寫入 Redux
-      } else {
-        // throw new Error('登入失敗，請確認帳密');
-        dispatch(setError("帳號或密碼錯誤"));
-      }
-    } catch (err) {
-      dispatch({ type: 'merchantAuth/error', payload: err.message });
-      return { success: false, message: err.message };
-    }
-  };
-
   const logout = () => dispatch(logoutAction());
 
   return {
-    merchant,
+    user,                         // { merchantId, role, ... }
+    merchantId: user?.merchantId ?? null,
+    role: user?.role ?? null,
     isAuthenticated,
     loading,
     error,
-    login,
     logout,
   };
 };
+
+// 給頁面/元件單純要 merchantId 的輕量 hook
+export const useMerchantId = () =>
+  useSelector((s) => s.merchantAuth.user?.merchantId ?? null);
 
 export default useMerchantAuth;
