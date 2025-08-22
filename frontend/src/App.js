@@ -3,7 +3,7 @@ import './App.css';
 import MemberCenter from "./pages/user/MemberCenter"
 import MenuPage from './pages/user/MenuPage';
 import OrderSummaryPage from './pages/user/OrderListPage';
-import StorePage from './pages/storePage';
+import StorePage from './pages/StorePage';
 import {Routes, Route, Navigate} from 'react-router-dom'
 import HistoryOrdersPage from './pages/user/historyOrdersPage';
 

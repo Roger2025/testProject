@@ -8,7 +8,7 @@ function AllUsersPage() {
   const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [lastRefreshedAt, setLastRefreshedAt] = useState(null); // 新：顯示資料更新時間
+  const [lastRefreshedAt, setLastRefreshedAt] = useState(null); // 顯示資料更新時間
 
   // 取得時間欄位（自動兼容 created_at / createdAt）
   const getCreatedAt = (u) => u?.created_at || u?.createdAt || null;
@@ -28,7 +28,7 @@ function AllUsersPage() {
         withCredentials: true
       });
       setUsers(res.data.users || []);
-      setLastRefreshedAt(new Date()); // 新：記錄更新時間
+      setLastRefreshedAt(new Date()); // 記錄更新時間
     } catch (err) {
       console.error('❌ 取得使用者失敗:', err);
     }
@@ -104,18 +104,18 @@ function AllUsersPage() {
       return matchesSearch && matchesRole && matchesStatus;
     });
 
-    // 新：當切到待審核時，以建立時間排序（新到舊）
+    // 當切到待審核時，以建立時間排序（新到舊）
     if (filterStatus === 'pending') {
       list.sort((a, b) => {
         const da = new Date(getCreatedAt(a) || 0).getTime();
         const db = new Date(getCreatedAt(b) || 0).getTime();
-        return db - da; // 新到舊；若要舊到新，改成: return da - db;
+        return da - db; // 舊到新
       });
     }
     return list;
   }, [users, search, filterRole, filterStatus]);
 
-  // 新：統計資訊（總數、狀態、角色）
+  // 統計資訊（總數、狀態、角色）
   const stats = useMemo(() => {
     const total = users.length;
     const byStatus = users.reduce((acc, u) => {
@@ -140,7 +140,7 @@ function AllUsersPage() {
         </small>
       </div>
 
-      {/* 新：統計區 */}
+      {/* 統計區 */}
       <div className="stats-bar" style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'12px', margin:'8px 0 16px'}}>
         <div className="stat-card"><b>總數(商家、消費、管理者)</b><div>{stats.total}</div></div>
         <div className="stat-card"><b>Active</b><div>{stats.byStatus.active || 0}</div></div>
@@ -192,7 +192,7 @@ function AllUsersPage() {
             <th>店名</th>
             <th>地址</th>
             <th>狀態</th>
-            <th>建立時間</th> {/* 新增欄 */}
+            <th>建立時間</th>
             <th>操作</th>
           </tr>
         </thead>
