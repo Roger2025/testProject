@@ -31,20 +31,18 @@
 ---
 
 ##  系統截圖
-[管理者停權/恢復/審核/儀錶板 介面]<img width="2879" height="1799" alt="image" src="https://github.com/user-attachments/assets/1ad568d0-24a1-4e35-bc10-bdeafa0f2e78" />
+[管理者停權/恢復/審核/儀錶板 介面1]<img width="2854" height="1453" alt="image" src="https://github.com/user-attachments/assets/6596e400-1220-4e58-858c-4bc3fffbc3fc" />
+
+[管理者停權/恢復/審核/儀錶板 介面2]<img width="2775" height="1449" alt="image" src="https://github.com/user-attachments/assets/a05e2830-9872-4c58-b5f3-44c32223bb78" />
+
 [管理者介面]<img width="2588" height="1144" alt="image" src="https://github.com/user-attachments/assets/b20fbfee-2450-4650-8702-09670daa9d3e" />
+
 [email驗證畫面]<img width="818" height="698" alt="image" src="https://github.com/user-attachments/assets/caf53fd7-e1bd-4fe7-8c02-9b81c14fbe6d" />
+
 [註冊畫面]<img width="827" height="1445" alt="image" src="https://github.com/user-attachments/assets/b5bdcf71-03b5-4320-8320-69564ab0e888" />
-[註冊畫面]<img width="836" height="834" alt="image" src="https://github.com/user-attachments/assets/030d516c-8a64-4425-b3f6-e2c76a8f1910" />
 
+[登入畫面]<img width="836" height="834" alt="image" src="https://github.com/user-attachments/assets/030d516c-8a64-4425-b3f6-e2c76a8f1910" />
 
-
-
-
-
-> 範例：  
-> ![登入頁面](images/login.png)  
-> ![後台管理頁面](images/admin.png)  
 
 ---
 
