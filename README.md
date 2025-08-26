@@ -50,7 +50,7 @@
 請依照 `.env.example` 建立 `.env` 檔案，設定前後端的 API 位置與參數。  
 
 前端範例：
-REACT_APP_API_URL=http://localhost:3001
+REACT_APP_API_URL=http://localhost:3000
 後端範例：
 PORT=3001
 NODE_ENV=development
